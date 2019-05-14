@@ -7,7 +7,7 @@ import sys
 from scipy import signal
 sys.path.append('../analysis/')
 from read_waveform import read_waveform as rw
-from write_waveform import write_waveform
+from write_waveform_copy import write_waveform
 import time
 import os
 from p1_sort import p1_sort
