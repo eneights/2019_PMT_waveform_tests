@@ -19,7 +19,6 @@ def write_waveform(x, y, file_name, hdr):
         fout.write(line)
     fout.close()
 
-
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(prog="write waveform", description="write a waveform datafile.")
