@@ -3,9 +3,10 @@ sys.path.append('../analysis/')
 import numpy as np
 import matplotlib.pyplot as plt
 from read_waveform import read_waveform as rw
-from write_waveform import write_waveform
+# from write_waveform import write_waveform
 from scipy import signal
 import os
+from pathlib import Path
 
 data_path = Path(r'/Users/Eliza/Documents/WATCHMAN/20190514_watchman_spe/')
 save_path = Path(r'/Users/Eliza/Documents/WATCHMAN/Python Stuff/2019_PMT_waveform_tests')
@@ -24,11 +25,14 @@ def p1_sort(fnum):
     spe_not_there = str(save_path / 'd1/not_spe/D1--not_spe--%05d.txt') % fnum
     spe_unsure = str(save_path / 'd1/unsure_if_spe/D1--unsure--%05d.txt') % fnum
     if os.path.isfile(spe_wname):
-        pass
+        print(spe_wname)
+        # pass
     elif os.path.isfile(spe_not_there):
-        pass
+        print(spe_wname)
+        # pass
     elif os.path.isfile(spe_unsure):
-        pass
+        print(spe_wname)
+        # pass
     else:
         (t, v, hdr) = rw(file_name, nhdr)
 
@@ -42,10 +46,10 @@ def p1_sort(fnum):
         t_peaks = t2[peaks]
         y_check = y_peaks <= -0.0117
         y_check_sum = sum(y_check)
-        # print(y_check)
-        # print('y_check_sum %f' %y_check_sum)
+        print(y_check)
+        print('y_check_sum %f' % y_check_sum)
 
-        # print(f)
+        """  # print(f)
         if len(peaks) == 1:
             if min(y2[370:1370]) < -0.0125:
                 # plt.figure()
@@ -102,5 +106,5 @@ def p1_sort(fnum):
                     write_waveform(t2, y2, spe_wname, hdr)
                     print(len(os.listdir('../d1/d1_raw/')))
                     # print('3')
-
+"""
     return

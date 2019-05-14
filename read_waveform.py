@@ -26,9 +26,9 @@ def read_waveform(file_name, nhdr):
 
 if __name__ == '__main__':
     import argparse
-    parser = argparse.ArgumentParser(prog="read waveform",description="read the waveform datafile.")
-    parser.add_argument("--nhdr",type=int,help='number of header lines to skip in the raw file',default=5)
-    parser.add_argument("--file_name",type=str,help="filename",default="./C2--waveforms--00000.txt")
+    parser = argparse.ArgumentParser(prog="read waveform", description="read the waveform datafile.")
+    parser.add_argument("--nhdr", type=int, help='number of header lines to skip in the raw file', default=5)
+    parser.add_argument("--file_name", type=str,help="filename", default="./C2--waveforms--00000.txt")
     args = parser.parse_args()
 
     t, v, hdr = read_waveform(args.file_name, args.nhdr)
