@@ -3,13 +3,13 @@ sys.path.append('../analysis/')
 import numpy as np
 import matplotlib.pyplot as plt
 from read_waveform import read_waveform as rw
-# from write_waveform import write_waveform
+from write_waveform import write_waveform
 from scipy import signal
 import os
 from pathlib import Path
 
 data_path = Path(r'/Users/Eliza/Documents/WATCHMAN/20190514_watchman_spe/')
-save_path = Path(r'/Users/Eliza/Documents/WATCHMAN/Python Stuff/2019_PMT_waveform_tests')
+save_path = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files')
 
 
 def p1_sort(fnum):
@@ -46,10 +46,10 @@ def p1_sort(fnum):
         t_peaks = t2[peaks]
         y_check = y_peaks <= -0.0117
         y_check_sum = sum(y_check)
-        print(y_check)
-        print('y_check_sum %f' % y_check_sum)
+        # print(y_check)
+        # print('y_check_sum %f' % y_check_sum)
 
-        """  # print(f)
+        # print(f)
         if len(peaks) == 1:
             if min(y2[370:1370]) < -0.0125:
                 # plt.figure()
@@ -57,10 +57,10 @@ def p1_sort(fnum):
                 # plt.plot(t2,y2,'r',linewidth=2.5)
                 # plt.plot(t_peaks, y_peaks,'x',color='yellow')
                 # plt.grid(True)
-                # print('Displaying file #%05d' % fnum)
+                print('Displaying file #%05d' % fnum)
                 # plt.show()
                 write_waveform(t2, y2, spe_wname, hdr)
-                print(len(os.listdir('../d1/d1_raw/')))
+                print(len(os.listdir(str(save_path / 'd1/d1_raw/'))))
                 # print('1')
 
         else:
@@ -79,7 +79,7 @@ def p1_sort(fnum):
 
                     spe_check = 'pre-loop initialization'
                     while spe_check != 'y' and spe_check != 'n' and spe_check != 'u':
-                        spe_check = raw_input('Is there a single visible SPE? "y" or "n"\n')
+                        spe_check = input('Is there a single visible SPE? "y" or "n"\n')
                     if spe_check == 'y':
 
                         # Write data file to processed SPE folder
@@ -92,7 +92,7 @@ def p1_sort(fnum):
                         write_waveform(t2, y2, spe_unsure, hdr)
                     print('file #%05d: Done' % fnum)
                     # print('mean is %f' % np.mean(y2))
-                    print(len(os.listdir('../d1/d1_raw/')))
+                    print(len(os.listdir(str(save_path / 'd1/d1_raw/'))))
                     # print('2')
             else:
                 if min(y2[370:1370]) < -0.0115:
@@ -101,10 +101,19 @@ def p1_sort(fnum):
                     # plt.plot(t2,y2,'r',linewidth=2.5)
                     # plt.plot(t_peaks, y_peaks,'x',color='yellow')
                     # plt.grid(True)
-                    # print('Displaying file #%05d' % fnum)
+                    print('Displaying file #%05d' % fnum)
                     # plt.show()
                     write_waveform(t2, y2, spe_wname, hdr)
-                    print(len(os.listdir('../d1/d1_raw/')))
+                    print(len(os.listdir(str(save_path / 'd1/d1_raw/'))))
                     # print('3')
-"""
+
     return
+
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(prog="p1 sort", description="Sorting through raw data to find good SPEs")
+    parser.add_argument("--fnum", type=int, help='file number to begin at')
+    args = parser.parse_args()
+
+    p1_sort(args.fnum)

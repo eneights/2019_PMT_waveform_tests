@@ -13,7 +13,7 @@ from p1_sort import p1_sort
 show_plot = False
 N = 4002                        # Signal window size
 fsps = 20000000000.             # Samples per second (Hz)
-Nloops = 100000
+Nloops = 10000
 vthr = -0.00025
 # nhdr = 5
 
@@ -25,7 +25,7 @@ print('wc', wc)
 numtaps = 51                    # Filter order + 1, chosen for balance of good performance and small transient size
 lowpass = signal.firwin(numtaps, cutoff=wc/np.pi, window='blackman')    # Blackman windowed lowpass filter
 
-j = 57000
+j = 0
 for i in range(j, Nloops):
     p1_sort(i)
 
