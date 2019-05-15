@@ -3,10 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-# path = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/waveforms/200MHz_bandwidth/')
-path = Path(r'/Users/Eliza/Documents/WATCHMAN/20190514_watchman_spe/')
+# path = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/bandwidth/raw')
+path = Path(r'/Users/Eliza/Documents/WATCHMAN/20190514_watchman_spe')
 cwd = os.getcwd()
 os.chdir(path)
+
 
 def read_waveform(file_name, nhdr):
     myfile = open(file_name, 'rb')          # opens file
@@ -19,18 +20,8 @@ def read_waveform(file_name, nhdr):
     for line in myfile:
         x = np.append(x, float(line.split(str.encode(','))[0]))         # fills array with times from file
         y = np.append(y, float(line.split(str.encode(','))[1]))         # fills array with voltages from file
-    half_max_value = min(y) / 2
-    xvals = np.linspace(4.64e-7, 6.64e-7, int(2e6))
-    yvals = np.interp(xvals, x, y)
-    differential = np.diff(yvals)
-    difference_value = np.abs(yvals - half_max_value)
-    for i in range(0, len(differential)):
-        if differential[i] > 0:
-            difference_value[i] = np.inf
-    index = np.argmin(difference_value)
-    time = xvals[index]
     myfile.close()
-    return x, y, header_string, half_max_value, time
+    return x, y, header_string
 
 
 if __name__ == '__main__':
@@ -40,7 +31,7 @@ if __name__ == '__main__':
     parser.add_argument("--file_name", type=str, help="filename", default="./C2--waveforms--00030.txt")
     args = parser.parse_args()
 
-    t, v, hdr, half_max, half_max_time = read_waveform(args.file_name, args.nhdr)
+    t, v, hdr = read_waveform(args.file_name, args.nhdr)
     print("\nHeader:\n\n", hdr)
     plt.plot(t, v)
     plt.show()

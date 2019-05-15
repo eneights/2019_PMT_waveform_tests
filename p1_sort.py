@@ -1,18 +1,14 @@
 import sys
-sys.path.append('../analysis/')
+import os
 import numpy as np
 import matplotlib.pyplot as plt
-from read_waveform import read_waveform as rw
-from write_waveform import write_waveform
-from scipy import signal
-import os
 from pathlib import Path
+from scipy import signal
+from read_waveform import read_waveform as rw
+from write_waveform import write_waveform as ww
 
-data_path = Path(r'/Users/Eliza/Documents/WATCHMAN/20190514_watchman_spe/')
-save_path = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files')
 
-
-def p1_sort(fnum):
+def p1_sort(file_num):
     nhdr = 5
     fsps = 20000000000.             # Samples per second (Hz)
     fc = 250000000.                 # Filter cutoff frequency (Hz)
@@ -20,92 +16,68 @@ def p1_sort(fnum):
     numtaps = 51                    # Filter order + 1, chosen for balance of good performance and small transient size
     lowpass = signal.firwin(numtaps, cutoff = wc/np.pi, window = 'blackman')    # Blackman windowed lowpass filter
 
-    file_name = str(data_path / 'C2--waveforms--%05d.txt') % fnum
-    spe_wname = str(save_path / 'd1/d1_raw/D1--waveforms--%05d.txt') % fnum
-    spe_not_there = str(save_path / 'd1/not_spe/D1--not_spe--%05d.txt') % fnum
-    spe_unsure = str(save_path / 'd1/unsure_if_spe/D1--unsure--%05d.txt') % fnum
-    if os.path.isfile(spe_wname):
-        print(spe_wname)
-        # pass
-    elif os.path.isfile(spe_not_there):
-        print(spe_wname)
-        # pass
-    elif os.path.isfile(spe_unsure):
-        print(spe_wname)
-        # pass
-    else:
-        (t, v, hdr) = rw(file_name, nhdr)
+    data_path = Path(r'/Users/Eliza/Documents/WATCHMAN/20190514_watchman_spe')
+    # data_path = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/bandwidth/raw')
+    save_path = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files')
+    # save_path = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/bandwidth')
 
-        y = signal.filtfilt(lowpass, 1.0, v)
-        y2 = y[numtaps:len(y)-1]
+    file_name = str(data_path / 'C2--waveforms--%05d.txt') % file_num
+    spe_name = str(save_path / 'd1/d1_raw/D1--waveforms--%05d.txt') % file_num
+    spe_not_there = str(save_path / 'd1/not_spe/D1--not_spe--%05d.txt') % file_num
+    spe_unsure = str(save_path / 'd1/unsure_if_spe/D1--unsure--%05d.txt') % file_num
+    if os.path.isfile(spe_name):
+        pass
+    elif os.path.isfile(spe_not_there):
+        pass
+    elif os.path.isfile(spe_unsure):
+        pass
+    else:
+        t, v, hdr, half_max, half_max_time = rw(file_name, nhdr)
+
+        v1 = signal.filtfilt(lowpass, 1.0, v)
+        v2 = v1[numtaps:len(y)-1]
         t2 = t[numtaps:len(y)-1]
 
-        y_flip = -1 * y2
-        peaks, _ = signal.find_peaks(y_flip, 0.0115, distance = 350)
-        y_peaks = y2[peaks]
+        v_flip = -1 * v2
+        peaks, _ = signal.find_peaks(v_flip, 0.0115, distance = 350)
+        v_peaks = v2[peaks]
         t_peaks = t2[peaks]
-        y_check = y_peaks <= -0.0117
-        y_check_sum = sum(y_check)
-        # print(y_check)
-        # print('y_check_sum %f' % y_check_sum)
+        v_check = v_peaks <= -0.0117
+        v_check_sum = sum(v_check)
 
-        # print(f)
         if len(peaks) == 1:
-            if min(y2[370:1370]) < -0.0125:
-                # plt.figure()
-                # plt.plot(t,v,'b')
-                # plt.plot(t2,y2,'r',linewidth=2.5)
-                # plt.plot(t_peaks, y_peaks,'x',color='yellow')
-                # plt.grid(True)
-                print('Displaying file #%05d' % fnum)
-                # plt.show()
-                write_waveform(t2, y2, spe_wname, hdr)
-                print(len(os.listdir(str(save_path / 'd1/d1_raw/'))))
-                # print('1')
+            if min(v2[370:1370]) < -0.0125:
+                ww(t2, v2, spe_name, hdr)
+                print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
 
         else:
-            if y_check_sum >= 2:
-                if min(y2[370:1370]) < -0.0115:
+            if v_check_sum >= 2:
+                if min(v2[370:1370]) < -0.0115:
                     plt.figure()
                     plt.plot(t,v,'b')
                     plt.plot(t2,y2,'r',linewidth=2.5)
                     plt.plot(t_peaks, y_peaks,'x',color='cyan')
-                    # plt.plot(t,-0.012*np.ones(len(v)),'k--')
                     plt.grid(True)
-                    print('Displaying file #%05d' % fnum)
+                    print('Displaying file #%05d' % file_num)
                     plt.show(block = False)
                     plt.pause(1.5)
                     plt.close()
 
                     spe_check = 'pre-loop initialization'
                     while spe_check != 'y' and spe_check != 'n' and spe_check != 'u':
-                        spe_check = input('Is there a single visible SPE? "y" or "n"\n')
+                        spe_check = input('Is there a single visible SPE? "y", "n", or "u"\n')
                     if spe_check == 'y':
-
-                        # Write data file to processed SPE folder
-                        write_waveform(t2, y2, spe_wname, hdr)
+                        ww(t2, v2, spe_name, hdr)
                     elif spe_check == 'n':
-
-                        write_waveform(t2, y2, spe_not_there, hdr)
+                        ww(t2, v2, spe_not_there, hdr)
                     elif spe_check == 'u':
-
-                        write_waveform(t2, y2, spe_unsure, hdr)
-                    print('file #%05d: Done' % fnum)
-                    # print('mean is %f' % np.mean(y2))
-                    print(len(os.listdir(str(save_path / 'd1/d1_raw/'))))
-                    # print('2')
+                        ww(t2, v2, spe_unsure, hdr)
+                    print('file #%05d: Done' % file_num)
+                    print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
             else:
                 if min(y2[370:1370]) < -0.0115:
-                    # plt.figure()
-                    # plt.plot(t,v,'b')
-                    # plt.plot(t2,y2,'r',linewidth=2.5)
-                    # plt.plot(t_peaks, y_peaks,'x',color='yellow')
-                    # plt.grid(True)
-                    print('Displaying file #%05d' % fnum)
-                    # plt.show()
-                    write_waveform(t2, y2, spe_wname, hdr)
-                    print(len(os.listdir(str(save_path / 'd1/d1_raw/'))))
-                    # print('3')
+                    ww(t2, v2, spe_name, hdr)
+                    print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
 
     return
 
@@ -113,7 +85,7 @@ def p1_sort(fnum):
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(prog="p1 sort", description="Sorting through raw data to find good SPEs")
-    parser.add_argument("--fnum", type=int, help='file number to begin at')
+    parser.add_argument("--file_num", type=int, help='file number to begin at', default=00000)
     args = parser.parse_args()
 
-    p1_sort(args.fnum)
+    p1_sort(args.file_num)
