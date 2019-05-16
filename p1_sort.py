@@ -18,7 +18,8 @@ def p1_sort(file_num):
 
     data_path = Path(r'/Users/Eliza/Documents/WATCHMAN/20190514_watchman_spe')
     # data_path = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/bandwidth/raw')
-    save_path = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files')
+    # save_path = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files')
+    save_path = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files/test_save')
     # save_path = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/bandwidth')
 
     file_name = str(data_path / 'C2--waveforms--%05d.txt') % file_num
@@ -32,31 +33,83 @@ def p1_sort(file_num):
     elif os.path.isfile(spe_unsure):
         pass
     else:
-        t, v, hdr, half_max, half_max_time = rw(file_name, nhdr)
+        t, v, hdr = rw(file_name, nhdr)
 
         v1 = signal.filtfilt(lowpass, 1.0, v)
-        v2 = v1[numtaps:len(y)-1]
-        t2 = t[numtaps:len(y)-1]
+        v2 = v1[numtaps:len(v1)-1]
+        t2 = t[numtaps:len(v1)-1]
 
         v_flip = -1 * v2
-        peaks, _ = signal.find_peaks(v_flip, 0.0115, distance = 350)
+        peaks, _ = signal.find_peaks(v_flip, 0.001)
         v_peaks = v2[peaks]
         t_peaks = t2[peaks]
-        v_check = v_peaks <= -0.0117
+        v_check = v_peaks <= -0.002
         v_check_sum = sum(v_check)
 
-        if len(peaks) == 1:
-            if min(v2[370:1370]) < -0.0125:
+        if len(peaks) == 0:
+            ww(t2, v2, spe_not_there, hdr)
+            print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
+
+        elif len(peaks) == 1:
+            if min(v2[370:1370]) < -0.003:
                 ww(t2, v2, spe_name, hdr)
+                print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
+            else:
+                plt.figure()
+                plt.plot(t, v, 'b')
+                plt.plot(t2, v2, 'r', linewidth=2.5)
+                plt.plot(t_peaks, v_peaks, 'x', color='cyan')
+                plt.grid(True)
+                print('Displaying file #%05d' % file_num)
+                plt.show(block=False)
+                plt.pause(1.5)
+                plt.close()
+
+                spe_check = 'pre-loop initialization'
+                while spe_check != 'y' and spe_check != 'n' and spe_check != 'u':
+                    spe_check = input('Is there a single visible SPE? "y", "n", or "u"\n')
+                if spe_check == 'y':
+                    ww(t2, v2, spe_name, hdr)
+                elif spe_check == 'n':
+                    ww(t2, v2, spe_not_there, hdr)
+                elif spe_check == 'u':
+                    ww(t2, v2, spe_unsure, hdr)
+                print('file #%05d: Done' % file_num)
                 print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
 
         else:
-            if v_check_sum >= 2:
-                if min(v2[370:1370]) < -0.0115:
+            if v_check_sum == 0:
+                if min(v2[370:1370]) <= -0.0015:
+                    plt.figure()
+                    plt.plot(t, v, 'b')
+                    plt.plot(t2, v2, 'r', linewidth=2.5)
+                    plt.plot(t_peaks, v_peaks, 'x', color='cyan')
+                    plt.grid(True)
+                    print('Displaying file #%05d' % file_num)
+                    plt.show(block=False)
+                    plt.pause(1.5)
+                    plt.close()
+
+                    spe_check = 'pre-loop initialization'
+                    while spe_check != 'y' and spe_check != 'n' and spe_check != 'u':
+                        spe_check = input('Is there a single visible SPE? "y", "n", or "u"\n')
+                    if spe_check == 'y':
+                        ww(t2, v2, spe_name, hdr)
+                    elif spe_check == 'n':
+                        ww(t2, v2, spe_not_there, hdr)
+                    elif spe_check == 'u':
+                        ww(t2, v2, spe_unsure, hdr)
+                    print('file #%05d: Done' % file_num)
+                    print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
+                else:
+                    ww(t2, v2, spe_not_there, hdr)
+                    print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
+            if v_check_sum == 1:
+                if min(v2[370:1370]) >= -0.004:
                     plt.figure()
                     plt.plot(t,v,'b')
-                    plt.plot(t2,y2,'r',linewidth=2.5)
-                    plt.plot(t_peaks, y_peaks,'x',color='cyan')
+                    plt.plot(t2,v2,'r',linewidth=2.5)
+                    plt.plot(t_peaks, v_peaks,'x',color='cyan')
                     plt.grid(True)
                     print('Displaying file #%05d' % file_num)
                     plt.show(block = False)
@@ -74,10 +127,31 @@ def p1_sort(file_num):
                         ww(t2, v2, spe_unsure, hdr)
                     print('file #%05d: Done' % file_num)
                     print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
-            else:
-                if min(y2[370:1370]) < -0.0115:
+                else:
                     ww(t2, v2, spe_name, hdr)
                     print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
+            else:
+                plt.figure()
+                plt.plot(t, v, 'b')
+                plt.plot(t2, v2, 'r', linewidth=2.5)
+                plt.plot(t_peaks, v_peaks, 'x', color='cyan')
+                plt.grid(True)
+                print('Displaying file #%05d' % file_num)
+                plt.show(block=False)
+                plt.pause(1.5)
+                plt.close()
+
+                spe_check = 'pre-loop initialization'
+                while spe_check != 'y' and spe_check != 'n' and spe_check != 'u':
+                    spe_check = input('Is there a single visible SPE? "y", "n", or "u"\n')
+                if spe_check == 'y':
+                    ww(t2, v2, spe_name, hdr)
+                elif spe_check == 'n':
+                    ww(t2, v2, spe_not_there, hdr)
+                elif spe_check == 'u':
+                    ww(t2, v2, spe_unsure, hdr)
+                print('file #%05d: Done' % file_num)
+                print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
 
     return
 
