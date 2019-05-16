@@ -9,9 +9,9 @@ from write_waveform import write_waveform as ww
 def subtract_time(file_num):
     nhdr = 5
 
-    data_path = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files/test_save/d1/d1_raw')
+    data_path = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files/d1/d1_raw')
     # data_path = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/bandwidth/d1/d1_raw')
-    save_path = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files/test_save/d1/d1_shifted')
+    save_path = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files/d1/d1_shifted')
     # save_path = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/bandwidth/d1/d1_shifted')
     file_name = 'D1--waveforms--%05d.txt' % file_num
 
