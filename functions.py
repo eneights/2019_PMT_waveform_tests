@@ -25,47 +25,57 @@ def calculate_average(x, y):
 def calculate_charge(x, y):
     ysum = 0
     resistance = 50
+    idx1 = np.inf
+    idx2 = np.inf
     avg = calculate_average(x, y)
+    min_val = np.amin(y)
+    idx_min_val = np.where(y == min_val)
+    time_min_val = x[idx_min_val]
+    min_time = time_min_val[0]
     xvals = np.linspace(x[0], x[len(x) - 1], int(2e6))
+    xvals1 = np.linspace(x[0], min_time, int(2e6))
+    xvals2 = np.linspace(min_time, x[len(x) - 1], int(2e6))
     yvals = np.interp(xvals, x, y)
-    difference_value1 = yvals - avg
-    difference_value2 = np.abs(xvals - 0)
-    idx = np.argmin(difference_value2)
-    diff_split = np.split(difference_value1, [idx])
-    diff_split1 = np.flip(diff_split[0])
-    diff_split2 = diff_split[1]
-    for j in range(0, len(diff_split1)):
-        if diff_split1[j] > 0:
-            idx1 = len(diff_split1) - j
+    yvals1 = np.interp(xvals1, x, y)
+    yvals2 = np.interp(xvals2, x, y)
+
+    yvals1_flip = np.flip(yvals1)
+    difference_value1 = yvals1_flip - avg
+    difference_value2 = yvals2 - avg
+    for j in range(0, len(difference_value1) - 1):
+        if difference_value1[j] >= 0:
+            idx1 = len(difference_value1) - j
             break
-        elif yvals[j] == 0:
-            idx1 = len(yvals) - j
+    if idx1 == np.inf:
+        for j in range(0, len(difference_value1) - 1):
+            if yvals1_flip[j] >= 0:
+                idx1 = len(yvals1_flip) - j
+                break
+    if idx1 == np.inf:
+        idx1 = len(difference_value1) - np.argmin(np.abs(difference_value1))
+    for j in range(0, len(difference_value2) - 1):
+        if difference_value2[j] >= 0:
+            idx2 = j
             break
-        else:
-            difference_value3 = np.abs(yvals - 0)
-            diff_split_2 = np.split(difference_value3, [idx])
-            diff_split3 = np.flip(diff_split_2[0])
-            idx1 = np.argmin(diff_split3)
-            break
-    for j in range(0, len(diff_split2)):
-        if diff_split2[j] > 0:
-            idx2 = idx + j
-            break
-        elif yvals[j] == 0:
-            idx2 = len(yvals) - j
-            break
-        else:
-            difference_value4 = np.abs(yvals - 0)
-            diff_split_3 = np.split(difference_value4, [idx])
-            diff_split4 = np.flip(diff_split_3[1])
-            idx2 = np.argmin(diff_split4)
-            break
-    x1 = xvals[idx1]
-    x2 = xvals[idx2]
+    if idx2 == np.inf:
+        for j in range(0, len(difference_value2) - 1):
+            if yvals2[j] >= 0:
+                idx2 = j
+                break
+    if idx2 == np.inf:
+        idx2 = np.argmin(np.abs(difference_value2))
+    x01 = xvals1[idx1]
+    x02 = xvals2[idx2]
+    diff_val1 = np.abs(xvals - x01)
+    diff_val2 = np.abs(xvals - x02)
+    index1 = np.argmin(diff_val1)
+    index2 = np.argmin(diff_val2)
+    x1 = xvals[index1]
+    x2 = xvals[index2]
     delta_x = x2 - x1
-    for j in range(idx1, idx2):
+    for j in range(index1, index2):
         ysum += yvals[j]
-    area = delta_x * ysum / (idx2 - idx1)
+    area = delta_x * ysum / (index2 - index1)
     char = -1 * area / resistance
     return x1, x2, char
 
@@ -79,8 +89,8 @@ def calculate_amp(x, y):
 
 def rise_time(x, y):
     min_val = np.amin(y)
-    ind_min_val = np.where(y == min_val)
-    time_min_val = x[ind_min_val]
+    idx_min_val = np.where(y == min_val)
+    time_min_val = x[idx_min_val]
     min_time = time_min_val[0]
     avg = calculate_average(x, y)
     x1, x2, char = calculate_charge(x, y)
@@ -111,8 +121,8 @@ def rise_time(x, y):
 
 def fall_time(x, y):
     min_val = np.amin(y)
-    ind_min_val = np.where(y == min_val)
-    time_min_val = x[ind_min_val]
+    idx_min_val = np.where(y == min_val)
+    time_min_val = x[idx_min_val]
     min_time = time_min_val[0]
     avg = calculate_average(x, y)
     x1, x2, char = calculate_charge(x, y)

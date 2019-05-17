@@ -42,6 +42,9 @@ if __name__ == '__main__':
     t, v, hdr = read_waveform(args.file_name, args.nhdr)
     print("\nHeader:\n\n" + str(hdr))
     plt.plot(t, v)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Voltage (V)')
+    plt.title('File', args.file_name)
     plt.show()
 
 os.chdir(cwd)
