@@ -26,7 +26,7 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(prog="write waveform", description="write a waveform datafile.")
     parser.add_argument("--hdr", type=str, help='header string for the output file', default=header_string)
-    parser.add_argument("--file_name", type=str, help="filename", default="./C2--waveforms--00010.txt")
+    parser.add_argument("--file_name", type=str, help="filename", default="./C2--waveforms--00000.txt")
     args = parser.parse_args()
 
     t, v, header = rw(args.file_name, 5)

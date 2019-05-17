@@ -28,8 +28,8 @@ fall2080_array = np.array([])
 for i in range(start_file, end_file + 1):
     p1_sort(i)
 
-# for i in range(start_file, end_file + 1):
-    # subtract_time(i)
+for i in range(start_file, end_file + 1):
+    subtract_time(i)
 
 for i in range(start_file, end_file + 1):
     file_name = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files/d1/d1_shifted/D1--waveforms--%05d.txt' % i)
@@ -37,8 +37,6 @@ for i in range(start_file, end_file + 1):
         print("File: %05d" % i)
         t, v, hdr = rw(file_name, nhdr)
         t1, t2, charge = calculate_charge(t, v)
-        if t2 < 0:
-            print(t2)
         amplitude = calculate_amp(t, v)
         rise1090, rise2080 = rise_time(t, v)
         fall1090, fall2080 = fall_time(t, v)
@@ -50,7 +48,7 @@ for i in range(start_file, end_file + 1):
         rise2080_array = np.append(rise2080_array, rise2080)
         fall1090_array = np.append(fall1090_array, fall1090)
         fall2080_array = np.append(fall2080_array, fall2080)
-'''
+
 plt.hist(t1_array, 50)
 plt.show()
 
@@ -76,7 +74,7 @@ plt.hist(fall2080_array, 50)
 plt.show()
 
 # for i in range(start_file, end_file + 1):
-    # charge, time = waveform_filter(i)'''
+    # charge, time = waveform_filter(i)
 
 
 
