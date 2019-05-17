@@ -1,19 +1,15 @@
-import sys
 import os
-import time
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
-from scipy import signal
 from read_waveform import read_waveform as rw
 from write_waveform import write_waveform as ww
 from p1_sort import p1_sort
 from subtract_time import subtract_time
-from waveform_filter import waveform_filter
 from functions import *
 
-start_file = 650
-end_file = 1000
+start_file = 0
+end_file = 10828
 nhdr = 5
 
 t1_array = np.array([])
@@ -29,8 +25,8 @@ fall2080_array = np.array([])
 for i in range(start_file, end_file + 1):
     p1_sort(i)
 
-# for i in range(start_file, end_file + 1):
-    # subtract_time(i)
+for i in range(start_file, end_file + 1):
+    subtract_time(i)
 
 for i in range(start_file, end_file + 1):
     file_name = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files/d1/d1_shifted/D1--waveforms--%05d.txt' % i)
@@ -53,15 +49,15 @@ for i in range(start_file, end_file + 1):
         fall1090_array = np.append(fall1090_array, fall1090)
         fall2080_array = np.append(fall2080_array, fall2080)
 
-plt.hist(t1_array, 50)
-plt.xlabel('Time (s)')
-plt.title('Start Time')
-plt.show()
+# plt.hist(t1_array, 50)
+# plt.xlabel('Time (s)')
+# plt.title('Start Time')
+# plt.show()
 
-plt.hist(t2_array, 50)
-plt.xlabel('Time (s)')
-plt.title('End Time')
-plt.show()
+# plt.hist(t2_array, 50)
+# plt.xlabel('Time (s)')
+# plt.title('End Time')
+# plt.show()
 
 plt.hist(length_array, 50)
 plt.xlabel('Time (s)')

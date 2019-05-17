@@ -6,9 +6,9 @@ from pathlib import Path
 from read_waveform import read_waveform as rw
 
 # path = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/bandwidth/raw')
-path = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files/d1/not_spe')
-cwd = os.getcwd()
-os.chdir(path)
+# path = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files/d1/not_spe')
+# cwd = os.getcwd()
+# os.chdir(path)
 
 
 def write_waveform(x, y, file_name, hdr):
@@ -32,4 +32,4 @@ if __name__ == '__main__':
     t, v, header = rw(args.file_name, 5)
     write_waveform(t, v, args.file_name, header)
 
-os.chdir(cwd)
+# os.chdir(cwd)

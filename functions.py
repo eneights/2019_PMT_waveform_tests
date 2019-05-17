@@ -13,7 +13,7 @@ def calculate_average(x, y):
     if idx > len(x) / 2:
         idx1 = int(.1 * len(x))
         idx2 = int(.4 * len(x))
-    if idx <= len(x) / 2:
+    else:
         idx1 = int(.6 * len(x))
         idx2 = int(.9 * len(x))
     for j in range(idx1, idx2):
@@ -47,21 +47,11 @@ def calculate_charge(x, y):
             idx1 = len(difference_value1) - j
             break
     if idx1 == np.inf:
-        for j in range(0, len(difference_value1) - 1):
-            if yvals1_flip[j] >= 0:
-                idx1 = len(yvals1_flip) - j
-                break
-    if idx1 == np.inf:
         idx1 = len(difference_value1) - np.argmin(np.abs(difference_value1))
     for j in range(0, len(difference_value2) - 1):
         if difference_value2[j] >= 0:
             idx2 = j
             break
-    if idx2 == np.inf:
-        for j in range(0, len(difference_value2) - 1):
-            if yvals2[j] >= 0:
-                idx2 = j
-                break
     if idx2 == np.inf:
         idx2 = np.argmin(np.abs(difference_value2))
     x01 = xvals1[idx1]
@@ -73,7 +63,7 @@ def calculate_charge(x, y):
     x1 = xvals[index1]
     x2 = xvals[index2]
     delta_x = x2 - x1
-    for j in range(index1, index2):
+    for j in range(index1.item(), index2.item()):
         ysum += yvals[j]
     area = delta_x * ysum / (index2 - index1)
     char = -1 * area / resistance
