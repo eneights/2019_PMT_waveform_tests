@@ -29,6 +29,7 @@ def subtract_time(file_num):
         half_max_time = tvals[index]
         t2 = t - half_max_time
         ww(t2, v, save_path / file_name, hdr)
+        print('Length of /d1_shifted/:', len(os.listdir(str(save_path))))
 
 
 if __name__ == '__main__':

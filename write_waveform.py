@@ -6,9 +6,9 @@ from pathlib import Path
 from read_waveform import read_waveform as rw
 
 # path = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/bandwidth/raw')
-# path = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files/d1/d1_raw')
-# cwd = os.getcwd()
-# os.chdir(path)
+path = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files/d1/not_spe')
+cwd = os.getcwd()
+os.chdir(path)
 
 
 def write_waveform(x, y, file_name, hdr):
@@ -22,13 +22,14 @@ def write_waveform(x, y, file_name, hdr):
 
 
 if __name__ == '__main__':
+    header_string = "LECROYWaveRunner,20113,Waveform\nSegments,1,SegmentSize,4002\n\n\nTime,Ampl"
     import argparse
     parser = argparse.ArgumentParser(prog="write waveform", description="write a waveform datafile.")
-    parser.add_argument("--hdr", type=str, help='header string for the output file', default=5)
-    parser.add_argument("--file_name", type=str, help="filename", default="./C2--waveforms--00030.txt")
+    parser.add_argument("--hdr", type=str, help='header string for the output file', default=header_string)
+    parser.add_argument("--file_name", type=str, help="filename", default="./C2--waveforms--00010.txt")
     args = parser.parse_args()
 
-    t, v, header = rw(args.file_name, args.hdr)
-    write_waveform(t, v, args.file_name, args.hdr)
+    t, v, header = rw(args.file_name, 5)
+    write_waveform(t, v, args.file_name, header)
 
-# os.chdir(cwd)
+os.chdir(cwd)

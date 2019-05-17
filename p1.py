@@ -5,44 +5,79 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 from scipy import signal
-from shutil import copyfile
 from read_waveform import read_waveform as rw
 from write_waveform import write_waveform as ww
 from p1_sort import p1_sort
 from subtract_time import subtract_time
 from waveform_filter import waveform_filter
+from functions import *
 
-Nloops = 1000
-j = 0
+start_file = 50
+end_file = 1000
+nhdr = 5
 
-for i in range(j, Nloops):
+t1_array = np.array([])
+t2_array = np.array([])
+charge_array = np.array([])
+amplitude_array = np.array([])
+rise1090_array = np.array([])
+rise2080_array = np.array([])
+fall1090_array = np.array([])
+fall2080_array = np.array([])
+
+for i in range(start_file, end_file + 1):
     p1_sort(i)
 
-for i in range(j, Nloops):
-    subtract_time(i)
+# for i in range(start_file, end_file + 1):
+    # subtract_time(i)
 
-# for i in range(j, Nloops):
-    # charge, time = waveform_filter(i)
+for i in range(start_file, end_file + 1):
+    file_name = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files/d1/d1_shifted/D1--waveforms--%05d.txt' % i)
+    if os.path.isfile(file_name):
+        print("File: %05d" % i)
+        t, v, hdr = rw(file_name, nhdr)
+        t1, t2, charge = calculate_charge(t, v)
+        if t2 < 0:
+            print(t2)
+        amplitude = calculate_amp(t, v)
+        rise1090, rise2080 = rise_time(t, v)
+        fall1090, fall2080 = fall_time(t, v)
+        t1_array = np.append(t1_array, t1)
+        t2_array = np.append(t2_array, t2)
+        charge_array = np.append(charge_array, charge)
+        amplitude_array = np.append(amplitude_array, amplitude)
+        rise1090_array = np.append(rise1090_array, rise1090)
+        rise2080_array = np.append(rise2080_array, rise2080)
+        fall1090_array = np.append(fall1090_array, fall1090)
+        fall2080_array = np.append(fall2080_array, fall2080)
+'''
+plt.hist(t1_array, 50)
+plt.show()
 
-# plt.hist(charge, 50)        # Charge histogram
-# plt.show()
+plt.hist(t2_array, 50)
+plt.show()
 
-# plt.hist(time, 50)          # Time histogram
-# plt.show()
+plt.hist(charge_array, 50)
+plt.show()
+
+plt.hist(amplitude_array, 50)
+plt.show()
+
+plt.hist(rise1090_array, 50)
+plt.show()
+
+plt.hist(rise2080_array, 50)
+plt.show()
+
+plt.hist(fall1090_array, 50)
+plt.show()
+
+plt.hist(fall2080_array, 50)
+plt.show()
+
+# for i in range(start_file, end_file + 1):
+    # charge, time = waveform_filter(i)'''
 
 
-#charge, amplitude, 10-90, 20-80, rise & fall times
 
-for i in range(j, Nloops):
-    # spe_name = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files/d1/d1_raw/D1--waveforms--%05d.txt' % i)
-    no_spe_name = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files/d1/not_spe/D1--not_spe--%05d.txt' % i)
-    # unsure_spe_name = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files/d1/unsure_if_spe/D1--unsure--%05d.txt' % i)
-    if os.path.isfile(no_spe_name):
-        print(i)
-        t, v, hdr = rw(no_spe_name, 5)
-        plt.plot(t, v)
-        plt.show()
-    # elif os.path.isfile(no_spe_name):
-        # t, v, hdr = rw(no_spe_name, nhdr)
-    # elif os.path.isfile(unsure_spe_name):
-        # t, v, hdr = rw(unsure_spe_name, nhdr)
+
