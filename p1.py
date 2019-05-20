@@ -14,9 +14,9 @@ nhdr = 5
 
 t1_array = np.array([])
 t2_array = np.array([])
-length_array = np.array([])
 charge_array = np.array([])
 amplitude_array = np.array([])
+fwhm_array = np.array([])
 rise1090_array = np.array([])
 rise2080_array = np.array([])
 fall1090_array = np.array([])
@@ -25,8 +25,8 @@ fall2080_array = np.array([])
 for i in range(start_file, end_file + 1):
     p1_sort(i)
 
-for i in range(start_file, end_file + 1):
-    subtract_time(i)
+# for i in range(start_file, end_file + 1):
+    # subtract_time(i)
 
 for i in range(start_file, end_file + 1):
     file_name = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files/d1/d1_shifted/D1--waveforms--%05d.txt' % i)
@@ -37,13 +37,14 @@ for i in range(start_file, end_file + 1):
         if charge < 0:
             print(charge)
         amplitude = calculate_amp(t, v)
+        fwhm = calculate_fwhm(t, v)
         rise1090, rise2080 = rise_time(t, v)
         fall1090, fall2080 = fall_time(t, v)
         t1_array = np.append(t1_array, t1)
         t2_array = np.append(t2_array, t2)
-        length_array = np.append(length_array, t2 - t1)
         charge_array = np.append(charge_array, charge)
         amplitude_array = np.append(amplitude_array, amplitude)
+        fwhm_array = np.append(fwhm_array, fwhm)
         rise1090_array = np.append(rise1090_array, rise1090)
         rise2080_array = np.append(rise2080_array, rise2080)
         fall1090_array = np.append(fall1090_array, fall1090)
@@ -59,9 +60,9 @@ for i in range(start_file, end_file + 1):
 # plt.title('End Time')
 # plt.show()
 
-plt.hist(length_array, 50)
+plt.hist(fwhm_array, 50)
 plt.xlabel('Time (s)')
-plt.title('Timescale of Waveform')
+plt.title('FWHM')
 plt.show()
 
 plt.hist(charge_array, 50)

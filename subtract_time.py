@@ -18,7 +18,7 @@ def subtract_time(file_num):
     if os.path.isfile(data_path / file_name):
         t, v, hdr = rw(data_path / file_name, nhdr)
         half_max = min(v) / 2
-        tvals = np.linspace(4.64e-7, 6.64e-7, int(2e6))
+        tvals = np.linspace(t[0], t[len(t) - 1], int(2e6))
         vvals = np.interp(tvals, t, v)
         differential = np.diff(vvals)
         difference_value = np.abs(vvals - half_max)

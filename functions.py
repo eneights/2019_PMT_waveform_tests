@@ -77,6 +77,20 @@ def calculate_amp(x, y):
     return amp
 
 
+def calculate_fwhm(x, y):
+    half_max = np.amin(y) / 2
+    xvals = np.linspace(x[0], x[len(x) - 1], int(2e6))
+    yvals = np.interp(xvals, x, y)
+    difference_value = np.abs(yvals - half_max)
+    differential = np.diff(yvals)
+    for j in range(0, len(differential)):
+        if differential[j] < 0:
+            difference_value[j] = np.inf
+    idx = np.argmin(difference_value)
+    half_max_time = xvals[idx]
+    return half_max_time
+
+
 def rise_time(x, y):
     min_val = np.amin(y)
     idx_min_val = np.where(y == min_val)

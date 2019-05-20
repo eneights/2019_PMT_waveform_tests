@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-# path = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/bandwidth/raw')
+# path = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/waveforms/bandwidth/raw')
 # path = Path(r'/Users/Eliza/Documents/WATCHMAN/20190514_watchman_spe')
 # path = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files/d1/d1_shifted')
 # cwd = os.getcwd()
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(prog="read waveform", description="read the waveform datafile.")
     parser.add_argument("--nhdr", type=int, help='number of header lines to skip in the raw file', default=5)
-    parser.add_argument("--file_name", type=str, help="filename", default="./D1--waveforms--00000.txt")
+    parser.add_argument("--file_name", type=str, help="filename", default="./C2--waveforms--00000.txt")
     args = parser.parse_args()
 
     t, v, hdr = read_waveform(args.file_name, args.nhdr)
@@ -44,7 +44,6 @@ if __name__ == '__main__':
     plt.plot(t, v)
     plt.xlabel('Time (s)')
     plt.ylabel('Voltage (V)')
-    plt.title('File', args.file_name)
     plt.show()
 
 # os.chdir(cwd)
