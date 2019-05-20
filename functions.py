@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 from scipy import signal
+from read_waveform import read_waveform as rw
 
 
 def calculate_average(t, v):
@@ -33,7 +34,7 @@ def calculate_charge(t, v, r):
     min_time = time_min_val[0]
 
     tvals = np.linspace(t[0], t[len(t) - 1], int(2e6))
-    tvals1 = np.linspace(x[0], min_time, int(2e6))
+    tvals1 = np.linspace(t[0], min_time, int(2e6))
     tvals2 = np.linspace(min_time, t[len(t) - 1], int(2e6))
     vvals = np.interp(tvals, t, v)
     vvals1 = np.interp(tvals1, t, v)
@@ -64,7 +65,7 @@ def calculate_charge(t, v, r):
     for i in range(index1.item(), index2.item()):
         vsum += vvals[i]
     charge = -1 * (t2 - t1) * vsum / ((index2 - index1) * r)
-    return x1, x2, charge
+    return t1, t2, charge
 
 
 def calculate_amp(t, v):
@@ -83,18 +84,18 @@ def calculate_fwhm(t, v, half_max):
         if differential[i] < 0:
             difference_value[i] = np.inf
     idx = np.argmin(difference_value)
-    half_max_time = xvals[idx]
+    half_max_time = tvals[idx]
     return half_max_time
 
 
-def rise_time(t, v):
+def rise_time(t, v, r):
     avg = calculate_average(t, v)
-    t1, t2, char = calculate_charge(t, v)
+    t1, t2, charge = calculate_charge(t, v, r)
     idx_min_val = np.where(v == min(v))
     time_min_val = t[idx_min_val]
     min_time = time_min_val[0]
 
-    val10 = .1 * (min_val - avg)
+    val10 = .1 * (min(v) - avg)
     val20 = 2 * val10
     val80 = 8 * val10
     val90 = 9 * val10
@@ -119,14 +120,14 @@ def rise_time(t, v):
     return rise_time1090, rise_time2080
 
 
-def fall_time(t, v):
+def fall_time(t, v, r):
     avg = calculate_average(t, v)
-    t1, t2, char = calculate_charge(t, v)
+    t1, t2, charge = calculate_charge(t, v, r)
     idx_min_val = np.where(v == min(v))
     time_min_val = t[idx_min_val]
     min_time = time_min_val[0]
 
-    val10 = .1 * (min_val - avg)
+    val10 = .1 * (min(v) - avg)
     val20 = 2 * val10
     val80 = 8 * val10
     val90 = 9 * val10
@@ -149,3 +150,76 @@ def fall_time(t, v):
     fall_time1090 = float(format(fall_time1090, '.2e'))
     fall_time2080 = float(format(fall_time2080, '.2e'))
     return fall_time1090, fall_time2080
+
+
+def make_arrays(save_shift, start, end, nhdr, r, half_max):
+    t1_array = np.array([])
+    t2_array = np.array([])
+    charge_array = np.array([])
+    amplitude_array = np.array([])
+    fwhm_array = np.array([])
+    rise1090_array = np.array([])
+    rise2080_array = np.array([])
+    fall1090_array = np.array([])
+    fall2080_array = np.array([])
+
+    for i in range(start, end + 1):
+        file_name = str(save_shift / 'D1--waveforms--%05d.txt') % i
+        if os.path.isfile(file_name):
+            print("File: %05d" % i)
+            t, v, hdr = rw(file_name, nhdr)
+            t1, t2, charge = calculate_charge(t, v, r)
+            amplitude = calculate_amp(t, v)
+            fwhm = calculate_fwhm(t, v, half_max)
+            rise1090, rise2080 = rise_time(t, v, r)
+            fall1090, fall2080 = fall_time(t, v, r)
+            t1_array = np.append(t1_array, t1)
+            t2_array = np.append(t2_array, t2)
+            charge_array = np.append(charge_array, charge)
+            amplitude_array = np.append(amplitude_array, amplitude)
+            fwhm_array = np.append(fwhm_array, fwhm)
+            rise1090_array = np.append(rise1090_array, rise1090)
+            rise2080_array = np.append(rise2080_array, rise2080)
+            fall1090_array = np.append(fall1090_array, fall1090)
+            fall2080_array = np.append(fall2080_array, fall2080)
+
+    return t1_array, t2_array, charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, \
+           fall1090_array, fall2080_array
+
+
+def plot_histograms(charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, fall1090_array,
+                    fall2080_array):
+    plt.hist(fwhm_array, 50)
+    plt.xlabel('Time (s)')
+    plt.title('FWHM')
+    plt.show()
+
+    plt.hist(charge_array, 50)
+    plt.xlabel('Charge (C)')
+    plt.title('Charge of SPE')
+    plt.show()
+
+    plt.hist(amplitude_array, 50)
+    plt.xlabel('Voltage (V)')
+    plt.title('Amplitude of SPE')
+    plt.show()
+
+    plt.hist(rise1090_array, 50)
+    plt.xlabel('Time (s)')
+    plt.title('10-90 Risetime')
+    plt.show()
+
+    plt.hist(rise2080_array, 50)
+    plt.xlabel('Time (s)')
+    plt.title('20-80 Risetime')
+    plt.show()
+
+    plt.hist(fall1090_array, 50)
+    plt.xlabel('Time (s)')
+    plt.title('10-90 Falltime')
+    plt.show()
+
+    plt.hist(fall2080_array, 50)
+    plt.xlabel('Time (s)')
+    plt.title('20-80 Falltime')
+    plt.show()
