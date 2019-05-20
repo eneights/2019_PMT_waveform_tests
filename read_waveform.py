@@ -3,12 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-# path = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/waveforms/bandwidth/raw')
-# path = Path(r'/Users/Eliza/Documents/WATCHMAN/20190514_watchman_spe')
-# path = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files/d1/d1_shifted')
-# cwd = os.getcwd()
-# os.chdir(path)
-
 
 def read_waveform(file_name, nhdr):
     header = []         # creates empty list for header
@@ -45,5 +39,3 @@ if __name__ == '__main__':
     plt.xlabel('Time (s)')
     plt.ylabel('Voltage (V)')
     plt.show()
-
-# os.chdir(cwd)
