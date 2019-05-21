@@ -8,9 +8,9 @@ from read_waveform import read_waveform as rw
 from write_waveform import write_waveform as ww
 
 
-def p1_sort(file_num, nhdr, fsps, fc, numtaps, data_path, save_path):
+def p1_sort(file_num, nhdr, fsps, fc, numtaps, data_path, save_path, baseline):
     wc = 2. * np.pi * fc / fsps     # Discrete radial frequency
-    lowpass = signal.firwin(numtaps, cutoff = wc/np.pi, window = 'blackman')    # Blackman windowed lowpass filter
+    lowpass = signal.firwin(numtaps, cutoff=wc/np.pi, window='blackman')    # Blackman windowed lowpass filter
 
     file_name = str(data_path / 'C2--waveforms--%05d.txt') % file_num
     spe_name = str(save_path / 'd1/d1_raw/D1--waveforms--%05d.txt') % file_num
@@ -26,7 +26,7 @@ def p1_sort(file_num, nhdr, fsps, fc, numtaps, data_path, save_path):
     else:
         t, v, hdr = rw(file_name, nhdr)
 
-        v1 = signal.filtfilt(lowpass, 1.0, v)
+        v1 = signal.filtfilt(lowpass, 1.0, v - baseline)
         v2 = v1[numtaps:len(v1)-1]
         t2 = t[numtaps:len(v1)-1]
 
@@ -80,11 +80,8 @@ def p1_sort(file_num, nhdr, fsps, fc, numtaps, data_path, save_path):
 
 
 if __name__ == '__main__':
-    data = Path(r'/Users/Eliza/Documents/WATCHMAN/20190514_watchman_spe')
-    # data = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/bandwidth/raw')
-    # save = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files')
-    save = Path(r'/Users/Eliza/Documents/WATCHMAN/test_files/test_sorting')
-    # save = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/bandwidth')
+    data = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/waveforms/full_bandwidth_no_noise_filter/d0')
+    save = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/waveforms/full_bandwidth_no_noise_filter')
     import argparse
     parser = argparse.ArgumentParser(prog="p1 sort", description="Sorting through raw data to find good SPEs")
     parser.add_argument("--file_num", type=int, help='file number to begin at', default=00000)
@@ -94,13 +91,7 @@ if __name__ == '__main__':
     parser.add_argument("--numtaps", type=int, help='filter order + 1', default=51)
     parser.add_argument("--data_path", type=str, help='folder to read from', default=data)
     parser.add_argument("--save_path", type=str, help='folder to save to', default=save)
+    parser.add_argument("--baseline", type=float, help='baseline of data set', default=0)
     args = parser.parse_args()
 
-    p1_sort(args.file_num, args.nhdr, args.fsps, args.fc, args.numtaps, args.data_path, args.save_path)
-
-    '''nhdr = 5
-    fsps = 20000000000.  # Samples per second (Hz)
-    fc = 250000000.  # Filter cutoff frequency (Hz)
-    wc = 2. * np.pi * fc / fsps  # Discrete radial frequency
-    numtaps = 51  # Filter order + 1, chosen for balance of good performance and small transient size
-    lowpass = signal.firwin(numtaps, cutoff=wc / np.pi, window='blackman')  # Blackman windowed lowpass filter'''
+    p1_sort(args.file_num, args.nhdr, args.fsps, args.fc, args.numtaps, args.data_path, args.save_path, args.baseline)
