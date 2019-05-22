@@ -7,14 +7,14 @@ from functions import *
 from info_file import info_file
 
 
-def p1(start, end, date, filter_band, nhdr, fsps, fc, numtaps, baseline, r, pmt_hv, gain, offset, trig_delay, amp, rate,
+def p1(start, end, date, filter_band, nhdr, fsps, fc, numtaps, baseline, r, pmt_hv, gain, offset, trig_delay, amp,
        band, nfilter):
     gen_path = Path(r'/Volumes/TOSHIBA EXT/data/watchman')
-    save_sort = str(gen_path / '%08d_watchman_spe/waveforms/%s') % (date, filter_band)
-    data_sort = save_sort / 'd0'
-    dest_path = save_sort / 'd1'
-    data_shift = dest_path / 'd1_raw'
-    save_shift = dest_path / 'd1_shifted'
+    save_sort = Path(str(gen_path / '%08d_watchman_spe/waveforms/%s') % (date, filter_band))
+    data_sort = Path(save_sort / 'd0')
+    dest_path = Path(save_sort / 'd1')
+    data_shift = Path(dest_path / 'd1_raw')
+    save_shift = Path(dest_path / 'd1_shifted')
 
     for i in range(start, end + 1):
         p1_sort(i, nhdr, fsps, fc, numtaps, data_sort, save_sort, baseline)
@@ -51,12 +51,12 @@ if __name__ == '__main__':
     parser.add_argument("--start", type=int, help='file number to begin at', default=0)
     parser.add_argument("--end", type=int, help='file number to end at', default=99999)
     parser.add_argument("--date", type=int, help='date of data acquisition', default=20190513)
-    parser.add_argument("--filter_band", type=str, help='folder name for data', default=full_bandwidth_no_noise_filter)
+    parser.add_argument("--fil_band", type=str, help='folder name for data', default='full_bdw_no_nf')
     parser.add_argument("--nhdr", type=int, help='number of header lines to skip in the raw file', default=5)
     parser.add_argument("--fsps", type=float, help='samples per second (Hz)', default=20000000000.)
     parser.add_argument("--fc", type=float, help='filter cutoff frequency (Hz)', default=250000000.)
     parser.add_argument("--numtaps", type=int, help='filter order + 1', default=51)
-    parser.add_argument("--baseline", type=float, help='baseline of data set', default=0)
+    parser.add_argument("--baseline", type=float, help='baseline of data set (V)', default=0)
     parser.add_argument("--r", type=int, help='resistance in ohms', default=50)
     parser.add_argument("--pmt_hv", type=int, help="voltage of PMT", default=1800)
     parser.add_argument("--gain", type=int, help="gain of PMT", default=1e7)
@@ -67,5 +67,5 @@ if __name__ == '__main__':
     parser.add_argument("--nfilter", type=float, help="noise filter on oscilloscope", default=0)
     args = parser.parse_args()
 
-    p1(args.start, args.end, args.date, args.filter_band, args.nhdr, args.fsps, args.fc, args.numtaps, args.baseline,
-       args.r, args.pmt_hv, args.gain, args.offset, args.trig_delay, args.amp, args.rate, args.band, args.nfilter)
+    p1(args.start, args.end, args.date, args.fil_band, args.nhdr, args.fsps, args.fc, args.numtaps, args.baseline,
+       args.r, args.pmt_hv, args.gain, args.offset, args.trig_delay, args.amp, args.band, args.nfilter)

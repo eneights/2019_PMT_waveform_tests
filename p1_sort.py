@@ -56,13 +56,11 @@ def p1_sort(file_num, nhdr, fsps, fc, numtaps, data_path, save_path, baseline):
         else:
             plt.figure()
             plt.plot(t, v, 'b')
-            plt.plot(t2, v2, 'r', linewidth=2.5)
-            plt.plot(t_peaks, v_peaks, 'x', color='cyan')
+            plt.plot(t2, v2 + baseline, 'r', linewidth=2.5)
+            plt.plot(t_peaks, v_peaks + baseline, 'x', color='cyan')
             plt.grid(True)
             print('Displaying file #%05d' % file_num)
             plt.show(block=False)
-            plt.pause(.1)
-            plt.close()
 
             spe_check = 'pre-loop initialization'
             while spe_check != 'y' and spe_check != 'n' and spe_check != 'u':
@@ -75,13 +73,14 @@ def p1_sort(file_num, nhdr, fsps, fc, numtaps, data_path, save_path, baseline):
                 ww(t2, v2, spe_unsure, hdr)
             print('file #%05d: Done' % file_num)
             print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
+            plt.close()
 
     return
 
 
 if __name__ == '__main__':
-    data = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/waveforms/full_bandwidth_no_noise_filter/d0')
-    save = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/waveforms/full_bandwidth_no_noise_filter')
+    data = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/waveforms/full_bdw_no_nf/d0')
+    save = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/waveforms/full_bdw_no_nf')
     import argparse
     parser = argparse.ArgumentParser(prog="p1 sort", description="Sorting through raw data to find good SPEs")
     parser.add_argument("--file_num", type=int, help='file number to begin at', default=00000)
@@ -91,7 +90,7 @@ if __name__ == '__main__':
     parser.add_argument("--numtaps", type=int, help='filter order + 1', default=51)
     parser.add_argument("--data_path", type=str, help='folder to read from', default=data)
     parser.add_argument("--save_path", type=str, help='folder to save to', default=save)
-    parser.add_argument("--baseline", type=float, help='baseline of data set', default=0)
+    parser.add_argument("--baseline", type=float, help='baseline of data set (V)', default=0)
     args = parser.parse_args()
 
     p1_sort(args.file_num, args.nhdr, args.fsps, args.fc, args.numtaps, args.data_path, args.save_path, args.baseline)

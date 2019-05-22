@@ -35,10 +35,8 @@ def subtract_time(file_num, nhdr, data_path, save_path):
 
 
 if __name__ == '__main__':
-    data = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/waveforms/full_bandwidth_no_noise_filter/d1/'
-                r'd1_raw')
-    save = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/waveforms/full_bandwidth_no_noise_filter/d1/'
-                r'd1_shifted')
+    data = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/waveforms/full_bdw_no_nf/d1/d1_raw')
+    save = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/waveforms/full_bdw_no_nf/d1/d1_shifted')
     import argparse
     parser = argparse.ArgumentParser(prog="subtract time", description="shift waveform datafile to start at 50% max.")
     parser.add_argument("--file_num", type=int, help='file number to begin at', default=00000)
