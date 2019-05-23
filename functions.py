@@ -89,13 +89,14 @@ def calculate_fwhm(t, v):
     vvals = np.interp(tvals, t, v)
     difference_value = np.abs(vvals - half_max)
     diff_val = np.abs(vvals - min(v))
-    index_min = np.argmin(diff_val)[0]
+    index_min = np.argmin(diff_val)
     differential = np.diff(vvals)
-    for i in range(index_min, len(differential) - 1):
+    for i in range(index_min.item(), len(differential) - 1):
         if differential[i] < 0:
             difference_value[i] = np.inf
+    difference_value = difference_value[index_min.item():len(vvals) - 1]
     idx = np.argmin(difference_value)
-    half_max_time = tvals[idx]
+    half_max_time = tvals[idx + index_min.item()]
     return half_max_time
 
 
@@ -238,7 +239,7 @@ def plot_histograms(charge_array, amplitude_array, fwhm_array, rise1090_array, r
     plt.savefig(path / 'amplitude.png')
     plt.show()
 
-    plt.hist(fwhm_array, 100, density=True, log=True)
+    plt.hist(fwhm_array, 100, density=True)
     mu_fwhm, sigma_fwhm = norm.fit(fwhm_array)
     mu_fwhm = float(format(mu_fwhm, '.2e'))
     sigma_fwhm = float(format(sigma_fwhm, '.2e'))
@@ -385,3 +386,196 @@ def calculate_times(file_name, nhdr, r):
         time90 = tvals[index90]
 
         return time10, time20, time80, time90
+
+
+def remove_outliers(charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, fall1090_array,
+                    fall2080_array, time10_array, time20_array, time80_array, time90_array):
+    charge_array = np.sort(charge_array)
+    charge_med = np.median(charge_array)
+    charge_diff = np.abs(charge_array - charge_med)
+    charge_idx = np.argmin(charge_diff)
+    charge_array1 = charge_array[0:charge_idx]
+    charge_array2 = charge_array[0:charge_idx]
+    charge_q1 = np.median(charge_array1)
+    charge_q3 = np.median(charge_array2)
+    charge_iq_range = charge_q3 - charge_q1
+    charge_outer1 = charge_q1 - (3 * charge_iq_range)
+    charge_outer2 = charge_q3 + (3 * charge_iq_range)
+    charge_diff1 = np.abs(charge_array - charge_outer1)
+    charge_diff2 = np.abs(charge_array - charge_outer2)
+    idx1 = np.argmin(charge_diff1)
+    idx2 = np.argmin(charge_diff2)
+    charge_array = charge_array[idx1:idx2]
+
+    amplitude_array = np.sort(amplitude_array)
+    amplitude_med = np.median(amplitude_array)
+    amplitude_diff = np.abs(amplitude_array - amplitude_med)
+    amplitude_idx = np.argmin(amplitude_diff)
+    amplitude_array1 = amplitude_array[0:amplitude_idx]
+    amplitude_array2 = amplitude_array[0:amplitude_idx]
+    amplitude_q1 = np.median(amplitude_array1)
+    amplitude_q3 = np.median(amplitude_array2)
+    amplitude_iq_range = amplitude_q3 - amplitude_q1
+    amplitude_outer1 = amplitude_q1 - (3 * amplitude_iq_range)
+    amplitude_outer2 = amplitude_q3 + (3 * amplitude_iq_range)
+    amplitude_diff1 = np.abs(amplitude_array - amplitude_outer1)
+    amplitude_diff2 = np.abs(amplitude_array - amplitude_outer2)
+    idx1 = np.argmin(amplitude_diff1)
+    idx2 = np.argmin(amplitude_diff2)
+    amplitude_array = amplitude_array[idx1:idx2]
+
+    fwhm_array = np.sort(fwhm_array)
+    fwhm_med = np.median(fwhm_array)
+    fwhm_diff = np.abs(fwhm_array - fwhm_med)
+    fwhm_idx = np.argmin(fwhm_diff)
+    fwhm_array1 = fwhm_array[0:fwhm_idx]
+    fwhm_array2 = fwhm_array[0:fwhm_idx]
+    fwhm_q1 = np.median(fwhm_array1)
+    fwhm_q3 = np.median(fwhm_array2)
+    fwhm_iq_range = fwhm_q3 - fwhm_q1
+    fwhm_outer1 = fwhm_q1 - (3 * fwhm_iq_range)
+    fwhm_outer2 = fwhm_q3 + (3 * fwhm_iq_range)
+    fwhm_diff1 = np.abs(fwhm_array - fwhm_outer1)
+    fwhm_diff2 = np.abs(fwhm_array - fwhm_outer2)
+    idx1 = np.argmin(fwhm_diff1)
+    idx2 = np.argmin(fwhm_diff2)
+    fwhm_array = fwhm_array[idx1:idx2]
+
+    rise1090_array = np.sort(rise1090_array)
+    rise1090_med = np.median(rise1090_array)
+    rise1090_diff = np.abs(rise1090_array - rise1090_med)
+    rise1090_idx = np.argmin(rise1090_diff)
+    rise1090_array1 = rise1090_array[0:rise1090_idx]
+    rise1090_array2 = rise1090_array[0:rise1090_idx]
+    rise1090_q1 = np.median(rise1090_array1)
+    rise1090_q3 = np.median(rise1090_array2)
+    rise1090_iq_range = rise1090_q3 - rise1090_q1
+    rise1090_outer1 = rise1090_q1 - (3 * rise1090_iq_range)
+    rise1090_outer2 = rise1090_q3 + (3 * rise1090_iq_range)
+    rise1090_diff1 = np.abs(rise1090_array - rise1090_outer1)
+    rise1090_diff2 = np.abs(rise1090_array - rise1090_outer2)
+    idx1 = np.argmin(rise1090_diff1)
+    idx2 = np.argmin(rise1090_diff2)
+    rise1090_array = rise1090_array[idx1:idx2]
+
+    rise2080_array = np.sort(rise2080_array)
+    rise2080_med = np.median(rise2080_array)
+    rise2080_diff = np.abs(rise2080_array - rise2080_med)
+    rise2080_idx = np.argmin(rise2080_diff)
+    rise2080_array1 = rise2080_array[0:rise2080_idx]
+    rise2080_array2 = rise2080_array[0:rise2080_idx]
+    rise2080_q1 = np.median(rise2080_array1)
+    rise2080_q3 = np.median(rise2080_array2)
+    rise2080_iq_range = rise2080_q3 - rise2080_q1
+    rise2080_outer1 = rise2080_q1 - (3 * rise2080_iq_range)
+    rise2080_outer2 = rise2080_q3 + (3 * rise2080_iq_range)
+    rise2080_diff1 = np.abs(rise2080_array - rise2080_outer1)
+    rise2080_diff2 = np.abs(rise2080_array - rise2080_outer2)
+    idx1 = np.argmin(rise2080_diff1)
+    idx2 = np.argmin(rise2080_diff2)
+    rise2080_array = rise2080_array[idx1:idx2]
+
+    fall1090_array = np.sort(fall1090_array)
+    fall1090_med = np.median(fall1090_array)
+    fall1090_diff = np.abs(fall1090_array - fall1090_med)
+    fall1090_idx = np.argmin(fall1090_diff)
+    fall1090_array1 = fall1090_array[0:fall1090_idx]
+    fall1090_array2 = fall1090_array[0:fall1090_idx]
+    fall1090_q1 = np.median(fall1090_array1)
+    fall1090_q3 = np.median(fall1090_array2)
+    fall1090_iq_range = fall1090_q3 - fall1090_q1
+    fall1090_outer1 = fall1090_q1 - (3 * fall1090_iq_range)
+    fall1090_outer2 = fall1090_q3 + (3 * fall1090_iq_range)
+    fall1090_diff1 = np.abs(fall1090_array - fall1090_outer1)
+    fall1090_diff2 = np.abs(fall1090_array - fall1090_outer2)
+    idx1 = np.argmin(fall1090_diff1)
+    idx2 = np.argmin(fall1090_diff2)
+    fall1090_array = fall1090_array[idx1:idx2]
+
+    fall2080_array = np.sort(fall2080_array)
+    fall2080_med = np.median(fall2080_array)
+    fall2080_diff = np.abs(fall2080_array - fall2080_med)
+    fall2080_idx = np.argmin(fall2080_diff)
+    fall2080_array1 = fall2080_array[0:fall2080_idx]
+    fall2080_array2 = fall2080_array[0:fall2080_idx]
+    fall2080_q1 = np.median(fall2080_array1)
+    fall2080_q3 = np.median(fall2080_array2)
+    fall2080_iq_range = fall2080_q3 - fall2080_q1
+    fall2080_outer1 = fall2080_q1 - (3 * fall2080_iq_range)
+    fall2080_outer2 = fall2080_q3 + (3 * fall2080_iq_range)
+    fall2080_diff1 = np.abs(fall2080_array - fall2080_outer1)
+    fall2080_diff2 = np.abs(fall2080_array - fall2080_outer2)
+    idx1 = np.argmin(fall2080_diff1)
+    idx2 = np.argmin(fall2080_diff2)
+    fall2080_array = fall2080_array[idx1:idx2]
+
+    time10_array = np.sort(time10_array)
+    time10_med = np.median(time10_array)
+    time10_diff = np.abs(time10_array - time10_med)
+    time10_idx = np.argmin(time10_diff)
+    time10_array1 = time10_array[0:time10_idx]
+    time10_array2 = time10_array[0:time10_idx]
+    time10_q1 = np.median(time10_array1)
+    time10_q3 = np.median(time10_array2)
+    time10_iq_range = time10_q3 - time10_q1
+    time10_outer1 = time10_q1 - (3 * time10_iq_range)
+    time10_outer2 = time10_q3 + (3 * time10_iq_range)
+    time10_diff1 = np.abs(time10_array - time10_outer1)
+    time10_diff2 = np.abs(time10_array - time10_outer2)
+    idx1 = np.argmin(time10_diff1)
+    idx2 = np.argmin(time10_diff2)
+    time10_array = time10_array[idx1:idx2]
+
+    time20_array = np.sort(time20_array)
+    time20_med = np.median(time20_array)
+    time20_diff = np.abs(time20_array - time20_med)
+    time20_idx = np.argmin(time20_diff)
+    time20_array1 = time20_array[0:time20_idx]
+    time20_array2 = time20_array[0:time20_idx]
+    time20_q1 = np.median(time20_array1)
+    time20_q3 = np.median(time20_array2)
+    time20_iq_range = time20_q3 - time20_q1
+    time20_outer1 = time20_q1 - (3 * time20_iq_range)
+    time20_outer2 = time20_q3 + (3 * time20_iq_range)
+    time20_diff1 = np.abs(time20_array - time20_outer1)
+    time20_diff2 = np.abs(time20_array - time20_outer2)
+    idx1 = np.argmin(time20_diff1)
+    idx2 = np.argmin(time20_diff2)
+    time20_array = time20_array[idx1:idx2]
+
+    time80_array = np.sort(time80_array)
+    time80_med = np.median(time80_array)
+    time80_diff = np.abs(time80_array - time80_med)
+    time80_idx = np.argmin(time80_diff)
+    time80_array1 = time80_array[0:time80_idx]
+    time80_array2 = time80_array[0:time80_idx]
+    time80_q1 = np.median(time80_array1)
+    time80_q3 = np.median(time80_array2)
+    time80_iq_range = time80_q3 - time80_q1
+    time80_outer1 = time80_q1 - (3 * time80_iq_range)
+    time80_outer2 = time80_q3 + (3 * time80_iq_range)
+    time80_diff1 = np.abs(time80_array - time80_outer1)
+    time80_diff2 = np.abs(time80_array - time80_outer2)
+    idx1 = np.argmin(time80_diff1)
+    idx2 = np.argmin(time80_diff2)
+    time80_array = time80_array[idx1:idx2]
+
+    time90_array = np.sort(time90_array)
+    time90_med = np.median(time90_array)
+    time90_diff = np.abs(time90_array - time90_med)
+    time90_idx = np.argmin(time90_diff)
+    time90_array1 = time90_array[0:time90_idx]
+    time90_array2 = time90_array[0:time90_idx]
+    time90_q1 = np.median(time90_array1)
+    time90_q3 = np.median(time90_array2)
+    time90_iq_range = time90_q3 - time90_q1
+    time90_outer1 = time90_q1 - (3 * time90_iq_range)
+    time90_outer2 = time90_q3 + (3 * time90_iq_range)
+    time90_diff1 = np.abs(time90_array - time90_outer1)
+    time90_diff2 = np.abs(time90_array - time90_outer2)
+    idx1 = np.argmin(time90_diff1)
+    idx2 = np.argmin(time90_diff2)
+    time90_array = time90_array[idx1:idx2]
+
+    return charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, fall1090_array, fall2080_array, \
+           time10_array, time20_array, time80_array, time90_array

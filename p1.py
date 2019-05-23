@@ -29,6 +29,14 @@ def p1(start, end, date, date_time, filter_band, nhdr, fsps, fc, numtaps, baseli
         fall2080_array, time10_array, time20_array, time80_array, time90_array = make_arrays(save_shift, start, end,
                                                                                              nhdr, r)
 
+    charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, fall1090_array, fall2080_array, \
+        time10_array, time20_array, time80_array, time90_array = remove_outliers(charge_array, amplitude_array,
+                                                                                 fwhm_array, rise1090_array,
+                                                                                 rise2080_array, fall1090_array,
+                                                                                 fall2080_array, time10_array,
+                                                                                 time20_array, time80_array,
+                                                                                 time90_array)
+
     plot_histograms(charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, fall1090_array,
                     fall2080_array, time10_array, time20_array, time80_array, time90_array, dest_path)
 
@@ -89,6 +97,6 @@ if __name__ == '__main__':
             i_amp = float(info_array[10])
             i_band = info_array[11]
             i_nfilter = float(info_array[12])
-            p1(args.start, args.end, i_date, args.fil_band, i_nhdr, i_fsps, args.fc, args.numtaps, i_baseline, i_r,
-               i_pmt_hv, i_gain, i_offset, i_trig_delay, i_amp, i_band, i_nfilter)
+            p1(args.start, args.end, i_date, i_date_time, args.fil_band, i_nhdr, i_fsps, args.fc, args.numtaps,
+               i_baseline, i_r, i_pmt_hv, i_gain, i_offset, i_trig_delay, i_amp, i_band, i_nfilter)
             myfile.close()
