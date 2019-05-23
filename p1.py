@@ -1,4 +1,5 @@
 import os
+import csv
 from pathlib import Path
 import numpy as np
 from p1_sort import p1_sort
@@ -7,7 +8,7 @@ from functions import *
 from info_file import info_file
 
 
-def p1(start, end, date, filter_band, nhdr, fsps, fc, numtaps, baseline, r, pmt_hv, gain, offset, trig_delay, amp,
+def p1(start, end, date, date_time, filter_band, nhdr, fsps, fc, numtaps, baseline, r, pmt_hv, gain, offset, trig_delay, amp,
        band, nfilter):
     gen_path = Path(r'/Volumes/TOSHIBA EXT/data/watchman')
     save_sort = Path(str(gen_path / '%08d_watchman_spe/waveforms/%s') % (date, filter_band))
@@ -31,12 +32,7 @@ def p1(start, end, date, filter_band, nhdr, fsps, fc, numtaps, baseline, r, pmt_
     plot_histograms(charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, fall1090_array,
                     fall2080_array, time10_array, time20_array, time80_array, time90_array, dest_path)
 
-    file_name = 'D1--waveforms--%05d.txt' % start
-    t, v, hdr = rw(data_sort / file_name, nhdr)
-    x = 3 + hdr.find('#1')
-    y = hdr.find(',0')
-    acq_date_time = hdr[x:y]
-    info_file(acq_date_time, data_sort, dest_path, pmt_hv, gain, offset, trig_delay, amp, fsps, band, nfilter, r)
+    info_file(date_time, data_sort, dest_path, pmt_hv, gain, offset, trig_delay, amp, fsps, band, nfilter, r)
 
 
 if __name__ == '__main__':
@@ -45,6 +41,7 @@ if __name__ == '__main__':
     parser.add_argument("--start", type=int, help='file number to begin at (default=0)', default=0)
     parser.add_argument("--end", type=int, help='file number to end at (default=99999)', default=99999)
     parser.add_argument("--date", type=int, help='date of data acquisition (YEARMMDD)')
+    parser.add_argument("--date_time", type=str, help='date & time of data acquisition')
     parser.add_argument("--fil_band", type=str, help='folder name for data')
     parser.add_argument("--nhdr", type=int, help='number of header lines to skip in raw file (default=5)', default=5)
     parser.add_argument("--fsps", type=float, help='samples per second (Hz) (suggested=20000000000.)')
@@ -63,11 +60,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if not args.info_file:
-        if not (args.date or args.fil_band or args.fsps or args.baseline or args.r or args.pmt_hv or args.gain or
+        if not (args.date or args.date_time or args.fil_band or args.fsps or args.baseline or args.r or args.pmt_hv or args.gain or
                 args.offset or args.trig_delay or args.amp or args.band or args.nfilter):
             print('Error: Must provide an info file or all other arguments')
         else:
-            p1(args.start, args.end, args.date, args.fil_band, args.nhdr, args.fsps, args.fc, args.numtaps,
+            p1(args.start, args.end, args.date, args.date_time, args.fil_band, args.nhdr, args.fsps, args.fc, args.numtaps,
                args.baseline, args.r, args.pmt_hv, args.gain, args.offset, args.trig_delay, args.amp, args.band,
                args.nfilter)
     else:
@@ -75,14 +72,23 @@ if __name__ == '__main__':
             print('Error: Must provide a folder name for data')
         else:
             myfile = open(args.info_file, 'r')
-            mylist = list(map(str.strip, myfile.readlines()))
-            x = np.array([])
-            y = np.array([])
-            for item in mylist:
-                x = np.append(x, item.split(',')[0])
-                # y = np.append(y, item.split(',')[1])
-            print(x)
-            # print(y)
-            # p1(args.start, args.end, date, fil_band, nhdr, fsps, args.fc, args.numtaps, baseline, r, pmt_hv, gain,
-            # offset, trig_delay, amp, band, nfilter)
+            csv_reader = csv.reader(myfile)
+            info_array = np.array([])
+            for row in csv_reader:
+                info_array = np.append(info_array, row[1])
+            i_date = int(info_array[0])
+            i_date_time = info_array[1]
+            i_nhdr = int(info_array[2])
+            i_fsps = float(info_array[3])
+            i_baseline = float(info_array[4])
+            i_r = int(info_array[5])
+            i_pmt_hv = int(info_array[6])
+            i_gain = int(float(info_array[7]))
+            i_offset = int(info_array[8])
+            i_trig_delay = float(info_array[9])
+            i_amp = float(info_array[10])
+            i_band = info_array[11]
+            i_nfilter = float(info_array[12])
+            p1(args.start, args.end, i_date, args.fil_band, i_nhdr, i_fsps, args.fc, args.numtaps, i_baseline, i_r,
+               i_pmt_hv, i_gain, i_offset, i_trig_delay, i_amp, i_band, i_nfilter)
             myfile.close()

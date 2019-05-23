@@ -31,7 +31,6 @@ def calculate_average(t, v):
 
 
 def calculate_charge(t, v, r):
-    avg = calculate_average(t, v)
     vsum = 0
     idx1 = np.inf
     idx2 = np.inf
@@ -89,8 +88,10 @@ def calculate_fwhm(t, v):
     tvals = np.linspace(t[0], t[len(t) - 1], int(2e6))
     vvals = np.interp(tvals, t, v)
     difference_value = np.abs(vvals - half_max)
+    diff_val = np.abs(vvals - min(v))
+    index_min = np.argmin(diff_val)[0]
     differential = np.diff(vvals)
-    for i in range(0, len(differential) - 1):
+    for i in range(index_min, len(differential) - 1):
         if differential[i] < 0:
             difference_value[i] = np.inf
     idx = np.argmin(difference_value)
@@ -209,7 +210,7 @@ def make_arrays(save_shift, start, end, nhdr, r):
 def plot_histograms(charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, fall1090_array,
                     fall2080_array, time10_array, time20_array, time80_array, time90_array, dest_path):
 
-    path = Path(dest_path / plots)
+    path = Path(dest_path / 'plots')
 
     plt.hist(charge_array, 100, density=True)
     mu_charge, sigma_charge = norm.fit(charge_array)
@@ -250,7 +251,7 @@ def plot_histograms(charge_array, amplitude_array, fwhm_array, rise1090_array, r
     plt.savefig(path / 'fwhm.png')
     plt.show()
 
-    plt.hist(rise1090_array, 100, density=True, log=True)
+    plt.hist(rise1090_array, 100, density=True)
     mu_rise1090, sigma_rise1090 = norm.fit(rise1090_array)
     mu_rise1090 = float(format(mu_rise1090, '.2e'))
     sigma_rise1090 = float(format(sigma_rise1090, '.2e'))
@@ -263,7 +264,7 @@ def plot_histograms(charge_array, amplitude_array, fwhm_array, rise1090_array, r
     plt.savefig(path / 'rise1090.png')
     plt.show()
 
-    plt.hist(rise2080_array, 100, density=True, log=True)
+    plt.hist(rise2080_array, 100, density=True)
     mu_rise2080, sigma_rise2080 = norm.fit(rise2080_array)
     mu_rise2080 = float(format(mu_rise2080, '.2e'))
     sigma_rise2080 = float(format(sigma_rise2080, '.2e'))
@@ -276,7 +277,7 @@ def plot_histograms(charge_array, amplitude_array, fwhm_array, rise1090_array, r
     plt.savefig(path / 'rise2080.png')
     plt.show()
 
-    plt.hist(fall1090_array, 100, density=True, log=True)
+    plt.hist(fall1090_array, 100, density=True)
     mu_fall1090, sigma_fall1090 = norm.fit(fall1090_array)
     mu_fall1090 = float(format(mu_fall1090, '.2e'))
     sigma_fall1090 = float(format(sigma_fall1090, '.2e'))
@@ -289,7 +290,7 @@ def plot_histograms(charge_array, amplitude_array, fwhm_array, rise1090_array, r
     plt.savefig(path / 'fall1090.png')
     plt.show()
 
-    plt.hist(fall2080_array, 100, density=True, log=True)
+    plt.hist(fall2080_array, 100, density=True)
     mu_fall2080, sigma_fall2080 = norm.fit(fall2080_array)
     mu_fall2080 = float(format(mu_fall2080, '.2e'))
     sigma_fall2080 = float(format(sigma_fall2080, '.2e'))
@@ -302,7 +303,7 @@ def plot_histograms(charge_array, amplitude_array, fwhm_array, rise1090_array, r
     plt.savefig(path / 'fall2080.png')
     plt.show()
 
-    plt.hist(time10_array, 100, density=True, log=True)
+    plt.hist(time10_array, 100, density=True)
     mu_time10, sigma_time10 = norm.fit(time10_array)
     mu_time10 = float(format(mu_time10, '.2e'))
     sigma_time10 = float(format(sigma_time10, '.2e'))
@@ -315,7 +316,7 @@ def plot_histograms(charge_array, amplitude_array, fwhm_array, rise1090_array, r
     plt.savefig(path / 'time10.png')
     plt.show()
 
-    plt.hist(time20_array, 100, density=True, log=True)
+    plt.hist(time20_array, 100, density=True)
     mu_time20, sigma_time20 = norm.fit(time20_array)
     mu_time20 = float(format(mu_time20, '.2e'))
     sigma_time20 = float(format(sigma_time20, '.2e'))
@@ -328,7 +329,7 @@ def plot_histograms(charge_array, amplitude_array, fwhm_array, rise1090_array, r
     plt.savefig(path / 'time20.png')
     plt.show()
 
-    plt.hist(time80_array, 100, density=True, log=True)
+    plt.hist(time80_array, 100, density=True)
     mu_time80, sigma_time80 = norm.fit(time80_array)
     mu_time80 = float(format(mu_time80, '.2e'))
     sigma_time80 = float(format(sigma_time80, '.2e'))
@@ -341,7 +342,7 @@ def plot_histograms(charge_array, amplitude_array, fwhm_array, rise1090_array, r
     plt.savefig(path / 'time80.png')
     plt.show()
 
-    plt.hist(time90_array, 100, density=True, log=True)
+    plt.hist(time90_array, 100, density=True)
     mu_time90, sigma_time90 = norm.fit(time90_array)
     mu_time90 = float(format(mu_time90, '.2e'))
     sigma_time90 = float(format(sigma_time90, '.2e'))
@@ -368,7 +369,7 @@ def calculate_times(file_name, nhdr, r):
         val20 = 2 * val10
         val80 = 8 * val10
         val90 = 9 * val10
-        tvals = np.linspace(min_time, t2, int(2e6))
+        tvals = np.linspace(t1, min_time, int(2e6))
         vvals = np.interp(tvals, t, v)
         difference_value10 = np.abs(vvals - val10)
         difference_value20 = np.abs(vvals - val20)
