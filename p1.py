@@ -26,16 +26,16 @@ def p1(start, end, date, date_time, filter_band, nhdr, fsps, fc, numtaps, baseli
             subtract_time(i, nhdr, data_shift, save_shift)
 
     t1_array, t2_array, charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, fall1090_array, \
-        fall2080_array, time10_array, time20_array, time80_array, time90_array = make_arrays(save_shift, start, end,
-                                                                                             nhdr, r)
+        fall2080_array, time10_array, time20_array, time80_array, time90_array = make_arrays(save_shift, dest_path,
+                                                                                             start, end, nhdr, r)
 
-    charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, fall1090_array, fall2080_array, \
+    '''charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, fall1090_array, fall2080_array, \
         time10_array, time20_array, time80_array, time90_array = remove_outliers(charge_array, amplitude_array,
                                                                                  fwhm_array, rise1090_array,
                                                                                  rise2080_array, fall1090_array,
                                                                                  fall2080_array, time10_array,
                                                                                  time20_array, time80_array,
-                                                                                 time90_array)
+                                                                                 time90_array)'''
 
     plot_histograms(charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, fall1090_array,
                     fall2080_array, time10_array, time20_array, time80_array, time90_array, dest_path)
@@ -76,27 +76,30 @@ if __name__ == '__main__':
                args.baseline, args.r, args.pmt_hv, args.gain, args.offset, args.trig_delay, args.amp, args.band,
                args.nfilter)
     else:
-        if not args.fil_band:
-            print('Error: Must provide a folder name for data')
-        else:
-            myfile = open(args.info_file, 'r')
-            csv_reader = csv.reader(myfile)
-            info_array = np.array([])
-            for row in csv_reader:
-                info_array = np.append(info_array, row[1])
-            i_date = int(info_array[0])
-            i_date_time = info_array[1]
-            i_nhdr = int(info_array[2])
-            i_fsps = float(info_array[3])
-            i_baseline = float(info_array[4])
-            i_r = int(info_array[5])
-            i_pmt_hv = int(info_array[6])
-            i_gain = int(float(info_array[7]))
-            i_offset = int(info_array[8])
-            i_trig_delay = float(info_array[9])
-            i_amp = float(info_array[10])
-            i_band = info_array[11]
-            i_nfilter = float(info_array[12])
-            p1(args.start, args.end, i_date, i_date_time, args.fil_band, i_nhdr, i_fsps, args.fc, args.numtaps,
-               i_baseline, i_r, i_pmt_hv, i_gain, i_offset, i_trig_delay, i_amp, i_band, i_nfilter)
-            myfile.close()
+        myfile = open(args.info_file, 'r')
+        csv_reader = csv.reader(myfile)
+        info_array = np.array([])
+        path_array = np.array([])
+        for row in csv_reader:
+            info_array = np.append(info_array, row[1])
+        i_date_time = info_array[0]
+        i_path = info_array[1]
+        i_nhdr = int(info_array[2])
+        i_baseline = float(info_array[3])
+        i_pmt_hv = int(info_array[4])
+        i_gain = int(float(info_array[5]))
+        i_offset = int(info_array[6])
+        i_trig_delay = float(info_array[7])
+        i_amp = float(info_array[8])
+        i_fsps = float(info_array[9])
+        i_band = info_array[10]
+        i_nfilter = float(info_array[11])
+        i_r = int(info_array[12])
+        a, b, c, d, e, fol, f, i_fil_band, g = i_path.split('/')
+        i_date, watch, spe = fol.split('_')
+        i_date = int(i_date)
+
+        p1(args.start, args.end, i_date, i_date_time, i_fil_band, i_nhdr, i_fsps, args.fc, args.numtaps,
+           i_baseline, i_r, i_pmt_hv, i_gain, i_offset, i_trig_delay, i_amp, i_band, i_nfilter)
+
+        myfile.close()
