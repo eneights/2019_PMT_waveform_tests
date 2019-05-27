@@ -260,144 +260,166 @@ def plot_histograms(charge_array, amplitude_array, fwhm_array, rise1090_array, r
     bins_charge = np.delete(bins_charge, len(bins_charge) - 1)
     b_est_charge, c_est_charge = norm.fit(charge_array)
     guess_charge = [1, float(b_est_charge), float(c_est_charge)]
-    popt, pcov = curve_fit(func, bins_charge, n_charge, p0=guess_charge)
-    plt.plot(bins_charge, func(bins_charge, *popt), color='red')
-    mu_charge = popt[1]
-    sigma_charge = popt[2]
+    popt_charge, pcov_charge = curve_fit(func, bins_charge, n_charge, p0=guess_charge, maxfev=2000)
+    plt.plot(bins_charge, func(bins_charge, *popt_charge), color='red')
+    mu_charge = float(format(popt_charge[1], '.2e'))
+    sigma_charge = float(format(popt_charge[2], '.2e'))
     plt.xlabel('Charge (C)')
-    plt.title('Charge of SPE\n mean: ' + str(mu_charge) + ', SD: ' + str(sigma_charge))
-    plt.savefig(path / 'charge.png')
+    plt.title('Charge of SPE\n mean: ' + str(mu_charge) + ' C, SD: ' + str(sigma_charge) + ' C')
+    plt.savefig(path / 'charge.png', dpi=360)
+    print(*popt_charge)
     plt.show()
 
     n_amplitude, bins_amplitude, patches_amplitude = plt.hist(amplitude_array, 100)
     bins_amplitude = np.delete(bins_amplitude, len(bins_amplitude) - 1)
     b_est_amplitude, c_est_amplitude = norm.fit(amplitude_array)
     guess_amplitude = [1, float(b_est_amplitude), float(c_est_amplitude)]
-    popt, pcov = curve_fit(func, bins_amplitude, n_amplitude, p0=guess_amplitude)
-    plt.plot(bins_amplitude, func(bins_amplitude, *popt), color='red')
-    mu_amplitude = popt[1]
-    sigma_amplitude = popt[2]
+    popt_amplitude, pcov_amplitude = curve_fit(func, bins_amplitude, n_amplitude, p0=guess_amplitude, maxfev=2000)
+    plt.plot(bins_amplitude, func(bins_amplitude, *popt_amplitude), color='red')
+    mu_amplitude = float(format(popt_amplitude[1], '.2e'))
+    sigma_amplitude = float(format(popt_amplitude[2], '.2e'))
     plt.xlabel('Amplitude (V)')
-    plt.title('Amplitude of SPE\n mean: ' + str(mu_amplitude) + ', SD: ' + str(sigma_amplitude))
-    plt.savefig(path / 'amplitude.png')
+    plt.title('Amplitude of SPE\n mean: ' + str(mu_amplitude) + ' V, SD: ' + str(sigma_amplitude) + ' V')
+    plt.savefig(path / 'amplitude.png', dpi=360)
     plt.show()
 
     n_fwhm, bins_fwhm, patches_fwhm = plt.hist(fwhm_array, 100)
     bins_fwhm = np.delete(bins_fwhm, len(bins_fwhm) - 1)
     b_est_fwhm, c_est_fwhm = norm.fit(fwhm_array)
     guess_fwhm = [1, float(b_est_fwhm), float(c_est_fwhm)]
-    popt, pcov = curve_fit(func, bins_fwhm, n_fwhm, p0=guess_fwhm)
-    plt.plot(bins_fwhm, func(bins_fwhm, *popt), color='red')
-    mu_fwhm = popt[1]
-    sigma_fwhm = popt[2]
+    popt_fwhm, pcov_fwhm = curve_fit(func, bins_fwhm, n_fwhm, p0=guess_fwhm, maxfev=2000)
+    plt.plot(bins_fwhm, func(bins_fwhm, *popt_fwhm), color='red')
+    mu_fwhm = float(format(popt_fwhm[1], '.2e'))
+    sigma_fwhm = float(format(popt_fwhm[2], '.2e'))
     plt.xlabel('Time (s)')
-    plt.title('FWHM of SPE\n mean: ' + str(mu_fwhm) + ', SD: ' + str(sigma_fwhm))
-    plt.savefig(path / 'fwhm.png')
+    plt.title('FWHM of SPE\n mean: ' + str(mu_fwhm) + ' s, SD: ' + str(sigma_fwhm) + ' s')
+    plt.savefig(path / 'fwhm.png', dpi=360)
+    print(*popt_fwhm)
     plt.show()
 
     n_rise1090, bins_rise1090, patches_rise1090 = plt.hist(rise1090_array, 100)
     bins_rise1090 = np.delete(bins_rise1090, len(bins_rise1090) - 1)
     b_est_rise1090, c_est_rise1090 = norm.fit(rise1090_array)
     guess_rise1090 = [1, float(b_est_rise1090), float(c_est_rise1090)]
-    popt, pcov = curve_fit(func, bins_rise1090, n_rise1090, p0=guess_rise1090)
-    plt.plot(bins_rise1090, func(bins_rise1090, *popt), color='red')
-    mu_rise1090 = popt[1]
-    sigma_rise1090 = popt[2]
+    popt_rise1090, pcov_rise1090 = curve_fit(func, bins_rise1090, n_rise1090, p0=guess_rise1090, maxfev=2000)
+    plt.plot(bins_rise1090, func(bins_rise1090, *popt_rise1090), color='red')
+    mu_rise1090 = float(format(popt_rise1090[1], '.2e'))
+    sigma_rise1090 = float(format(popt_rise1090[2], '.2e'))
     plt.xlabel('Time (s)')
-    plt.title('10-90 Rise Time of SPE\n mean: ' + str(mu_rise1090) + ', SD: ' + str(sigma_rise1090))
-    plt.savefig(path / 'rise1090.png')
+    plt.title('10-90 Rise Time of SPE\n mean: ' + str(mu_rise1090) + ' s, SD: ' + str(sigma_rise1090) + ' s')
+    plt.savefig(path / 'rise1090.png', dpi=360)
+    print(*popt_rise1090)
     plt.show()
 
     n_rise2080, bins_rise2080, patches_rise2080 = plt.hist(rise2080_array, 100)
     bins_rise2080 = np.delete(bins_rise2080, len(bins_rise2080) - 1)
     b_est_rise2080, c_est_rise2080 = norm.fit(rise2080_array)
     guess_rise2080 = [1, float(b_est_rise2080), float(c_est_rise2080)]
-    popt, pcov = curve_fit(func, bins_rise2080, n_rise2080, p0=guess_rise2080)
-    plt.plot(bins_rise2080, func(bins_rise2080, *popt), color='red')
-    mu_rise2080 = popt[1]
-    sigma_rise2080 = popt[2]
+    popt_rise2080, pcov_rise2080 = curve_fit(func, bins_rise2080, n_rise2080, p0=guess_rise2080, maxfev=2000)
+    plt.plot(bins_rise2080, func(bins_rise2080, *popt_rise2080), color='red')
+    mu_rise2080 = float(format(popt_rise2080[1], '.2e'))
+    sigma_rise2080 = float(format(popt_rise2080[2], '.2e'))
     plt.xlabel('Time (s)')
-    plt.title('20-80 Rise Time of SPE\n mean: ' + str(mu_rise2080) + ', SD: ' + str(sigma_rise2080))
-    plt.savefig(path / 'rise2080.png')
+    plt.title('20-80 Rise Time of SPE\n mean: ' + str(mu_rise2080) + ' s, SD: ' + str(sigma_rise2080) + ' s')
+    plt.savefig(path / 'rise2080.png', dpi=360)
+    print(*popt_rise2080)
     plt.show()
 
     n_fall1090, bins_fall1090, patches_fall1090 = plt.hist(fall1090_array, 100)
     bins_fall1090 = np.delete(bins_fall1090, len(bins_fall1090) - 1)
     b_est_fall1090, c_est_fall1090 = norm.fit(fall1090_array)
     guess_fall1090 = [1, float(b_est_fall1090), float(c_est_fall1090)]
-    popt, pcov = curve_fit(func, bins_fall1090, n_fall1090, p0=guess_fall1090)
-    plt.plot(bins_fall1090, func(bins_fall1090, *popt), color='red')
-    mu_fall1090 = popt[1]
-    sigma_fall1090 = popt[2]
+    popt_fall1090, pcov_fall1090 = curve_fit(func, bins_fall1090, n_fall1090, p0=guess_fall1090, maxfev=2000)
+    plt.plot(bins_fall1090, func(bins_fall1090, *popt_fall1090), color='red')
+    mu_fall1090 = float(format(popt_fall1090[1], '.2e'))
+    sigma_fall1090 = float(format(popt_fall1090[2], '.2e'))
     plt.xlabel('Time (s)')
-    plt.title('10-90 Fall Time of SPE\n mean: ' + str(mu_fall1090) + ', SD: ' + str(sigma_fall1090))
-    plt.savefig(path / 'fall1090.png')
+    plt.title('10-90 Fall Time of SPE\n mean: ' + str(mu_fall1090) + ' s, SD: ' + str(sigma_fall1090) + ' s')
+    plt.savefig(path / 'fall1090.png', dpi=360)
+    print(*popt_fall1090)
     plt.show()
 
     n_fall2080, bins_fall2080, patches_fall2080 = plt.hist(fall2080_array, 100)
     bins_fall2080 = np.delete(bins_fall2080, len(bins_fall2080) - 1)
     b_est_fall2080, c_est_fall2080 = norm.fit(fall2080_array)
     guess_fall2080 = [1, float(b_est_fall2080), float(c_est_fall2080)]
-    popt, pcov = curve_fit(func, bins_fall2080, n_fall2080, p0=guess_fall2080)
-    plt.plot(bins_fall2080, func(bins_fall2080, *popt), color='red')
-    mu_fall2080 = popt[1]
-    sigma_fall2080 = popt[2]
+    popt_fall2080, pcov_fall2080 = curve_fit(func, bins_fall2080, n_fall2080, p0=guess_fall2080, maxfev=2000)
+    plt.plot(bins_fall2080, func(bins_fall2080, *popt_fall2080), color='red')
+    mu_fall2080 = float(format(popt_fall2080[1], '.2e'))
+    sigma_fall2080 = float(format(popt_fall2080[2], '.2e'))
     plt.xlabel('Time (s)')
-    plt.title('20-80 Fall Time of SPE\n mean: ' + str(mu_fall2080) + ', SD: ' + str(sigma_fall2080))
-    plt.savefig(path / 'fall2080.png')
+    plt.title('20-80 Fall Time of SPE\n mean: ' + str(mu_fall2080) + ' s, SD: ' + str(sigma_fall2080) + ' s')
+    plt.savefig(path / 'fall2080.png', dpi=360)
+    print(*popt_fall2080)
     plt.show()
 
     n_time10, bins_time10, patches_time10 = plt.hist(time10_array, 100)
     bins_time10 = np.delete(bins_time10, len(bins_time10) - 1)
     b_est_time10, c_est_time10 = norm.fit(time10_array)
     guess_time10 = [1, float(b_est_time10), float(c_est_time10)]
-    popt, pcov = curve_fit(func, bins_time10, n_time10, p0=guess_time10)
-    plt.plot(bins_time10, func(bins_time10, *popt), color='red')
-    mu_time10 = popt[1]
-    sigma_time10 = popt[2]
+    popt_time10, pcov_time10 = curve_fit(func, bins_time10, n_time10, p0=guess_time10, maxfev=2000)
+    plt.plot(bins_time10, func(bins_time10, *popt_time10), color='red')
+    mu_time10 = float(format(popt_time10[1], '.2e'))
+    sigma_time10 = float(format(popt_time10[2], '.2e'))
     plt.xlabel('Time (s)')
-    plt.title('10% Jitter of SPE\n mean: ' + str(mu_time10) + ', SD: ' + str(sigma_time10))
-    plt.savefig(path / 'time10.png')
+    plt.title('10% Jitter of SPE\n mean: ' + str(mu_time10) + ' s, SD: ' + str(sigma_time10) + ' s')
+    plt.savefig(path / 'time10.png', dpi=360)
+    print(*popt_time10)
     plt.show()
 
     n_time20, bins_time20, patches_time20 = plt.hist(time20_array, 100)
     bins_time20 = np.delete(bins_time20, len(bins_time20) - 1)
     b_est_time20, c_est_time20 = norm.fit(time20_array)
     guess_time20 = [1, float(b_est_time20), float(c_est_time20)]
-    popt, pcov = curve_fit(func, bins_time20, n_time20, p0=guess_time20)
-    plt.plot(bins_time20, func(bins_time20, *popt), color='red')
-    mu_time20 = popt[1]
-    sigma_time20 = popt[2]
+    popt_time20, pcov_time20 = curve_fit(func, bins_time20, n_time20, p0=guess_time20, maxfev=2000)
+    plt.plot(bins_time20, func(bins_time20, *popt_time20), color='red')
+    mu_time20 = float(format(popt_time20[1], '.2e'))
+    sigma_time20 = float(format(popt_time20[2], '.2e'))
     plt.xlabel('Time (s)')
-    plt.title('20% Jitter of SPE\n mean: ' + str(mu_time20) + ', SD: ' + str(sigma_time20))
-    plt.savefig(path / 'time20.png')
+    plt.title('20% Jitter of SPE\n mean: ' + str(mu_time20) + ' s, SD: ' + str(sigma_time20) + ' s')
+    plt.savefig(path / 'time20.png', dpi=360)
+    print(*popt_time20)
     plt.show()
 
     n_time80, bins_time80, patches_time80 = plt.hist(time80_array, 100)
     bins_time80 = np.delete(bins_time80, len(bins_time80) - 1)
     b_est_time80, c_est_time80 = norm.fit(time80_array)
     guess_time80 = [1, float(b_est_time80), float(c_est_time80)]
-    popt, pcov = curve_fit(func, bins_time80, n_time80, p0=guess_time80)
-    plt.plot(bins_time80, func(bins_time80, *popt), color='red')
-    mu_time80 = popt[1]
-    sigma_time80 = popt[2]
+    popt_time80, pcov_time80 = curve_fit(func, bins_time80, n_time80, p0=guess_time80, maxfev=2000)
+    plt.plot(bins_time80, func(bins_time80, *popt_time80), color='red')
+    mu_time80 = float(format(popt_time80[1], '.2e'))
+    sigma_time80 = float(format(popt_time80[2], '.2e'))
     plt.xlabel('Time (s)')
-    plt.title('80% Jitter of SPE\n mean: ' + str(mu_time80) + ', SD: ' + str(sigma_time80))
-    plt.savefig(path / 'time80.png')
+    plt.title('80% Jitter of SPE\n mean: ' + str(mu_time80) + ' s, SD: ' + str(sigma_time80) + ' s')
+    plt.savefig(path / 'time80.png', dpi=360)
+    print(*popt_time80)
     plt.show()
 
     n_time90, bins_time90, patches_time90 = plt.hist(time90_array, 100)
     bins_time90 = np.delete(bins_time90, len(bins_time90) - 1)
     b_est_time90, c_est_time90 = norm.fit(time90_array)
     guess_time90 = [1, float(b_est_time90), float(c_est_time90)]
-    popt, pcov = curve_fit(func, bins_time90, n_time90, p0=guess_time90)
-    plt.plot(bins_time90, func(bins_time90, *popt), color='red')
-    mu_time90 = popt[1]
-    sigma_time90 = popt[2]
+    popt_time90, pcov_time90 = curve_fit(func, bins_time90, n_time90, p0=guess_time90, maxfev=2000)
+    plt.plot(bins_time90, func(bins_time90, *popt_time90), color='red')
+    mu_time90 = float(format(popt_time90[1], '.2e'))
+    sigma_time90 = float(format(popt_time90[2], '.2e'))
     plt.xlabel('Time (s)')
-    plt.title('90% Jitter of SPE\n mean: ' + str(mu_time90) + ', SD: ' + str(sigma_time90))
-    plt.savefig(path / 'time90.png')
+    plt.title('90% Jitter of SPE\n mean: ' + str(mu_time90) + ' s, SD: ' + str(sigma_time90) + ' s')
+    plt.savefig(path / 'time90.png', dpi=360)
+    print(*popt_time90)
     plt.show()
+
+    write_hist_data(charge_array, dest_path, 'charge.txt')
+    write_hist_data(amplitude_array, dest_path, 'amplitude.txt')
+    write_hist_data(fwhm_array, dest_path, 'fwhm.txt')
+    write_hist_data(rise1090_array, dest_path, 'rise1090.txt')
+    write_hist_data(rise2080_array, dest_path, 'rise2080.txt')
+    write_hist_data(fall1090_array, dest_path, 'fall1090.txt')
+    write_hist_data(fall2080_array, dest_path, 'fall2080.txt')
+    write_hist_data(time10_array, dest_path, 'time10.txt')
+    write_hist_data(time20_array, dest_path, 'time20.txt')
+    write_hist_data(time80_array, dest_path, 'time80.txt')
+    write_hist_data(time90_array, dest_path, 'time90.txt')
 
 
 def calculate_times(file_name, nhdr, r):
@@ -641,4 +663,14 @@ def save_calculations(dest_path, i, t1, t2, charge, amplitude, fwhm, rise1090, r
     myfile.write('\ntime20,' + str(time20))
     myfile.write('\ntime80,' + str(time80))
     myfile.write('\ntime90,' + str(time90))
+    myfile.close()
+
+
+def write_hist_data(_array, dest_path, name):
+    _array = np.sort(_array)
+    file_name = Path(dest_path / 'hist_data' / name)
+
+    myfile = open(file_name, 'w')
+    for item in _array:
+        myfile.write(str(item) + '\n')
     myfile.close()

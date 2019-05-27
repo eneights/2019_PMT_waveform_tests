@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from read_waveform import read_waveform as rw
 
 path = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/waveforms/full_bdw_no_nf/d1/d1_raw')
-file = 'D1--waveforms--80021.txt'
+file = 'D1--waveforms--51589.txt'
 file_name = str(path / file)
 nhdr = 5
 

@@ -1,21 +1,43 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
-from readwaveform import read_waveform as rw
-from writewaveform import write_waveform
-import os
+from pathlib import Path
+from read_waveform import read_waveform as rw
+from write_waveform import write_waveform as ww
 
-#Determining average shape
-def determine_average_shape(data_date,numhead):
-    Nloops = len(os.listdir('G:/data/watchman/'+data_date+'_watchman_spe/d1/d1_normalized'))
-    writename = 'G:/data/watchman/'+data_date+'_watchman_spe/d1/d1_histograms/average_shape.txt'
-    for i in range(Nloops):
-        print(i)
-        filename = 'G:/data/watchman/'+data_date+'_watchman_spe/d1/d1_normalized/D1--waveforms--%05d.txt' % i
-        (t,y,_) = rw(filename,numhead)
-        if i == 0:
-            ysum = y
-        else:
-            ysum = np.add(ysum,y)
+'''loops through all shifted files
+    normalizes file
+adds all v
+divides by number of files
+plots t and v'''
+
+
+def average_waveform(start, end, dest_path, nhdr):
+    data_file = Path(dest_path / 'd1_shifted')
+    # save_file = Path(dest_path / 'plots')
+    # vsum = 0
+    for i in range(start, end + 1):
+        file_name = 'D1--waveforms--%05d.txt' % i
+        if os.path.isfile(data_file / file_name):
+            print('Calculating average waveform: ', i)
+            t, v, hdr = rw(data_file / file_name, nhdr)
+            v = v / min(v)
+            idx = np.where(t == 0)
+            idx = int(idx[0])
+            t = np.roll(t, -idx)
+            v = np.roll(v, -idx)
+            idx2 = np.where(t == min(t))
+            if idx2 <= 3430:
+                t = t[:3431]
+                v = v[:3431]
+                t = np.roll(t, -idx)
+            print(idx2)
+            print(t[3430])
+
+
+average_waveform(0, 100, Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/waveforms/full_bdw_no_nf/d1'),
+                 5)
+'''vsum += v
     yfinal = np.divide(ysum,(Nloops+1))
     header_name = "Average Waveform Shape"
     write_waveform(t,yfinal,writename,header_name)
@@ -39,4 +61,4 @@ if __name__ == '__main__':
     parser.add_argument('--numhead',type=int,help='number of lines to ignore for header',default = 5)
     args = parser.parse_args()
 
-    generate_average_shape_plot(args.data_date,args.numhead)
+    generate_average_shape_plot(args.data_date,args.numhead)'''
