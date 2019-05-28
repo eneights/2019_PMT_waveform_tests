@@ -10,10 +10,10 @@ from scipy.stats import norm
 # Reads csv file with header and time & voltage columns
 # Returns time array, voltage array, and header as a string
 def rw(file_name, nhdr):
-    header = []         # creates empty list for header
+    header = []
     header_str = ''
-    x = np.array([])    # creates empty array for time
-    y = np.array([])    # creates empty array for voltage
+    x = np.array([])
+    y = np.array([])
 
     if os.path.isfile(file_name):
         myfile = open(file_name, 'rb')
@@ -42,7 +42,7 @@ def ww(x, y, file_name, hdr):
     myfile.close()
 
 
-# Calculates the average baseline (baseline noise level)
+# Returns the average baseline (baseline noise level)
 def calculate_average(t, v):
     v_sum = 0
 
@@ -63,7 +63,7 @@ def calculate_average(t, v):
     return average
 
 
-# Shifts spes so that when t = 0, v = 50% max and baseline = 0
+# Shifts spes so that baseline = 0 and when t = 0, v = 50% max
 def subtract_time(file_num, nhdr, data_path, save_path):
     file_name = 'D1--waveforms--%05d.txt' % file_num
 
@@ -87,7 +87,7 @@ def subtract_time(file_num, nhdr, data_path, save_path):
             print('Length of /d1_shifted/:', len(os.listdir(str(save_path))))
 
 
-# Calculates charge of spe
+# Returns time when spe waveform begins, time when spe waveform ends, and charge of spe
 def calculate_charge(t, v, r):
     vsum = 0
     idx1 = np.inf
@@ -133,7 +133,7 @@ def calculate_charge(t, v, r):
     return t1, t2, charge
 
 
-# Calculates amplitude of spe (minimum voltage)
+# Returns the amplitude of spe (minimum voltage)
 def calculate_amp(t, v):
     avg = calculate_average(t, v)
     min_val = np.amin(v)
@@ -141,7 +141,7 @@ def calculate_amp(t, v):
     return amp
 
 
-# Calculates full width half max (FWHM) of spe
+# Returns the full width half max (FWHM) of spe
 def calculate_fwhm(t, v):
     half_max = min(v) / 2
     half_max = half_max.item()
@@ -160,7 +160,7 @@ def calculate_fwhm(t, v):
     return half_max_time
 
 
-# Calculates rise time of spe
+# Returns 10-90 and 20-80 rise times
 def rise_time(t, v, r):
     avg = calculate_average(t, v)
     t1, t2, charge = calculate_charge(t, v, r)
@@ -193,7 +193,7 @@ def rise_time(t, v, r):
     return rise_time1090, rise_time2080
 
 
-# Calculates fall time of spe
+# Returns 10-90 and 20-80 fall times
 def fall_time(t, v, r):
     avg = calculate_average(t, v)
     t1, t2, charge = calculate_charge(t, v, r)
@@ -226,39 +226,37 @@ def fall_time(t, v, r):
     return fall_time1090, fall_time2080
 
 
-# Calculates 10%, 20%, 80%, and 90% jitter of spe
-def calculate_times(file_name, nhdr, r):
-    if os.path.isfile(file_name):
-        t, v, hdr = rw(file_name, nhdr)
-        avg = calculate_average(t, v)
-        t1, t2, charge = calculate_charge(t, v, r)
-        idx_min_val = np.where(v == min(v))
-        time_min_val = t[idx_min_val]
-        min_time = time_min_val[0]
+# Returns 10%, 20%, 80%, and 90% jitter of spe
+def calculate_times(t, v, r):
+    avg = calculate_average(t, v)
+    t1, t2, charge = calculate_charge(t, v, r)
+    idx_min_val = np.where(v == min(v))
+    time_min_val = t[idx_min_val]
+    min_time = time_min_val[0]
 
-        val10 = .1 * (min(v) - avg)
-        val20 = 2 * val10
-        val80 = 8 * val10
-        val90 = 9 * val10
-        tvals = np.linspace(t1, min_time, int(2e6))
-        vvals = np.interp(tvals, t, v)
-        difference_value10 = np.abs(vvals - val10)
-        difference_value20 = np.abs(vvals - val20)
-        difference_value80 = np.abs(vvals - val80)
-        difference_value90 = np.abs(vvals - val90)
-        index10 = np.argmin(difference_value10)
-        index20 = np.argmin(difference_value20)
-        index80 = np.argmin(difference_value80)
-        index90 = np.argmin(difference_value90)
-        time10 = tvals[index10]
-        time20 = tvals[index20]
-        time80 = tvals[index80]
-        time90 = tvals[index90]
+    val10 = .1 * (min(v) - avg)
+    val20 = 2 * val10
+    val80 = 8 * val10
+    val90 = 9 * val10
+    tvals = np.linspace(t1, min_time, int(2e6))
+    vvals = np.interp(tvals, t, v)
+    difference_value10 = np.abs(vvals - val10)
+    difference_value20 = np.abs(vvals - val20)
+    difference_value80 = np.abs(vvals - val80)
+    difference_value90 = np.abs(vvals - val90)
+    index10 = np.argmin(difference_value10)
+    index20 = np.argmin(difference_value20)
+    index80 = np.argmin(difference_value80)
+    index90 = np.argmin(difference_value90)
+    time10 = tvals[index10]
+    time20 = tvals[index20]
+    time80 = tvals[index80]
+    time90 = tvals[index90]
 
-        return time10, time20, time80, time90
+    return time10, time20, time80, time90
 
 
-# Creates text file with time of beginning of spe, time of end of spe, charge, amplitude, fwhm, 10-90 & 20-80 rise
+# wCreates text file with time of beginning of spe, time of end of spe, charge, amplitude, fwhm, 10-90 & 20-80 rise
 # times, 10-90 & 20-80 fall times, and 10%, 20%, 80% & 90% jitter for an spe file
 # This saves a lot of time when running program
 def save_calculations(dest_path, i, t1, t2, charge, amplitude, fwhm, rise1090, rise2080, fall1090, fall2080, time10,
@@ -292,10 +290,10 @@ def write_hist_data(array, dest_path, name):
     myfile.close()
 
 
-# Calculates time of beginning of spe, time of end of spe, charge, amplitude, fwhm, 10-90 & 20-80 rise times, 10-90 &
-# 20-80 fall times, and 10%, 20%, 80% & 90% jitter for each spe file
-# Creates arrays of time of beginning of spe, time of end of spe, charge, amplitude, fwhm, 10-90 & 20-80 rise times,
-# 10-90 & 20-80 fall times, and 10%, 20%, 80% & 90% jitter
+# Calculates beginning & end times of spe waveform, charge, amplitude, fwhm, 10-90 & 20-80 rise times, 10-90 & 20-80
+# fall times, and 10%, 20%, 80% & 90% jitter for each spe file
+# Returns arrays of beginning & end times of spe waveform, charge, amplitude, fwhm, 10-90 & 20-80 rise times, 10-90 &
+# 20-80 fall times, and 10%, 20%, 80% & 90% jitter
 def make_arrays(save_shift, dest_path, start, end, nhdr, r):
     t1_array = np.array([])
     t2_array = np.array([])
@@ -357,7 +355,7 @@ def make_arrays(save_shift, dest_path, start, end, nhdr, r):
                 fwhm = calculate_fwhm(t, v)
                 rise1090, rise2080 = rise_time(t, v, r)
                 fall1090, fall2080 = fall_time(t, v, r)
-                time10, time20, time80, time90 = calculate_times(file_name1, nhdr, r)
+                time10, time20, time80, time90 = calculate_times(t, v, r)
                 save_calculations(dest_path, i, t1, t2, charge, amplitude, fwhm, rise1090, rise2080, fall1090, fall2080,
                                   time10, time20, time80, time90)
                 t1_array = np.append(t1_array, t1)
@@ -415,7 +413,7 @@ def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename):
     write_hist_data(array, dest_path, filename + '.txt')
 
 
-# Removes outliers from an array
+# Returns array with outliers removed
 def remove_outliers(array, nbins, nsigma):
 
     def func(x, a, b, c):

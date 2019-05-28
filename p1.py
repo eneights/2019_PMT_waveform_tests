@@ -3,8 +3,8 @@ from functions import *
 from info_file import info_file
 
 
-def p1(start, end, date, date_time, filter_band, nhdr, fsps, fc, numtaps, baseline, r, pmt_hv, gain, offset, trig_delay, amp,
-       band, nfilter):
+def p1(start, end, date, date_time, filter_band, nhdr, fsps, fc, numtaps, baseline, r, pmt_hv, gain, offset, trig_delay,
+       amp, band, nfilter):
     gen_path = Path(r'/Volumes/TOSHIBA EXT/data/watchman')
     save_sort = Path(str(gen_path / '%08d_watchman_spe/waveforms/%s') % (date, filter_band))
     data_sort = Path(save_sort / 'd0')
@@ -24,8 +24,8 @@ def p1(start, end, date, date_time, filter_band, nhdr, fsps, fc, numtaps, baseli
         if os.path.isfile(data_shift / file_name):
             subtract_time(i, nhdr, data_shift, save_shift)
 
-    # Creates arrays of time of beginning of spe, time of end of spe, charge, amplitude, fwhm, 10-90 & 20-80 rise times,
-    # 10-90 & 20-80 fall times, and 10%, 20%, 80% & 90% jitter
+    # Creates arrays of beginning & end times of spe waveform, time of end of spe, charge, amplitude, fwhm, 10-90 &
+    # 20-80 rise times, 10-90 & 20-80 fall times, and 10%, 20%, 80% & 90% jitter
     t1_array, t2_array, charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, fall1090_array, \
         fall2080_array, time10_array, time20_array, time80_array, time90_array = make_arrays(save_shift, dest_path,
                                                                                              start, end, nhdr, r)
@@ -85,7 +85,8 @@ if __name__ == '__main__':
     parser.add_argument("--fil_band", type=str, help='folder name for data')
     parser.add_argument("--nhdr", type=int, help='number of header lines to skip in raw file (default=5)', default=5)
     parser.add_argument("--fsps", type=float, help='samples per second (Hz) (suggested=20000000000.)')
-    parser.add_argument("--fc", type=float, help='filter cutoff frequency (Hz) (default=250000000.)', default=250000000.)
+    parser.add_argument("--fc", type=float, help='filter cutoff frequency (Hz) (default=250000000.)', default=250000000.
+                        )
     parser.add_argument("--numtaps", type=int, help='filter order + 1 (default=51)', default=51)
     parser.add_argument("--baseline", type=float, help='baseline of data set (V) (suggested=0)')
     parser.add_argument("--r", type=int, help='resistance in ohms (suggested=50)')
@@ -96,17 +97,17 @@ if __name__ == '__main__':
     parser.add_argument("--amp", type=float, help='amplitude of pulse generator (V) (suggested=3.5)')
     parser.add_argument("--band", type=str, help='bandwidth of oscilloscope (Hz) (suggested=full)')
     parser.add_argument("--nfilter", type=float, help='noise filter on oscilloscope (bits) (suggested=0)')
-    parser.add_argument("--info_file", type=str, help='info file path')
+    parser.add_argument("--info_file", type=str, help='path to d0 info file')
     args = parser.parse_args()
 
     if not args.info_file:
-        if not (args.date or args.date_time or args.fil_band or args.fsps or args.baseline or args.r or args.pmt_hv or args.gain or
-                args.offset or args.trig_delay or args.amp or args.band or args.nfilter):
+        if not (args.date or args.date_time or args.fil_band or args.fsps or args.baseline or args.r or args.pmt_hv or
+                args.gain or args.offset or args.trig_delay or args.amp or args.band or args.nfilter):
             print('Error: Must provide an info file or all other arguments')
         else:
-            p1(args.start, args.end, args.date, args.date_time, args.fil_band, args.nhdr, args.fsps, args.fc, args.numtaps,
-               args.baseline, args.r, args.pmt_hv, args.gain, args.offset, args.trig_delay, args.amp, args.band,
-               args.nfilter)
+            p1(args.start, args.end, args.date, args.date_time, args.fil_band, args.nhdr, args.fsps, args.fc,
+               args.numtaps, args.baseline, args.r, args.pmt_hv, args.gain, args.offset, args.trig_delay, args.amp,
+               args.band, args.nfilter)
     else:
         myfile = open(args.info_file, 'r')
         csv_reader = csv.reader(myfile)
