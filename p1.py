@@ -1,9 +1,4 @@
-import os
-import csv
-from pathlib import Path
-import numpy as np
 from p1_sort import p1_sort
-from subtract_time import subtract_time
 from functions import *
 from info_file import info_file
 
@@ -17,29 +12,66 @@ def p1(start, end, date, date_time, filter_band, nhdr, fsps, fc, numtaps, baseli
     data_shift = Path(dest_path / 'd1_raw')
     save_shift = Path(dest_path / 'd1_shifted')
 
+    # Separates spes and non-spes into different folders
+    print('Sorting files...')
     for i in range(start, end + 1):
         p1_sort(i, nhdr, fsps, fc, numtaps, data_sort, save_sort, baseline)
 
+    # Shifts spes so that when t = 0, v = 50% max and baseline = 0
+    print('Shifting waveforms...')
     for i in range(start, end + 1):
         file_name = 'D1--waveforms--%05d.txt' % i
         if os.path.isfile(data_shift / file_name):
             subtract_time(i, nhdr, data_shift, save_shift)
 
+    # Creates arrays of time of beginning of spe, time of end of spe, charge, amplitude, fwhm, 10-90 & 20-80 rise times,
+    # 10-90 & 20-80 fall times, and 10%, 20%, 80% & 90% jitter
     t1_array, t2_array, charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, fall1090_array, \
         fall2080_array, time10_array, time20_array, time80_array, time90_array = make_arrays(save_shift, dest_path,
                                                                                              start, end, nhdr, r)
 
-    '''charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, fall1090_array, fall2080_array, \
-        time10_array, time20_array, time80_array, time90_array = remove_outliers(charge_array, amplitude_array,
-                                                                                 fwhm_array, rise1090_array,
-                                                                                 rise2080_array, fall1090_array,
-                                                                                 fall2080_array, time10_array,
-                                                                                 time20_array, time80_array,
-                                                                                 time90_array)'''
+    # Plots histograms of charge, amplitude, FWHM, 10-90 & 20-80 rise times, 10-90 & 20-80 fall times, and 10%, 20%, 80%
+    # & 90% jitter (including outliers)
+    plot_histogram(charge_array, dest_path, 100, 'Charge', 'Charge', 'C', 'charge_w_outliers')
+    plot_histogram(amplitude_array, dest_path, 100, 'Voltage', 'Amplitude', 'V', 'amplitude_w_outliers')
+    plot_histogram(fwhm_array, dest_path, 100, 'Time', 'FWHM', 's', 'fwhm_w_outliers')
+    plot_histogram(rise1090_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rise1090_w_outliers')
+    plot_histogram(rise2080_array, dest_path, 100, 'Time', '20-80 Rise Time', 's', 'rise2080_w_outliers')
+    plot_histogram(fall1090_array, dest_path, 100, 'Time', '10-90 Fall Time', 's', 'fall1090_w_outliers')
+    plot_histogram(fall2080_array, dest_path, 100, 'Time', '20-80 Fall Time', 's', 'fall2080_w_outliers')
+    plot_histogram(time10_array, dest_path, 100, 'Time', '10% Jitter', 's', 'time10_w_outliers')
+    plot_histogram(time20_array, dest_path, 100, 'Time', '20% Jitter', 's', 'time20_w_outliers')
+    plot_histogram(time80_array, dest_path, 100, 'Time', '80% Jitter', 's', 'time80_w_outliers')
+    plot_histogram(time90_array, dest_path, 100, 'Time', '90% Jitter', 's', 'time90_w_outliers')
 
-    plot_histograms(charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, fall1090_array,
-                    fall2080_array, time10_array, time20_array, time80_array, time90_array, dest_path)
+    # Removes outliers (anything less than -3sigma or greater than +3sigma) from all arrays
+    charge_array2 = remove_outliers(charge_array, 100, 3)
+    amplitude_array2 = remove_outliers(amplitude_array, 100, 3)
+    fwhm_array2 = remove_outliers(fwhm_array, 100, 3)
+    rise1090_array2 = remove_outliers(rise1090_array, 100, 3)
+    rise2080_array2 = remove_outliers(rise2080_array, 100, 3)
+    fall1090_array2 = remove_outliers(fall1090_array, 100, 3)
+    fall2080_array2 = remove_outliers(fall2080_array, 100, 3)
+    time10_array2 = remove_outliers(time10_array, 100, 3)
+    time20_array2 = remove_outliers(time20_array, 100, 3)
+    time80_array2 = remove_outliers(time80_array, 100, 3)
+    time90_array2 = remove_outliers(time90_array, 100, 3)
 
+    # Plots histograms of charge, amplitude, FWHM, 10-90 & 20-80 rise times, 10-90 & 20-80 fall times, and 10%, 20%, 80%
+    # & 90% jitter (with outliers removed)
+    plot_histogram(charge_array2, dest_path, 80, 'Charge', 'Charge', 'C', 'charge_wo_outliers')
+    plot_histogram(amplitude_array2, dest_path, 80, 'Voltage', 'Amplitude', 'V', 'amplitude_wo_outliers')
+    plot_histogram(fwhm_array2, dest_path, 80, 'Time', 'FWHM', 's', 'fwhm_wo_outliers')
+    plot_histogram(rise1090_array2, dest_path, 40, 'Time', '10-90 Rise Time', 's', 'rise1090_wo_outliers')
+    plot_histogram(rise2080_array2, dest_path, 40, 'Time', '20-80 Rise Time', 's', 'rise2080_wo_outliers')
+    plot_histogram(fall1090_array2, dest_path, 40, 'Time', '10-90 Fall Time', 's', 'fall1090_wo_outliers')
+    plot_histogram(fall2080_array2, dest_path, 40, 'Time', '20-80 Fall Time', 's', 'fall2080_wo_outliers')
+    plot_histogram(time10_array2, dest_path, 100, 'Time', '10% Jitter', 's', 'time10_wo_outliers')
+    plot_histogram(time20_array2, dest_path, 100, 'Time', '20% Jitter', 's', 'time20_wo_outliers')
+    plot_histogram(time80_array2, dest_path, 100, 'Time', '80% Jitter', 's', 'time80_wo_outliers')
+    plot_histogram(time90_array2, dest_path, 100, 'Time', '90% Jitter', 's', 'time90_wo_outliers')
+
+    # Creates d1 info file
     info_file(date_time, data_sort, dest_path, pmt_hv, gain, offset, trig_delay, amp, fsps, band, nfilter, r)
 
 

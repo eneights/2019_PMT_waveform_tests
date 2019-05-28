@@ -1,13 +1,8 @@
-import sys
-import os
-import numpy as np
-import matplotlib.pyplot as plt
-from pathlib import Path
 from scipy import signal
-from read_waveform import read_waveform as rw
-from write_waveform import write_waveform as ww
+from functions import *
 
 
+# Separates files into spe, non-spe, and maybe spe
 def p1_sort(file_num, nhdr, fsps, fc, numtaps, data_path, save_path, baseline):
     wc = 2. * np.pi * fc / fsps     # Discrete radial frequency
     lowpass = signal.firwin(numtaps, cutoff=wc/np.pi, window='blackman')    # Blackman windowed lowpass filter
@@ -37,22 +32,23 @@ def p1_sort(file_num, nhdr, fsps, fc, numtaps, data_path, save_path, baseline):
         check_peaks, _ = signal.find_peaks(v_flip, [0.001, 0.0025])
         v_check = v2[check_peaks]
 
+        # If no peaks larger than 0.001 V, no spe
         if len(peaks) == 0:
             ww(t2, v2, spe_not_there, hdr)
             print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
 
+        # If one peak larger than 0.001 V and it is larger than 0.002 V, spe
         elif len(peaks) == 1 and min(v2[370:1370]) < -0.002:
             ww(t2, v2, spe_name, hdr)
             print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
 
-        elif len(peaks) == 2 and min(v2[370:1370]) < -0.0045:
+        # If 2 or more peaks larger than 0.001 V, peak is larger than 0.005 V, and all other peaks are smaller than
+        # 0.0025, spe
+        elif len(peaks) >= 2 and min(v2[370:1370]) < -0.005 and len(peaks) - 1 == len(v_check):
             ww(t2, v2, spe_name, hdr)
             print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
 
-        elif len(peaks) > 2 and min(v2[370:1370]) < -0.005 and len(peaks) - 1 == len(v_check):
-            ww(t2, v2, spe_name, hdr)
-            print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
-
+        # Otherwise, plots waveform for user to sort manually
         else:
             plt.figure()
             plt.plot(t, v, 'b')

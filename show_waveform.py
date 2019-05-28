@@ -1,6 +1,4 @@
-from pathlib import Path
-import matplotlib.pyplot as plt
-from read_waveform import read_waveform as rw
+from functions import *
 
 path = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/waveforms/full_bdw_no_nf/d1/d1_raw')
 file = 'D1--waveforms--51589.txt'

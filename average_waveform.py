@@ -1,25 +1,17 @@
-import os
-import numpy as np
-import matplotlib.pyplot as plt
-from pathlib import Path
-from read_waveform import read_waveform as rw
-from write_waveform import write_waveform as ww
-
-'''loops through all shifted files
-    normalizes file
-adds all v
-divides by number of files
-plots t and v'''
+from functions import *
 
 
+# Calculates the average waveform of an spe
 def average_waveform(start, end, dest_path, nhdr):
     data_file = Path(dest_path / 'd1_shifted')
-    # save_file = Path(dest_path / 'plots')
-    # vsum = 0
+    save_file = Path(dest_path / 'plots')
+    tsum = 0
+    vsum = 0
+    n = 0
     for i in range(start, end + 1):
         file_name = 'D1--waveforms--%05d.txt' % i
         if os.path.isfile(data_file / file_name):
-            print('Calculating average waveform: ', i)
+            print('File #', i)
             t, v, hdr = rw(data_file / file_name, nhdr)
             v = v / min(v)
             idx = np.where(t == 0)
@@ -27,38 +19,43 @@ def average_waveform(start, end, dest_path, nhdr):
             t = np.roll(t, -idx)
             v = np.roll(v, -idx)
             idx2 = np.where(t == min(t))
+            idx2 = int(idx2[0])
+            idx3 = np.where(t == max(t))
+            idx3 = int(idx3[0])
             if idx2 <= 3430:
-                t = t[:3431]
-                v = v[:3431]
-                t = np.roll(t, -idx)
-            print(idx2)
-            print(t[3430])
+                t = np.concatenate((t[:idx3], t[3431:]))
+                v = np.concatenate((v[:idx3], v[3431:]))
+                t = np.roll(t, -idx3)
+                v = np.roll(v, -idx3)
+                if len(t) >= 3920:
+                    t = t[:3920]
+                    v = v[:3920]
+                    tsum += t
+                    vsum += v
+                    n += 1
+    t_avg = tsum / n
+    v_avg = vsum / n
 
-
-average_waveform(0, 100, Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/waveforms/full_bdw_no_nf/d1'),
-                 5)
-'''vsum += v
-    yfinal = np.divide(ysum,(Nloops+1))
-    header_name = "Average Waveform Shape"
-    write_waveform(t,yfinal,writename,header_name)
-    return (t,yfinal)
-
-#Generate plot
-def generate_average_shape_plot(data_date,numhead):
-    (x,y) = determine_average_shape(data_date,numhead)
-    fig = plt.figure(figsize=(6,4))
-    plt.plot(x,y)
-    plt.xlabel('Time')
-    plt.ylabel('Ratio to Peak Height')
-    plt.title('Average Wave Shape')
+    plt.plot(t_avg, v_avg)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Normalized Voltage')
+    plt.title('Average Waveform')
+    plt.savefig(save_file / 'avg_waveform.png', dpi=360)
     plt.show()
-    fig.savefig('G:/data/watchman/'+data_date+'_watchman_spe/d1/d1_histograms/average_shape.png',dpi = 300)
+
+    file_name = dest_path / 'hist_data' / 'avg_waveform.txt'
+    hdr = 'Average Waveform\n\n\n\nTime,Ampl'
+    ww(t_avg, v_avg, file_name, hdr)
+
 
 if __name__ == '__main__':
+    path_d1 = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/waveforms/full_bdw_no_nf/d1')
     import argparse
-    parser = argparse.ArgumentParser(prog='determineaverageshape', description='determining and writing plot of average waveform shape')
-    parser.add_argument('--data_date',type = str,help = 'date when data was gathered, YYYYMMDD', default = '20190516')
-    parser.add_argument('--numhead',type=int,help='number of lines to ignore for header',default = 5)
+    parser = argparse.ArgumentParser(prog='average_waveform', description='creating plot of average waveform shape')
+    parser.add_argument('--start', type=int, help='file number to begin at', default=0)
+    parser.add_argument('--end', type=int, help='file number to end at', default=99999)
+    parser.add_argument('--dest_path', type=str, help='path to d1 folder', default=path_d1)
+    parser.add_argument('--nhdr', type=int, help='number of lines to ignore for header', default=5)
     args = parser.parse_args()
 
-    generate_average_shape_plot(args.data_date,args.numhead)'''
+    average_waveform(args.start, args.end, args.dest_path, args.nhdr)

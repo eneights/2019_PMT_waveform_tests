@@ -1,8 +1,7 @@
 import datetime
-from pathlib import Path
-from read_waveform import read_waveform as rw
 
 
+# Creates d1 info file
 def info_file(acq_date_time, source_path, dest_path, pmt_hv, gain, offset, trig_delay, amp, fsps, band, nfilter, r):
     now = datetime.datetime.now()
     file_name = 'info.txt'

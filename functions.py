@@ -1,17 +1,48 @@
-import sys
 import os
 import csv
-import time
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.mlab as mlab
 from pathlib import Path
-from scipy import signal
 from scipy.optimize import curve_fit
 from scipy.stats import norm
-from read_waveform import read_waveform as rw
 
 
+# Reads csv file with header and time & voltage columns
+# Returns time array, voltage array, and header as a string
+def rw(file_name, nhdr):
+    header = []         # creates empty list for header
+    header_str = ''
+    x = np.array([])    # creates empty array for time
+    y = np.array([])    # creates empty array for voltage
+
+    if os.path.isfile(file_name):
+        myfile = open(file_name, 'rb')
+        for i in range(nhdr):
+            header.append(myfile.readline())
+        for line in myfile:
+            x = np.append(x, float(line.split(str.encode(','))[0]))
+            y = np.append(y, float(line.split(str.encode(','))[1]))
+        myfile.close()
+        head_len = len(header)
+        for i in range(0, head_len):
+            head_byte = header[i]
+            head_str = head_byte.decode('cp437')
+            header_str += head_str
+    return x, y, header_str
+
+
+# Given a time array, voltage array, and header, writes a csv file with header and time & voltage columns
+def ww(x, y, file_name, hdr):
+    myfile = open(file_name, 'w')
+    for entry in str(hdr):
+        myfile.write(entry)
+    for ix, iy in zip(x, y):
+        line = '%.7E,%f\n' % (ix, iy)
+        myfile.write(line)
+    myfile.close()
+
+
+# Calculates the average baseline (baseline noise level)
 def calculate_average(t, v):
     v_sum = 0
 
@@ -20,18 +51,43 @@ def calculate_average(t, v):
     min_time = time_min_val[0]
     idx = np.abs(t - min_time).argmin()
 
-    if idx > len(t) / 2:
-        idx1 = int(.1 * len(t))
+    if idx > len(t) / 2:            # If minimum voltage is in second half of voltage array, calculates baseline using
+        idx1 = int(.1 * len(t))     # first half of voltage array
         idx2 = int(.35 * len(t))
     else:
-        idx1 = int(.65 * len(t))
-        idx2 = int(.9 * len(t))
+        idx1 = int(.65 * len(t))    # If minimum voltage is in first half of voltage array, calculates baseline using
+        idx2 = int(.9 * len(t))     # second half of voltage array
     for i in range(idx1, idx2):
         v_sum += v[i]
     average = v_sum / (idx2 - idx1)
     return average
 
 
+# Shifts spes so that when t = 0, v = 50% max and baseline = 0
+def subtract_time(file_num, nhdr, data_path, save_path):
+    file_name = 'D1--waveforms--%05d.txt' % file_num
+
+    if os.path.isfile(data_path / file_name):
+        if os.path.isfile(save_path / file_name):
+            pass
+        else:
+            t, v, hdr = rw(data_path / file_name, nhdr)
+            half_max = min(v) / 2
+            differential = np.diff(v)
+            difference_value = np.abs(v - half_max)
+            for i in range(0, len(differential)):
+                if differential[i] > 0:
+                    difference_value[i] = np.inf
+            index = np.argmin(difference_value)
+            half_max_time = t[index]
+            t2 = t - half_max_time
+            avg = calculate_average(t, v)
+            v2 = v - avg
+            ww(t2, v2, save_path / file_name, hdr)
+            print('Length of /d1_shifted/:', len(os.listdir(str(save_path))))
+
+
+# Calculates charge of spe
 def calculate_charge(t, v, r):
     vsum = 0
     idx1 = np.inf
@@ -77,6 +133,7 @@ def calculate_charge(t, v, r):
     return t1, t2, charge
 
 
+# Calculates amplitude of spe (minimum voltage)
 def calculate_amp(t, v):
     avg = calculate_average(t, v)
     min_val = np.amin(v)
@@ -84,6 +141,7 @@ def calculate_amp(t, v):
     return amp
 
 
+# Calculates full width half max (FWHM) of spe
 def calculate_fwhm(t, v):
     half_max = min(v) / 2
     half_max = half_max.item()
@@ -102,6 +160,7 @@ def calculate_fwhm(t, v):
     return half_max_time
 
 
+# Calculates rise time of spe
 def rise_time(t, v, r):
     avg = calculate_average(t, v)
     t1, t2, charge = calculate_charge(t, v, r)
@@ -134,6 +193,7 @@ def rise_time(t, v, r):
     return rise_time1090, rise_time2080
 
 
+# Calculates fall time of spe
 def fall_time(t, v, r):
     avg = calculate_average(t, v)
     t1, t2, charge = calculate_charge(t, v, r)
@@ -166,6 +226,76 @@ def fall_time(t, v, r):
     return fall_time1090, fall_time2080
 
 
+# Calculates 10%, 20%, 80%, and 90% jitter of spe
+def calculate_times(file_name, nhdr, r):
+    if os.path.isfile(file_name):
+        t, v, hdr = rw(file_name, nhdr)
+        avg = calculate_average(t, v)
+        t1, t2, charge = calculate_charge(t, v, r)
+        idx_min_val = np.where(v == min(v))
+        time_min_val = t[idx_min_val]
+        min_time = time_min_val[0]
+
+        val10 = .1 * (min(v) - avg)
+        val20 = 2 * val10
+        val80 = 8 * val10
+        val90 = 9 * val10
+        tvals = np.linspace(t1, min_time, int(2e6))
+        vvals = np.interp(tvals, t, v)
+        difference_value10 = np.abs(vvals - val10)
+        difference_value20 = np.abs(vvals - val20)
+        difference_value80 = np.abs(vvals - val80)
+        difference_value90 = np.abs(vvals - val90)
+        index10 = np.argmin(difference_value10)
+        index20 = np.argmin(difference_value20)
+        index80 = np.argmin(difference_value80)
+        index90 = np.argmin(difference_value90)
+        time10 = tvals[index10]
+        time20 = tvals[index20]
+        time80 = tvals[index80]
+        time90 = tvals[index90]
+
+        return time10, time20, time80, time90
+
+
+# Creates text file with time of beginning of spe, time of end of spe, charge, amplitude, fwhm, 10-90 & 20-80 rise
+# times, 10-90 & 20-80 fall times, and 10%, 20%, 80% & 90% jitter for an spe file
+# This saves a lot of time when running program
+def save_calculations(dest_path, i, t1, t2, charge, amplitude, fwhm, rise1090, rise2080, fall1090, fall2080, time10,
+                      time20, time80, time90):
+    file_name = str(dest_path / 'calculations' / 'D1--waveforms--%05d.txt') % i
+    myfile = open(file_name, 'w')
+    myfile.write('t1,' + str(t1))
+    myfile.write('\nt2,' + str(t2))
+    myfile.write('\ncharge,' + str(charge))
+    myfile.write('\namplitude,' + str(amplitude))
+    myfile.write('\nfwhm,' + str(fwhm))
+    myfile.write('\nrise1090,' + str(rise1090))
+    myfile.write('\nrise2080,' + str(rise2080))
+    myfile.write('\nfall1090,' + str(fall1090))
+    myfile.write('\nfall2080,' + str(fall2080))
+    myfile.write('\ntime10,' + str(time10))
+    myfile.write('\ntime20,' + str(time20))
+    myfile.write('\ntime80,' + str(time80))
+    myfile.write('\ntime90,' + str(time90))
+    myfile.close()
+
+
+# Creates text file with data from an array
+def write_hist_data(array, dest_path, name):
+    array = np.sort(array)
+    file_name = Path(dest_path / 'hist_data' / name)
+
+    myfile = open(file_name, 'w')
+    for item in array:
+        myfile.write(str(item) + '\n')
+    myfile.close()
+
+
+# Calculates time of beginning of spe, time of end of spe, charge, amplitude, fwhm, 10-90 & 20-80 rise times, 10-90 &
+# 20-80 fall times, and 10%, 20%, 80% & 90% jitter for each spe file
+# Creates arrays of time of beginning of spe, time of end of spe, charge, amplitude, fwhm, 10-90 & 20-80 rise times,
+# 10-90 & 20-80 fall times, and 10%, 20%, 80% & 90% jitter
 def make_arrays(save_shift, dest_path, start, end, nhdr, r):
     t1_array = np.array([])
     t2_array = np.array([])
@@ -244,433 +374,67 @@ def make_arrays(save_shift, dest_path, start, end, nhdr, r):
                 time80_array = np.append(time80_array, time80)
                 time90_array = np.append(time90_array, time90)
 
+    t1_array = np.sort(t1_array)
+    t2_array = np.sort(t2_array)
+    charge_array = np.sort(charge_array)
+    amplitude_array = np.sort(amplitude_array)
+    fwhm_array = np.sort(fwhm_array)
+    rise1090_array = np.sort(rise1090_array)
+    rise2080_array = np.sort(rise2080_array)
+    fall1090_array = np.sort(fall1090_array)
+    fall2080_array = np.sort(fall2080_array)
+    time10_array = np.sort(time10_array)
+    time20_array = np.sort(time20_array)
+    time80_array = np.sort(time80_array)
+    time90_array = np.sort(time90_array)
+
     return t1_array, t2_array, charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, \
            fall1090_array, fall2080_array, time10_array, time20_array, time80_array, time90_array
 
 
-def plot_histograms(charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, fall1090_array,
-                    fall2080_array, time10_array, time20_array, time80_array, time90_array, dest_path):
-
-    path = Path(dest_path / 'plots')
+# Creates histogram given an array
+def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename):
 
     def func(x, a, b, c):
         return a * np.exp(-(x - b) ** 2.0 / (2 * c ** 2))
 
-    n_charge, bins_charge, patches_charge = plt.hist(charge_array, 100)
-    bins_charge = np.delete(bins_charge, len(bins_charge) - 1)
-    b_est_charge, c_est_charge = norm.fit(charge_array)
-    guess_charge = [1, float(b_est_charge), float(c_est_charge)]
-    popt_charge, pcov_charge = curve_fit(func, bins_charge, n_charge, p0=guess_charge, maxfev=2000)
-    plt.plot(bins_charge, func(bins_charge, *popt_charge), color='red')
-    mu_charge = float(format(popt_charge[1], '.2e'))
-    sigma_charge = float(format(popt_charge[2], '.2e'))
-    plt.xlabel('Charge (C)')
-    plt.title('Charge of SPE\n mean: ' + str(mu_charge) + ' C, SD: ' + str(sigma_charge) + ' C')
-    plt.savefig(path / 'charge.png', dpi=360)
-    print(*popt_charge)
+    path = Path(dest_path / 'plots')
+    n, bins, patches = plt.hist(array, nbins)
+    bins = np.delete(bins, len(bins) - 1)
+    b_est, c_est = norm.fit(array)
+    guess = [1, float(b_est), float(c_est)]
+    popt, pcov = curve_fit(func, bins, n, p0=guess, maxfev=10000)
+    plt.plot(bins, func(bins, *popt), color='red')
+    mu = float(format(popt[1], '.2e'))
+    sigma = np.abs(float(format(popt[2], '.2e')))
+    plt.xlabel(xaxis + ' (' + units + ')')
+    plt.title(title + ' of SPE\n mean: ' + str(mu) + ' ' + units + ', SD: ' + str(sigma) + ' ' + units)
+    plt.savefig(path / str(filename + '.png'), dpi=360)
     plt.show()
 
-    n_amplitude, bins_amplitude, patches_amplitude = plt.hist(amplitude_array, 100)
-    bins_amplitude = np.delete(bins_amplitude, len(bins_amplitude) - 1)
-    b_est_amplitude, c_est_amplitude = norm.fit(amplitude_array)
-    guess_amplitude = [1, float(b_est_amplitude), float(c_est_amplitude)]
-    popt_amplitude, pcov_amplitude = curve_fit(func, bins_amplitude, n_amplitude, p0=guess_amplitude, maxfev=2000)
-    plt.plot(bins_amplitude, func(bins_amplitude, *popt_amplitude), color='red')
-    mu_amplitude = float(format(popt_amplitude[1], '.2e'))
-    sigma_amplitude = float(format(popt_amplitude[2], '.2e'))
-    plt.xlabel('Amplitude (V)')
-    plt.title('Amplitude of SPE\n mean: ' + str(mu_amplitude) + ' V, SD: ' + str(sigma_amplitude) + ' V')
-    plt.savefig(path / 'amplitude.png', dpi=360)
-    plt.show()
-
-    n_fwhm, bins_fwhm, patches_fwhm = plt.hist(fwhm_array, 100)
-    bins_fwhm = np.delete(bins_fwhm, len(bins_fwhm) - 1)
-    b_est_fwhm, c_est_fwhm = norm.fit(fwhm_array)
-    guess_fwhm = [1, float(b_est_fwhm), float(c_est_fwhm)]
-    popt_fwhm, pcov_fwhm = curve_fit(func, bins_fwhm, n_fwhm, p0=guess_fwhm, maxfev=2000)
-    plt.plot(bins_fwhm, func(bins_fwhm, *popt_fwhm), color='red')
-    mu_fwhm = float(format(popt_fwhm[1], '.2e'))
-    sigma_fwhm = float(format(popt_fwhm[2], '.2e'))
-    plt.xlabel('Time (s)')
-    plt.title('FWHM of SPE\n mean: ' + str(mu_fwhm) + ' s, SD: ' + str(sigma_fwhm) + ' s')
-    plt.savefig(path / 'fwhm.png', dpi=360)
-    print(*popt_fwhm)
-    plt.show()
-
-    n_rise1090, bins_rise1090, patches_rise1090 = plt.hist(rise1090_array, 100)
-    bins_rise1090 = np.delete(bins_rise1090, len(bins_rise1090) - 1)
-    b_est_rise1090, c_est_rise1090 = norm.fit(rise1090_array)
-    guess_rise1090 = [1, float(b_est_rise1090), float(c_est_rise1090)]
-    popt_rise1090, pcov_rise1090 = curve_fit(func, bins_rise1090, n_rise1090, p0=guess_rise1090, maxfev=2000)
-    plt.plot(bins_rise1090, func(bins_rise1090, *popt_rise1090), color='red')
-    mu_rise1090 = float(format(popt_rise1090[1], '.2e'))
-    sigma_rise1090 = float(format(popt_rise1090[2], '.2e'))
-    plt.xlabel('Time (s)')
-    plt.title('10-90 Rise Time of SPE\n mean: ' + str(mu_rise1090) + ' s, SD: ' + str(sigma_rise1090) + ' s')
-    plt.savefig(path / 'rise1090.png', dpi=360)
-    print(*popt_rise1090)
-    plt.show()
-
-    n_rise2080, bins_rise2080, patches_rise2080 = plt.hist(rise2080_array, 100)
-    bins_rise2080 = np.delete(bins_rise2080, len(bins_rise2080) - 1)
-    b_est_rise2080, c_est_rise2080 = norm.fit(rise2080_array)
-    guess_rise2080 = [1, float(b_est_rise2080), float(c_est_rise2080)]
-    popt_rise2080, pcov_rise2080 = curve_fit(func, bins_rise2080, n_rise2080, p0=guess_rise2080, maxfev=2000)
-    plt.plot(bins_rise2080, func(bins_rise2080, *popt_rise2080), color='red')
-    mu_rise2080 = float(format(popt_rise2080[1], '.2e'))
-    sigma_rise2080 = float(format(popt_rise2080[2], '.2e'))
-    plt.xlabel('Time (s)')
-    plt.title('20-80 Rise Time of SPE\n mean: ' + str(mu_rise2080) + ' s, SD: ' + str(sigma_rise2080) + ' s')
-    plt.savefig(path / 'rise2080.png', dpi=360)
-    print(*popt_rise2080)
-    plt.show()
-
-    n_fall1090, bins_fall1090, patches_fall1090 = plt.hist(fall1090_array, 100)
-    bins_fall1090 = np.delete(bins_fall1090, len(bins_fall1090) - 1)
-    b_est_fall1090, c_est_fall1090 = norm.fit(fall1090_array)
-    guess_fall1090 = [1, float(b_est_fall1090), float(c_est_fall1090)]
-    popt_fall1090, pcov_fall1090 = curve_fit(func, bins_fall1090, n_fall1090, p0=guess_fall1090, maxfev=2000)
-    plt.plot(bins_fall1090, func(bins_fall1090, *popt_fall1090), color='red')
-    mu_fall1090 = float(format(popt_fall1090[1], '.2e'))
-    sigma_fall1090 = float(format(popt_fall1090[2], '.2e'))
-    plt.xlabel('Time (s)')
-    plt.title('10-90 Fall Time of SPE\n mean: ' + str(mu_fall1090) + ' s, SD: ' + str(sigma_fall1090) + ' s')
-    plt.savefig(path / 'fall1090.png', dpi=360)
-    print(*popt_fall1090)
-    plt.show()
-
-    n_fall2080, bins_fall2080, patches_fall2080 = plt.hist(fall2080_array, 100)
-    bins_fall2080 = np.delete(bins_fall2080, len(bins_fall2080) - 1)
-    b_est_fall2080, c_est_fall2080 = norm.fit(fall2080_array)
-    guess_fall2080 = [1, float(b_est_fall2080), float(c_est_fall2080)]
-    popt_fall2080, pcov_fall2080 = curve_fit(func, bins_fall2080, n_fall2080, p0=guess_fall2080, maxfev=2000)
-    plt.plot(bins_fall2080, func(bins_fall2080, *popt_fall2080), color='red')
-    mu_fall2080 = float(format(popt_fall2080[1], '.2e'))
-    sigma_fall2080 = float(format(popt_fall2080[2], '.2e'))
-    plt.xlabel('Time (s)')
-    plt.title('20-80 Fall Time of SPE\n mean: ' + str(mu_fall2080) + ' s, SD: ' + str(sigma_fall2080) + ' s')
-    plt.savefig(path / 'fall2080.png', dpi=360)
-    print(*popt_fall2080)
-    plt.show()
-
-    n_time10, bins_time10, patches_time10 = plt.hist(time10_array, 100)
-    bins_time10 = np.delete(bins_time10, len(bins_time10) - 1)
-    b_est_time10, c_est_time10 = norm.fit(time10_array)
-    guess_time10 = [1, float(b_est_time10), float(c_est_time10)]
-    popt_time10, pcov_time10 = curve_fit(func, bins_time10, n_time10, p0=guess_time10, maxfev=2000)
-    plt.plot(bins_time10, func(bins_time10, *popt_time10), color='red')
-    mu_time10 = float(format(popt_time10[1], '.2e'))
-    sigma_time10 = float(format(popt_time10[2], '.2e'))
-    plt.xlabel('Time (s)')
-    plt.title('10% Jitter of SPE\n mean: ' + str(mu_time10) + ' s, SD: ' + str(sigma_time10) + ' s')
-    plt.savefig(path / 'time10.png', dpi=360)
-    print(*popt_time10)
-    plt.show()
-
-    n_time20, bins_time20, patches_time20 = plt.hist(time20_array, 100)
-    bins_time20 = np.delete(bins_time20, len(bins_time20) - 1)
-    b_est_time20, c_est_time20 = norm.fit(time20_array)
-    guess_time20 = [1, float(b_est_time20), float(c_est_time20)]
-    popt_time20, pcov_time20 = curve_fit(func, bins_time20, n_time20, p0=guess_time20, maxfev=2000)
-    plt.plot(bins_time20, func(bins_time20, *popt_time20), color='red')
-    mu_time20 = float(format(popt_time20[1], '.2e'))
-    sigma_time20 = float(format(popt_time20[2], '.2e'))
-    plt.xlabel('Time (s)')
-    plt.title('20% Jitter of SPE\n mean: ' + str(mu_time20) + ' s, SD: ' + str(sigma_time20) + ' s')
-    plt.savefig(path / 'time20.png', dpi=360)
-    print(*popt_time20)
-    plt.show()
-
-    n_time80, bins_time80, patches_time80 = plt.hist(time80_array, 100)
-    bins_time80 = np.delete(bins_time80, len(bins_time80) - 1)
-    b_est_time80, c_est_time80 = norm.fit(time80_array)
-    guess_time80 = [1, float(b_est_time80), float(c_est_time80)]
-    popt_time80, pcov_time80 = curve_fit(func, bins_time80, n_time80, p0=guess_time80, maxfev=2000)
-    plt.plot(bins_time80, func(bins_time80, *popt_time80), color='red')
-    mu_time80 = float(format(popt_time80[1], '.2e'))
-    sigma_time80 = float(format(popt_time80[2], '.2e'))
-    plt.xlabel('Time (s)')
-    plt.title('80% Jitter of SPE\n mean: ' + str(mu_time80) + ' s, SD: ' + str(sigma_time80) + ' s')
-    plt.savefig(path / 'time80.png', dpi=360)
-    print(*popt_time80)
-    plt.show()
-
-    n_time90, bins_time90, patches_time90 = plt.hist(time90_array, 100)
-    bins_time90 = np.delete(bins_time90, len(bins_time90) - 1)
-    b_est_time90, c_est_time90 = norm.fit(time90_array)
-    guess_time90 = [1, float(b_est_time90), float(c_est_time90)]
-    popt_time90, pcov_time90 = curve_fit(func, bins_time90, n_time90, p0=guess_time90, maxfev=2000)
-    plt.plot(bins_time90, func(bins_time90, *popt_time90), color='red')
-    mu_time90 = float(format(popt_time90[1], '.2e'))
-    sigma_time90 = float(format(popt_time90[2], '.2e'))
-    plt.xlabel('Time (s)')
-    plt.title('90% Jitter of SPE\n mean: ' + str(mu_time90) + ' s, SD: ' + str(sigma_time90) + ' s')
-    plt.savefig(path / 'time90.png', dpi=360)
-    print(*popt_time90)
-    plt.show()
-
-    write_hist_data(charge_array, dest_path, 'charge.txt')
-    write_hist_data(amplitude_array, dest_path, 'amplitude.txt')
-    write_hist_data(fwhm_array, dest_path, 'fwhm.txt')
-    write_hist_data(rise1090_array, dest_path, 'rise1090.txt')
-    write_hist_data(rise2080_array, dest_path, 'rise2080.txt')
-    write_hist_data(fall1090_array, dest_path, 'fall1090.txt')
-    write_hist_data(fall2080_array, dest_path, 'fall2080.txt')
-    write_hist_data(time10_array, dest_path, 'time10.txt')
-    write_hist_data(time20_array, dest_path, 'time20.txt')
-    write_hist_data(time80_array, dest_path, 'time80.txt')
-    write_hist_data(time90_array, dest_path, 'time90.txt')
+    write_hist_data(array, dest_path, filename + '.txt')
 
 
-def calculate_times(file_name, nhdr, r):
-    if os.path.isfile(file_name):
-        t, v, hdr = rw(file_name, nhdr)
-        avg = calculate_average(t, v)
-        t1, t2, charge = calculate_charge(t, v, r)
-        idx_min_val = np.where(v == min(v))
-        time_min_val = t[idx_min_val]
-        min_time = time_min_val[0]
+# Removes outliers from an array
+def remove_outliers(array, nbins, nsigma):
 
-        val10 = .1 * (min(v) - avg)
-        val20 = 2 * val10
-        val80 = 8 * val10
-        val90 = 9 * val10
-        tvals = np.linspace(t1, min_time, int(2e6))
-        vvals = np.interp(tvals, t, v)
-        difference_value10 = np.abs(vvals - val10)
-        difference_value20 = np.abs(vvals - val20)
-        difference_value80 = np.abs(vvals - val80)
-        difference_value90 = np.abs(vvals - val90)
-        index10 = np.argmin(difference_value10)
-        index20 = np.argmin(difference_value20)
-        index80 = np.argmin(difference_value80)
-        index90 = np.argmin(difference_value90)
-        time10 = tvals[index10]
-        time20 = tvals[index20]
-        time80 = tvals[index80]
-        time90 = tvals[index90]
+    def func(x, a, b, c):
+        return a * np.exp(-(x - b) ** 2.0 / (2 * c ** 2))
 
-        return time10, time20, time80, time90
+    n, bins, patches = plt.hist(array, nbins)
+    bins = np.delete(bins, len(bins) - 1)
+    b_est, c_est = norm.fit(array)
+    guess = [1, float(b_est), float(c_est)]
+    popt, pcov = curve_fit(func, bins, n, p0=guess, maxfev=2000)
+    mu = float(format(popt[1], '.2e'))
+    sigma = float(format(popt[2], '.2e'))
+    minimum = mu - nsigma * np.abs(sigma)
+    maximum = mu + nsigma * np.abs(sigma)
+    min_diff_val = np.abs(array - minimum)
+    max_diff_val = np.abs(array - maximum)
+    min_idx = np.argmin(min_diff_val)
+    max_idx = np.argmin(max_diff_val)
+    array = array[min_idx:max_idx]
+    plt.close()
 
-
-def remove_outliers(charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, fall1090_array,
-                    fall2080_array, time10_array, time20_array, time80_array, time90_array):
-    charge_array = np.sort(charge_array)
-    charge_med = np.median(charge_array)
-    charge_diff = np.abs(charge_array - charge_med)
-    charge_idx = np.argmin(charge_diff)
-    charge_array1 = charge_array[0:charge_idx]
-    charge_array2 = charge_array[charge_idx:len(charge_array) - 1]
-    charge_q1 = np.median(charge_array1)
-    charge_q3 = np.median(charge_array2)
-    charge_iq_range = charge_q3 - charge_q1
-    charge_outer1 = charge_q1 - (3 * charge_iq_range)
-    charge_outer2 = charge_q3 + (3 * charge_iq_range)
-    charge_diff1 = np.abs(charge_array - charge_outer1)
-    charge_diff2 = np.abs(charge_array - charge_outer2)
-    idx1 = np.argmin(charge_diff1)
-    idx2 = np.argmin(charge_diff2)
-    charge_array = charge_array[idx1:idx2]
-
-    amplitude_array = np.sort(amplitude_array)
-    amplitude_med = np.median(amplitude_array)
-    amplitude_diff = np.abs(amplitude_array - amplitude_med)
-    amplitude_idx = np.argmin(amplitude_diff)
-    amplitude_array1 = amplitude_array[0:amplitude_idx]
-    amplitude_array2 = amplitude_array[amplitude_idx:len(amplitude_array) - 1]
-    amplitude_q1 = np.median(amplitude_array1)
-    amplitude_q3 = np.median(amplitude_array2)
-    amplitude_iq_range = amplitude_q3 - amplitude_q1
-    amplitude_outer1 = amplitude_q1 - (3 * amplitude_iq_range)
-    amplitude_outer2 = amplitude_q3 + (3 * amplitude_iq_range)
-    amplitude_diff1 = np.abs(amplitude_array - amplitude_outer1)
-    amplitude_diff2 = np.abs(amplitude_array - amplitude_outer2)
-    idx1 = np.argmin(amplitude_diff1)
-    idx2 = np.argmin(amplitude_diff2)
-    amplitude_array = amplitude_array[idx1:idx2]
-
-    fwhm_array = np.sort(fwhm_array)
-    fwhm_med = np.median(fwhm_array)
-    fwhm_diff = np.abs(fwhm_array - fwhm_med)
-    fwhm_idx = np.argmin(fwhm_diff)
-    fwhm_array1 = fwhm_array[0:fwhm_idx]
-    fwhm_array2 = fwhm_array[fwhm_idx:len(fwhm_array) - 1]
-    fwhm_q1 = np.median(fwhm_array1)
-    fwhm_q3 = np.median(fwhm_array2)
-    fwhm_iq_range = fwhm_q3 - fwhm_q1
-    fwhm_outer1 = fwhm_q1 - (3 * fwhm_iq_range)
-    fwhm_outer2 = fwhm_q3 + (3 * fwhm_iq_range)
-    fwhm_diff1 = np.abs(fwhm_array - fwhm_outer1)
-    fwhm_diff2 = np.abs(fwhm_array - fwhm_outer2)
-    idx1 = np.argmin(fwhm_diff1)
-    idx2 = np.argmin(fwhm_diff2)
-    fwhm_array = fwhm_array[idx1:idx2]
-
-    rise1090_array = np.sort(rise1090_array)
-    rise1090_med = np.median(rise1090_array)
-    rise1090_diff = np.abs(rise1090_array - rise1090_med)
-    rise1090_idx = np.argmin(rise1090_diff)
-    rise1090_array1 = rise1090_array[0:rise1090_idx]
-    rise1090_array2 = rise1090_array[rise1090_idx:len(rise1090_array) - 1]
-    rise1090_q1 = np.median(rise1090_array1)
-    rise1090_q3 = np.median(rise1090_array2)
-    rise1090_iq_range = rise1090_q3 - rise1090_q1
-    rise1090_outer1 = rise1090_q1 - (3 * rise1090_iq_range)
-    rise1090_outer2 = rise1090_q3 + (3 * rise1090_iq_range)
-    rise1090_diff1 = np.abs(rise1090_array - rise1090_outer1)
-    rise1090_diff2 = np.abs(rise1090_array - rise1090_outer2)
-    idx1 = np.argmin(rise1090_diff1)
-    idx2 = np.argmin(rise1090_diff2)
-    rise1090_array = rise1090_array[idx1:idx2]
-
-    rise2080_array = np.sort(rise2080_array)
-    rise2080_med = np.median(rise2080_array)
-    rise2080_diff = np.abs(rise2080_array - rise2080_med)
-    rise2080_idx = np.argmin(rise2080_diff)
-    rise2080_array1 = rise2080_array[0:rise2080_idx]
-    rise2080_array2 = rise2080_array[rise2080_idx:len(rise2080_array) - 1]
-    rise2080_q1 = np.median(rise2080_array1)
-    rise2080_q3 = np.median(rise2080_array2)
-    rise2080_iq_range = rise2080_q3 - rise2080_q1
-    rise2080_outer1 = rise2080_q1 - (3 * rise2080_iq_range)
-    rise2080_outer2 = rise2080_q3 + (3 * rise2080_iq_range)
-    rise2080_diff1 = np.abs(rise2080_array - rise2080_outer1)
-    rise2080_diff2 = np.abs(rise2080_array - rise2080_outer2)
-    idx1 = np.argmin(rise2080_diff1)
-    idx2 = np.argmin(rise2080_diff2)
-    rise2080_array = rise2080_array[idx1:idx2]
-
-    fall1090_array = np.sort(fall1090_array)
-    fall1090_med = np.median(fall1090_array)
-    fall1090_diff = np.abs(fall1090_array - fall1090_med)
-    fall1090_idx = np.argmin(fall1090_diff)
-    fall1090_array1 = fall1090_array[0:fall1090_idx]
-    fall1090_array2 = fall1090_array[fall1090_idx:len(fall1090_array) - 1]
-    fall1090_q1 = np.median(fall1090_array1)
-    fall1090_q3 = np.median(fall1090_array2)
-    fall1090_iq_range = fall1090_q3 - fall1090_q1
-    fall1090_outer1 = fall1090_q1 - (3 * fall1090_iq_range)
-    fall1090_outer2 = fall1090_q3 + (3 * fall1090_iq_range)
-    fall1090_diff1 = np.abs(fall1090_array - fall1090_outer1)
-    fall1090_diff2 = np.abs(fall1090_array - fall1090_outer2)
-    idx1 = np.argmin(fall1090_diff1)
-    idx2 = np.argmin(fall1090_diff2)
-    fall1090_array = fall1090_array[idx1:idx2]
-
-    fall2080_array = np.sort(fall2080_array)
-    fall2080_med = np.median(fall2080_array)
-    fall2080_diff = np.abs(fall2080_array - fall2080_med)
-    fall2080_idx = np.argmin(fall2080_diff)
-    fall2080_array1 = fall2080_array[0:fall2080_idx]
-    fall2080_array2 = fall2080_array[fall2080_idx:len(fall2080_array) - 1]
-    fall2080_q1 = np.median(fall2080_array1)
-    fall2080_q3 = np.median(fall2080_array2)
-    fall2080_iq_range = fall2080_q3 - fall2080_q1
-    fall2080_outer1 = fall2080_q1 - (3 * fall2080_iq_range)
-    fall2080_outer2 = fall2080_q3 + (3 * fall2080_iq_range)
-    fall2080_diff1 = np.abs(fall2080_array - fall2080_outer1)
-    fall2080_diff2 = np.abs(fall2080_array - fall2080_outer2)
-    idx1 = np.argmin(fall2080_diff1)
-    idx2 = np.argmin(fall2080_diff2)
-    fall2080_array = fall2080_array[idx1:idx2]
-
-    time10_array = np.sort(time10_array)
-    time10_med = np.median(time10_array)
-    time10_diff = np.abs(time10_array - time10_med)
-    time10_idx = np.argmin(time10_diff)
-    time10_array1 = time10_array[0:time10_idx]
-    time10_array2 = time10_array[time10_idx:len(time10_array) - 1]
-    time10_q1 = np.median(time10_array1)
-    time10_q3 = np.median(time10_array2)
-    time10_iq_range = time10_q3 - time10_q1
-    time10_outer1 = time10_q1 - (3 * time10_iq_range)
-    time10_outer2 = time10_q3 + (3 * time10_iq_range)
-    time10_diff1 = np.abs(time10_array - time10_outer1)
-    time10_diff2 = np.abs(time10_array - time10_outer2)
-    idx1 = np.argmin(time10_diff1)
-    idx2 = np.argmin(time10_diff2)
-    time10_array = time10_array[idx1:idx2]
-
-    time20_array = np.sort(time20_array)
-    time20_med = np.median(time20_array)
-    time20_diff = np.abs(time20_array - time20_med)
-    time20_idx = np.argmin(time20_diff)
-    time20_array1 = time20_array[0:time20_idx]
-    time20_array2 = time20_array[time20_idx:len(time20_array) - 1]
-    time20_q1 = np.median(time20_array1)
-    time20_q3 = np.median(time20_array2)
-    time20_iq_range = time20_q3 - time20_q1
-    time20_outer1 = time20_q1 - (3 * time20_iq_range)
-    time20_outer2 = time20_q3 + (3 * time20_iq_range)
-    time20_diff1 = np.abs(time20_array - time20_outer1)
-    time20_diff2 = np.abs(time20_array - time20_outer2)
-    idx1 = np.argmin(time20_diff1)
-    idx2 = np.argmin(time20_diff2)
-    time20_array = time20_array[idx1:idx2]
-
-    time80_array = np.sort(time80_array)
-    time80_med = np.median(time80_array)
-    time80_diff = np.abs(time80_array - time80_med)
-    time80_idx = np.argmin(time80_diff)
-    time80_array1 = time80_array[0:time80_idx]
-    time80_array2 = time80_array[time80_idx:len(time80_array) - 1]
-    time80_q1 = np.median(time80_array1)
-    time80_q3 = np.median(time80_array2)
-    time80_iq_range = time80_q3 - time80_q1
-    time80_outer1 = time80_q1 - (3 * time80_iq_range)
-    time80_outer2 = time80_q3 + (3 * time80_iq_range)
-    time80_diff1 = np.abs(time80_array - time80_outer1)
-    time80_diff2 = np.abs(time80_array - time80_outer2)
-    idx1 = np.argmin(time80_diff1)
-    idx2 = np.argmin(time80_diff2)
-    time80_array = time80_array[idx1:idx2]
-
-    time90_array = np.sort(time90_array)
-    time90_med = np.median(time90_array)
-    time90_diff = np.abs(time90_array - time90_med)
-    time90_idx = np.argmin(time90_diff)
-    time90_array1 = time90_array[0:time90_idx]
-    time90_array2 = time90_array[time90_idx:len(time90_array) - 1]
-    time90_q1 = np.median(time90_array1)
-    time90_q3 = np.median(time90_array2)
-    time90_iq_range = time90_q3 - time90_q1
-    time90_outer1 = time90_q1 - (3 * time90_iq_range)
-    time90_outer2 = time90_q3 + (3 * time90_iq_range)
-    time90_diff1 = np.abs(time90_array - time90_outer1)
-    time90_diff2 = np.abs(time90_array - time90_outer2)
-    idx1 = np.argmin(time90_diff1)
-    idx2 = np.argmin(time90_diff2)
-    time90_array = time90_array[idx1:idx2]
-
-    return charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, fall1090_array, fall2080_array, \
-           time10_array, time20_array, time80_array, time90_array
-
-
-def save_calculations(dest_path, i, t1, t2, charge, amplitude, fwhm, rise1090, rise2080, fall1090, fall2080, time10,
-                      time20, time80, time90):
-    file_name = str(dest_path / 'calculations' / 'D1--waveforms--%05d.txt') % i
-    myfile = open(file_name, 'w')
-    myfile.write('t1,' + str(t1))
-    myfile.write('\nt2,' + str(t2))
-    myfile.write('\ncharge,' + str(charge))
-    myfile.write('\namplitude,' + str(amplitude))
-    myfile.write('\nfwhm,' + str(fwhm))
-    myfile.write('\nrise1090,' + str(rise1090))
-    myfile.write('\nrise2080,' + str(rise2080))
-    myfile.write('\nfall1090,' + str(fall1090))
-    myfile.write('\nfall2080,' + str(fall2080))
-    myfile.write('\ntime10,' + str(time10))
-    myfile.write('\ntime20,' + str(time20))
-    myfile.write('\ntime80,' + str(time80))
-    myfile.write('\ntime90,' + str(time90))
-    myfile.close()
-
-
-def write_hist_data(_array, dest_path, name):
-    _array = np.sort(_array)
-    file_name = Path(dest_path / 'hist_data' / name)
-
-    myfile = open(file_name, 'w')
-    for item in _array:
-        myfile.write(str(item) + '\n')
-    myfile.close()
+    return array
