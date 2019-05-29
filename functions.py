@@ -87,7 +87,7 @@ def subtract_time(file_num, nhdr, data_path, save_path):
             print('Length of /d1_shifted/:', len(os.listdir(str(save_path))))
 
 
-# Returns time when spe waveform begins, time when spe waveform ends, and charge of spe
+# Returns time when spe waveform begins, time when spe waveform ends, and charge of spe (charge as a positive value)
 def calculate_charge(t, v, r):
     vsum = 0
     idx1 = np.inf
@@ -105,8 +105,8 @@ def calculate_charge(t, v, r):
     vvals1 = np.interp(tvals1, t, v)
     vvals2 = np.interp(tvals2, t, v)
     vvals1_flip = np.flip(vvals1)
-    difference_value1 = vvals1_flip - (0.1 * min_val)
-    difference_value2 = vvals2 - (0.1 * min_val)
+    difference_value1 = vvals1_flip - (0.05 * min_val)
+    difference_value2 = vvals2 - (0.05 * min_val)
 
     for i in range(0, len(difference_value1) - 1):
         if difference_value1[i] >= 0:
@@ -127,13 +127,13 @@ def calculate_charge(t, v, r):
     index2 = np.argmin(diff_val2)
     t1 = tvals[index1]
     t2 = tvals[index2]
-    for i in range(index1.item(), index2.item()):
+    for i in range(len(tvals)):
         vsum += vvals[i]
-    charge = -1 * (t2 - t1) * vsum / ((index2 - index1) * r)
+    charge = -1 * (tvals[len(tvals) - 1]) * vsum / (len(tvals) * r)
     return t1, t2, charge
 
 
-# Returns the amplitude of spe (minimum voltage)
+# Returns the amplitude of spe as a positive value (minimum voltage)
 def calculate_amp(t, v):
     avg = calculate_average(t, v)
     min_val = np.amin(v)
@@ -256,9 +256,8 @@ def calculate_times(t, v, r):
     return time10, time20, time80, time90
 
 
-# wCreates text file with time of beginning of spe, time of end of spe, charge, amplitude, fwhm, 10-90 & 20-80 rise
+# Creates text file with time of beginning of spe, time of end of spe, charge, amplitude, fwhm, 10-90 & 20-80 rise
 # times, 10-90 & 20-80 fall times, and 10%, 20%, 80% & 90% jitter for an spe file
-# This saves a lot of time when running program
 def save_calculations(dest_path, i, t1, t2, charge, amplitude, fwhm, rise1090, rise2080, fall1090, fall2080, time10,
                       time20, time80, time90):
     file_name = str(dest_path / 'calculations' / 'D1--waveforms--%05d.txt') % i

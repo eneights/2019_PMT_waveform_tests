@@ -2,15 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="97772641-92e1-459f-b04b-98837b745efe" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.txt" beforeDir="false" afterPath="$PROJECT_DIR$/README.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/functions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/info_file.py" beforeDir="false" afterPath="$PROJECT_DIR$/info_file.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/p1.py" beforeDir="false" afterPath="$PROJECT_DIR$/p1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plot_fft.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plot_fft_copy.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/show_waveform.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/waveform_filter.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/p1_sort.py" beforeDir="false" afterPath="$PROJECT_DIR$/p1_sort.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -28,27 +21,27 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="42" />
+          <entry key="py" value="45" />
           <entry key="txt" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="PLAIN_TEXT" value="3" />
-          <entry key="Python" value="42" />
+          <entry key="Python" value="45" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="1" />
-          <entry key="py" value="15284" />
+          <entry key="py" value="16572" />
           <entry key="txt" value="50" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="51" />
-          <entry key="Python" value="15284" />
+          <entry key="Python" value="16572" />
         </counts>
       </usages-collector>
     </session>
@@ -58,8 +51,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/functions.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="6" column="28" lean-forward="true" selection-start-line="6" selection-start-column="28" selection-end-line="6" selection-end-column="28" />
+            <state relative-caret-position="362">
+              <caret line="128" column="22" lean-forward="true" selection-start-line="128" selection-start-column="22" selection-end-line="128" selection-end-column="22" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -70,19 +63,44 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/average_waveform.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
+            <state relative-caret-position="201">
               <caret line="15" column="26" lean-forward="true" selection-start-line="15" selection-start-column="26" selection-end-line="15" selection-end-column="26" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/p1_sort.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="483">
-              <caret line="52" column="14" lean-forward="true" selection-start-line="52" selection-start-column="14" selection-end-line="52" selection-end-column="14" />
+            <state relative-caret-position="1425">
+              <caret line="95" lean-forward="true" selection-start-line="95" selection-end-line="95" />
               <folding>
                 <element signature="e#0#24#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/p1.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="45">
+              <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
+              <folding>
+                <element signature="e#0#27#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/p1b.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="351">
+              <caret line="74" column="55" selection-start-line="74" selection-start-column="55" selection-end-line="74" selection-end-column="55" />
+              <folding>
+                <marker date="1559148009190" expanded="true" signature="486:487" ph="..." />
+                <marker date="1559148009190" expanded="true" signature="486:491" ph="..." />
               </folding>
             </state>
           </provider>
@@ -130,11 +148,12 @@
         <option value="$PROJECT_DIR$/show_waveform.py" />
         <option value="$PROJECT_DIR$/average_waveform.py" />
         <option value="$PROJECT_DIR$/plot_waveform.py" />
-        <option value="$PROJECT_DIR$/p1_sort.py" />
         <option value="$PROJECT_DIR$/plot_fft.py" />
         <option value="$PROJECT_DIR$/p1.py" />
-        <option value="$PROJECT_DIR$/functions.py" />
         <option value="$PROJECT_DIR$/info_file.py" />
+        <option value="$PROJECT_DIR$/p1_sort.py" />
+        <option value="$PROJECT_DIR$/functions.py" />
+        <option value="$PROJECT_DIR$/p1b.py" />
       </list>
     </option>
   </component>
@@ -446,33 +465,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/functions.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" column="28" lean-forward="true" selection-start-line="6" selection-start-column="28" selection-end-line="6" selection-end-column="28" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/average_waveform.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="15" column="26" lean-forward="true" selection-start-line="15" selection-start-column="26" selection-end-line="15" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/p1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
-          <folding>
-            <element signature="e#0#27#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/plot_waveform.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="420">
@@ -489,12 +481,50 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/average_waveform.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="201">
+          <caret line="15" column="26" lean-forward="true" selection-start-line="15" selection-start-column="26" selection-end-line="15" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/p1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
+          <folding>
+            <element signature="e#0#27#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/p1_sort.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="483">
-          <caret line="52" column="14" lean-forward="true" selection-start-line="52" selection-start-column="14" selection-end-line="52" selection-end-column="14" />
+        <state relative-caret-position="1425">
+          <caret line="95" lean-forward="true" selection-start-line="95" selection-end-line="95" />
           <folding>
             <element signature="e#0#24#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/functions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="362">
+          <caret line="128" column="22" lean-forward="true" selection-start-line="128" selection-start-column="22" selection-end-line="128" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/p1b.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="351">
+          <caret line="74" column="55" selection-start-line="74" selection-start-column="55" selection-end-line="74" selection-end-column="55" />
+          <folding>
+            <marker date="1559148009190" expanded="true" signature="486:487" ph="..." />
+            <marker date="1559148009190" expanded="true" signature="486:491" ph="..." />
           </folding>
         </state>
       </provider>
