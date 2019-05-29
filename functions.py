@@ -293,7 +293,7 @@ def write_hist_data(array, dest_path, name):
 # fall times, and 10%, 20%, 80% & 90% jitter for each spe file
 # Returns arrays of beginning & end times of spe waveform, charge, amplitude, fwhm, 10-90 & 20-80 rise times, 10-90 &
 # 20-80 fall times, and 10%, 20%, 80% & 90% jitter
-def make_arrays(save_shift, dest_path, start, end, nhdr, r):
+def make_arrays(save_shift, dest_path, data_sort, start, end, nhdr, r):
     t1_array = np.array([])
     t2_array = np.array([])
     charge_array = np.array([])
@@ -333,19 +333,30 @@ def make_arrays(save_shift, dest_path, start, end, nhdr, r):
                 time20 = file_array[10]
                 time80 = file_array[11]
                 time90 = file_array[12]
-                t1_array = np.append(t1_array, t1)
-                t2_array = np.append(t2_array, t2)
-                charge_array = np.append(charge_array, charge)
-                amplitude_array = np.append(amplitude_array, amplitude)
-                fwhm_array = np.append(fwhm_array, fwhm)
-                rise1090_array = np.append(rise1090_array, rise1090)
-                rise2080_array = np.append(rise2080_array, rise2080)
-                fall1090_array = np.append(fall1090_array, fall1090)
-                fall2080_array = np.append(fall2080_array, fall2080)
-                time10_array = np.append(time10_array, time10)
-                time20_array = np.append(time20_array, time20)
-                time80_array = np.append(time80_array, time80)
-                time90_array = np.append(time90_array, time90)
+                if (charge <= 0 or amplitude <= 0 or fwhm <= 0 or rise1090 <= 0 or rise2080 <= 0 or fall1090 <= 0 or
+                        fall2080 <= 0 or time10 >= 0 or time20 >= 0 or time80 <= 0 or time90 <= 0):
+                    raw_file = str(data_sort / 'C2--waveforms--%05d.txt') % i
+                    save_file = str(dest_path / 'not_spe' / 'D1--not_spe--%05d.txt') % i
+                    t, v, hdr = rw(raw_file, nhdr)
+                    ww(t, v, save_file, hdr)
+                    print('Removing file #%05d' % i)
+                    os.remove(str(save_shift / 'D1--waveforms--%05d.txt') % i)
+                    os.remove(str(dest_path / 'd1_raw' / 'D1--waveforms--%05d.txt') % i)
+                    os.remove(str(dest_path / 'calculations' / 'D1--waveforms--%05d.txt') % i)
+                else:
+                    t1_array = np.append(t1_array, t1)
+                    t2_array = np.append(t2_array, t2)
+                    charge_array = np.append(charge_array, charge)
+                    amplitude_array = np.append(amplitude_array, amplitude)
+                    fwhm_array = np.append(fwhm_array, fwhm)
+                    rise1090_array = np.append(rise1090_array, rise1090)
+                    rise2080_array = np.append(rise2080_array, rise2080)
+                    fall1090_array = np.append(fall1090_array, fall1090)
+                    fall2080_array = np.append(fall2080_array, fall2080)
+                    time10_array = np.append(time10_array, time10)
+                    time20_array = np.append(time20_array, time20)
+                    time80_array = np.append(time80_array, time80)
+                    time90_array = np.append(time90_array, time90)
             else:
                 print("Calculating shifted file #%05d" % i)
                 t, v, hdr = rw(file_name1, nhdr)
@@ -355,21 +366,31 @@ def make_arrays(save_shift, dest_path, start, end, nhdr, r):
                 rise1090, rise2080 = rise_time(t, v, r)
                 fall1090, fall2080 = fall_time(t, v, r)
                 time10, time20, time80, time90 = calculate_times(t, v, r)
-                save_calculations(dest_path, i, t1, t2, charge, amplitude, fwhm, rise1090, rise2080, fall1090, fall2080,
-                                  time10, time20, time80, time90)
-                t1_array = np.append(t1_array, t1)
-                t2_array = np.append(t2_array, t2)
-                charge_array = np.append(charge_array, charge)
-                amplitude_array = np.append(amplitude_array, amplitude)
-                fwhm_array = np.append(fwhm_array, fwhm)
-                rise1090_array = np.append(rise1090_array, rise1090)
-                rise2080_array = np.append(rise2080_array, rise2080)
-                fall1090_array = np.append(fall1090_array, fall1090)
-                fall2080_array = np.append(fall2080_array, fall2080)
-                time10_array = np.append(time10_array, time10)
-                time20_array = np.append(time20_array, time20)
-                time80_array = np.append(time80_array, time80)
-                time90_array = np.append(time90_array, time90)
+                if (charge <= 0 or amplitude <= 0 or fwhm <= 0 or rise1090 <= 0 or rise2080 <= 0 or fall1090 <= 0 or
+                        fall2080 <= 0 or time10 >= 0 or time20 >= 0 or time80 <= 0 or time90 <= 0):
+                    raw_file = str(data_sort / 'C2--waveforms--%05d.txt') % i
+                    save_file = str(dest_path / 'not_spe' / 'D1--not_spe--%05d.txt') % i
+                    t, v, hdr = rw(raw_file, nhdr)
+                    ww(t, v, save_file, hdr)
+                    print('Removing file #%05d' % i)
+                    os.remove(str(save_shift / 'D1--waveforms--%05d.txt') % i)
+                    os.remove(str(dest_path / 'd1_raw' / 'D1--waveforms--%05d.txt') % i)
+                else:
+                    save_calculations(dest_path, i, t1, t2, charge, amplitude, fwhm, rise1090, rise2080, fall1090,
+                                      fall2080, time10, time20, time80, time90)
+                    t1_array = np.append(t1_array, t1)
+                    t2_array = np.append(t2_array, t2)
+                    charge_array = np.append(charge_array, charge)
+                    amplitude_array = np.append(amplitude_array, amplitude)
+                    fwhm_array = np.append(fwhm_array, fwhm)
+                    rise1090_array = np.append(rise1090_array, rise1090)
+                    rise2080_array = np.append(rise2080_array, rise2080)
+                    fall1090_array = np.append(fall1090_array, fall1090)
+                    fall2080_array = np.append(fall2080_array, fall2080)
+                    time10_array = np.append(time10_array, time10)
+                    time20_array = np.append(time20_array, time20)
+                    time80_array = np.append(time80_array, time80)
+                    time90_array = np.append(time90_array, time90)
 
     t1_array = np.sort(t1_array)
     t2_array = np.sort(t2_array)
@@ -386,7 +407,7 @@ def make_arrays(save_shift, dest_path, start, end, nhdr, r):
     time90_array = np.sort(time90_array)
 
     return t1_array, t2_array, charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, \
-           fall1090_array, fall2080_array, time10_array, time20_array, time80_array, time90_array
+        fall1090_array, fall2080_array, time10_array, time20_array, time80_array, time90_array
 
 
 # Creates histogram given an array

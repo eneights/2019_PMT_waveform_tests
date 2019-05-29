@@ -28,7 +28,8 @@ def p1(start, end, date, date_time, filter_band, nhdr, fsps, fc, numtaps, baseli
     # 20-80 rise times, 10-90 & 20-80 fall times, and 10%, 20%, 80% & 90% jitter
     t1_array, t2_array, charge_array, amplitude_array, fwhm_array, rise1090_array, rise2080_array, fall1090_array, \
         fall2080_array, time10_array, time20_array, time80_array, time90_array = make_arrays(save_shift, dest_path,
-                                                                                             start, end, nhdr, r)
+                                                                                             data_sort, start, end,
+                                                                                             nhdr, r)
 
     # Plots histograms of charge, amplitude, FWHM, 10-90 & 20-80 rise times, 10-90 & 20-80 fall times, and 10%, 20%, 80%
     # & 90% jitter (including outliers)
