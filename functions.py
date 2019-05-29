@@ -411,7 +411,7 @@ def make_arrays(save_shift, dest_path, data_sort, start, end, nhdr, r):
 
 
 # Creates histogram given an array
-def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename):
+def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename, range_min, range_max):
 
     def func(x, a, b, c):
         return a * np.exp(-(x - b) ** 2.0 / (2 * c ** 2))
@@ -419,10 +419,14 @@ def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename):
     path = Path(dest_path / 'plots')
     n, bins, patches = plt.hist(array, nbins)
     bins = np.delete(bins, len(bins) - 1)
+    idx_min = np.argmin(n == np.abs(bins - range_min))
+    idx_max = np.argmin(n == np.abs(bins - range_max))
+    n_range = n[idx_min:idx_max + 1]
+    bins_range = bins[idx_min:idx_max + 1]
     b_est, c_est = norm.fit(array)
     guess = [1, float(b_est), float(c_est)]
-    popt, pcov = curve_fit(func, bins, n, p0=guess, maxfev=10000)
-    plt.plot(bins, func(bins, *popt), color='red')
+    popt, pcov = curve_fit(func, bins_range, n_range, p0=guess, maxfev=10000)
+    plt.plot(bins_range, func(bins_range, *popt), color='red')
     mu = float(format(popt[1], '.2e'))
     sigma = np.abs(float(format(popt[2], '.2e')))
     plt.xlabel(xaxis + ' (' + units + ')')
