@@ -33,17 +33,17 @@ def p1(start, end, date, date_time, filter_band, nhdr, fsps, fc, numtaps, baseli
 
     # Plots histograms of charge, amplitude, FWHM, 10-90 & 20-80 rise times, 10-90 & 20-80 fall times, and 10%, 20%, 80%
     # & 90% jitter
-    plot_histogram(charge_array, dest_path, 100, 'Charge', 'Charge', 'C', 'charge', 8e-13, 1.75e-12)
-    plot_histogram(amplitude_array, dest_path, 100, 'Voltage', 'Amplitude', 'V', 'amplitude', 0.004, 0.009)
-    plot_histogram(fwhm_array, dest_path, 100, 'Time', 'FWHM', 's', 'fwhm', 7.1e-9, 8.2e-9)
-    plot_histogram(rise1090_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rise1090', 2.5e-9, 3.5e-9)
-    plot_histogram(rise2080_array, dest_path, 100, 'Time', '20-80 Rise Time', 's', 'rise2080', 1.8e-9, 2.3e-9)
-    plot_histogram(fall1090_array, dest_path, 100, 'Time', '10-90 Fall Time', 's', 'fall1090', 1.5e-8, 1.9e-8)
-    plot_histogram(fall2080_array, dest_path, 100, 'Time', '20-80 Fall Time', 's', 'fall2080', 9.5e-9, 1.2e-8)
-    plot_histogram(time10_array, dest_path, 100, 'Time', '10% Jitter', 's', 'time10', -2e-9, -1e-9)
-    plot_histogram(time20_array, dest_path, 100, 'Time', '20% Jitter', 's', 'time20', -1.3e-9, -5e-10)
-    plot_histogram(time80_array, dest_path, 100, 'Time', '80% Jitter', 's', 'time80', 8e-10, 11e-10)
-    plot_histogram(time90_array, dest_path, 100, 'Time', '90% Jitter', 's', 'time90', 11e-10, 16e-10)
+    plot_histogram(charge_array, dest_path, 100, 'Charge', 'Charge', 'C', 'charge')
+    plot_histogram(amplitude_array, dest_path, 100, 'Voltage', 'Amplitude', 'V', 'amplitude')
+    plot_histogram(fwhm_array, dest_path, 100, 'Time', 'FWHM', 's', 'fwhm')
+    plot_histogram(rise1090_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rise1090')
+    plot_histogram(rise2080_array, dest_path, 100, 'Time', '20-80 Rise Time', 's', 'rise2080')
+    plot_histogram(fall1090_array, dest_path, 100, 'Time', '10-90 Fall Time', 's', 'fall1090')
+    plot_histogram(fall2080_array, dest_path, 100, 'Time', '20-80 Fall Time', 's', 'fall2080')
+    plot_histogram(time10_array, dest_path, 100, 'Time', '10% Jitter', 's', 'time10')
+    plot_histogram(time20_array, dest_path, 100, 'Time', '20% Jitter', 's', 'time20')
+    plot_histogram(time80_array, dest_path, 100, 'Time', '80% Jitter', 's', 'time80')
+    plot_histogram(time90_array, dest_path, 100, 'Time', '90% Jitter', 's', 'time90')
 
     # Creates d1 info file
     info_file(date_time, data_sort, dest_path, pmt_hv, gain, offset, trig_delay, amp, fsps, band, nfilter, r)

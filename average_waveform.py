@@ -11,31 +11,38 @@ def average_waveform(start, end, dest_path, nhdr):
     for i in range(start, end + 1):
         file_name = 'D1--waveforms--%05d.txt' % i
         if os.path.isfile(data_file / file_name):
-            print('File #', i)
-            t, v, hdr = rw(data_file / file_name, nhdr)
-            v = v / min(v)
-            idx = np.where(t == 0)
+            print('Reading file #', i)
+            t, v, hdr = rw(data_file / file_name, nhdr)     # Reads a waveform file
+            v = v / min(v)                                  # Normalizes voltages
+            idx = np.where(t == 0)                          # Finds index of t = 0 point
             idx = int(idx[0])
-            t = np.roll(t, -idx)
-            v = np.roll(v, -idx)
-            idx2 = np.where(t == min(t))
+            t = np.roll(t, -idx)                            # Rolls time array so that t = 0 point is at index 0
+            v = np.roll(v, -idx)                            # Rolls voltage array so that 50% max point is at index 0
+            idx2 = np.where(t == min(t))                    # Finds index of point of minimum t
             idx2 = int(idx2[0])
-            idx3 = np.where(t == max(t))
+            idx3 = np.where(t == max(t))                    # Finds index of point of maximum t
             idx3 = int(idx3[0])
+            # Only averages waveform files that have enough points before t = 0 & after the spe
             if idx2 <= 3430:
-                t = np.concatenate((t[:idx3], t[3431:]))
-                v = np.concatenate((v[:idx3], v[3431:]))
+                # Removes points between point of maximum t & chosen minimum t in time & voltage arrays
+                t = np.concatenate((t[:idx3], t[3430:]))
+                v = np.concatenate((v[:idx3], v[3430:]))
+                # Rolls time & voltage arrays so that point of chosen minimum t is at index 0
                 t = np.roll(t, -idx3)
                 v = np.roll(v, -idx3)
                 if len(t) >= 3920:
+                    # Removes points after chosen point of maximum t in time & voltage arrays
                     t = t[:3920]
                     v = v[:3920]
+                    # Sums time & voltage arrays
                     tsum += t
                     vsum += v
                     n += 1
+    # Finds average time & voltage arrays
     t_avg = tsum / n
     v_avg = vsum / n
 
+    # Plots average waveform & saves image
     plt.plot(t_avg, v_avg)
     plt.xlabel('Time (s)')
     plt.ylabel('Normalized Voltage')
@@ -43,6 +50,7 @@ def average_waveform(start, end, dest_path, nhdr):
     plt.savefig(save_file / 'avg_waveform.png', dpi=360)
     plt.show()
 
+    # Saves average waveform data
     file_name = dest_path / 'hist_data' / 'avg_waveform.txt'
     hdr = 'Average Waveform\n\n\n\nTime,Ampl'
     ww(t_avg, v_avg, file_name, hdr)

@@ -12,48 +12,48 @@ def p1_sort(file_num, nhdr, fsps, fc, numtaps, data_path, save_path, baseline):
     spe_not_there = str(save_path / 'd1/not_spe/D1--not_spe--%05d.txt') % file_num
     spe_unsure = str(save_path / 'd1/unsure_if_spe/D1--unsure--%05d.txt') % file_num
 
-    if os.path.isfile(spe_name):
+    if os.path.isfile(spe_name):    # If file has already been sorted, does not sort it again
         pass
-    elif os.path.isfile(spe_not_there):
+    elif os.path.isfile(spe_not_there):     # If file has already been sorted, does not sort it again
         pass
-    elif os.path.isfile(spe_unsure):
+    elif os.path.isfile(spe_unsure):        # If file has already been sorted, does not sort it again
         pass
-    else:
-        t, v, hdr = rw(file_name, nhdr)
+    else:                           # If file has not been sorted, sorts it
+        t, v, hdr = rw(file_name, nhdr)     # Reads waveform file
 
-        v1 = signal.filtfilt(lowpass, 1.0, v - baseline)
-        v2 = v1[numtaps:len(v1)-1]
-        t2 = t[numtaps:len(v1)-1]
+        v1 = signal.filtfilt(lowpass, 1.0, v - baseline)        # Applies lowpass filter to voltage array
+        v2 = v1[numtaps:len(v1)-1]          # Splices voltage array
+        t2 = t[numtaps:len(v1)-1]           # Splices time array
 
-        v_flip = -1 * v2
-        peaks, _ = signal.find_peaks(v_flip, 0.001)
-        v_peaks = v2[peaks]
-        t_peaks = t2[peaks]
-        check_peaks, _ = signal.find_peaks(v_flip, [0.001, 0.0025])
-        v_check = v2[check_peaks]
+        v_flip = -1 * v2            # Flips voltage array so spe is positive
+        peaks, _ = signal.find_peaks(v_flip, 0.001)     # Finds indeces of peaks above 0.001 V
+        v_peaks = v2[peaks]         # Creates list of voltages where peaks above 0.001 V occur
+        t_peaks = t2[peaks]         # Creates list of times where peaks above 0.001 V occur
+        check_peaks, _ = signal.find_peaks(v_flip, [0.001, 0.0025])     # Finds peaks between 0.001 V & 0.0025 V
+        v_check = v2[check_peaks]   # Creates list of times where peaks between 0.001 V & 0.0025 V occur
 
         # If no peaks larger than 0.001 V, no spe
         if len(peaks) == 0:
-            ww(t2, v2, spe_not_there, hdr)
+            ww(t2, v2, spe_not_there, hdr)      # Writes filtered waveform to file
             print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
 
         # If one peak larger than 0.001 V and it is larger than 0.002 V, spe
         elif len(peaks) == 1 and min(v2[370:1370]) < -0.002:
-            ww(t2, v2, spe_name, hdr)
+            ww(t2, v2, spe_name, hdr)           # Writes filtered waveform to file
             print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
 
         # If 2 or more peaks larger than 0.001 V, peak is larger than 0.005 V, and all other peaks are smaller than
         # 0.0025, spe
         elif len(peaks) >= 2 and min(v2[370:1370]) < -0.005 and len(peaks) - 1 == len(v_check):
-            ww(t2, v2, spe_name, hdr)
+            ww(t2, v2, spe_name, hdr)           # Writes filtered waveform to file
             print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
 
         # Otherwise, plots waveform for user to sort manually
         else:
             plt.figure()
-            plt.plot(t, v, 'b')
-            plt.plot(t2, v2 + baseline, 'r', linewidth=2.5)
-            plt.plot(t_peaks, v_peaks + baseline, 'x', color='cyan')
+            plt.plot(t, v, 'b')         # Plots unfiltered waveform
+            plt.plot(t2, v2 + baseline, 'r', linewidth=2.5)         # Plots filtered waveform
+            plt.plot(t_peaks, v_peaks + baseline, 'x', color='cyan')        # Plots peaks
             plt.title('File #%05d' % file_num)
             plt.xlabel('Time (s)')
             plt.ylabel('Voltage (V)')
@@ -65,11 +65,11 @@ def p1_sort(file_num, nhdr, fsps, fc, numtaps, data_path, save_path, baseline):
             while spe_check != 'y' and spe_check != 'n' and spe_check != 'u':
                 spe_check = input('Is there a single visible SPE? "y", "n", or "u"\n')
             if spe_check == 'y':
-                ww(t2, v2, spe_name, hdr)
+                ww(t2, v2, spe_name, hdr)           # Writes filtered waveform to file
             elif spe_check == 'n':
-                ww(t2, v2, spe_not_there, hdr)
+                ww(t2, v2, spe_not_there, hdr)      # Writes filtered waveform to file
             elif spe_check == 'u':
-                ww(t2, v2, spe_unsure, hdr)
+                ww(t2, v2, spe_unsure, hdr)         # Writes filtered waveform to file
             print('file #%05d: Done' % file_num)
             print("Length of /d1_raw/:", len(os.listdir(str(save_path / 'd1/d1_raw/'))))
             plt.close()
