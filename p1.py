@@ -68,8 +68,8 @@ if __name__ == '__main__':
     parser.add_argument("--offset", type=int, help='offset of pulse generator (suggested=0)')
     parser.add_argument("--trig_delay", type=float, help='delay of pulse generator trigger (ns) (suggested=9.)')
     parser.add_argument("--amp", type=float, help='amplitude of pulse generator (V) (suggested=3.5)')
-    parser.add_argument("--band", type=str, help='bandwidth of oscilloscope (Hz) (suggested=full)')
-    parser.add_argument("--nfilter", type=float, help='noise filter on oscilloscope (bits) (suggested=0)')
+    parser.add_argument("--band", type=str, help='bandwidth of oscilloscope (Hz)')
+    parser.add_argument("--nfilter", type=float, help='noise filter on oscilloscope (bits)')
     parser.add_argument("--info_file", type=str, help='path to d0 info file')
     args = parser.parse_args()
 
