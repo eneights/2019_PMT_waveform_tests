@@ -21,9 +21,10 @@ def p1b(start, end, dest_path, nhdr):
     file_path_shift_d1b = Path(dest_path / 'd1b_shifted')
     file_path_not_spe = Path(dest_path / 'd1b_not_spe')
 
-    mean_fwhm = 7.5e-9
-    mean_charge = 1.4e-12
-    mean_fall1090 = 1.66e-8
+    mean_fwhm = 7.57e-9
+    mean_charge = 1.43e-12
+    mean_fall1090 = 1.68e-8
+    mean_amplitude = 0.00661
 
     print('Reading files...')
     for i in range(start, end + 1):
@@ -40,7 +41,7 @@ def p1b(start, end, dest_path, nhdr):
             time90 = file_array[12]
 
             # If jitter times are unreasonable, adds file number to a list
-            if time10 <= -6e-9 or time20 <= -4e-9 or time80 >= 4e-9 or time90 >= 5e-9:
+            if time10 <= -4e-9 or time20 <= -2.5e-9 or time80 >= 2.5e-9 or time90 >= 3.5e-9:
                 jitter_array = np.append(jitter_array, int(i))
 
     for i in range(start, end + 1):
@@ -58,10 +59,12 @@ def p1b(start, end, dest_path, nhdr):
                     file_array = np.append(file_array, float(row[1]))
                 myfile.close()
                 charge = file_array[2]
+                amplitude = file_array[3]
                 fwhm = file_array[4]
                 fall1090 = file_array[7]
                 # If FWHM, charge, or 10-90 fall time is over twice the mean value, waveform is not spe
-                if fwhm > 2 * mean_fwhm or charge > 2 * mean_charge or fall1090 > 2 * mean_fall1090:
+                if charge > 2 * mean_charge and (fwhm > 2 * mean_fwhm or fall1090 > 2 * mean_fall1090 or amplitude > 2 *
+                                                 mean_amplitude):
                     print('File #%05d is not spe' % i)
                     ww(t, v, str(file_path_not_spe / 'D1--waveforms--%05d.txt') % i, hdr)
                 else:
@@ -130,7 +133,7 @@ def p1b(start, end, dest_path, nhdr):
     # Histograms are plotted using p1b spe data from arrays
     plot_histogram(charge_array, dest_path, 100, 'Charge', 'Charge', 'C', 'charge_d1b')
     plot_histogram(amplitude_array, dest_path, 100, 'Voltage', 'Amplitude', 'V', 'amplitude_d1b')
-    plot_histogram(fwhm_array, dest_path, 100, 'Time', 'FWHM', 's', 'fwhm_w_outliers')
+    plot_histogram(fwhm_array, dest_path, 100, 'Time', 'FWHM', 's', 'fwhm_d1b')
     plot_histogram(rise1090_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rise1090_d1b')
     plot_histogram(rise2080_array, dest_path, 100, 'Time', '20-80 Rise Time', 's', 'rise2080_d1b')
     plot_histogram(fall1090_array, dest_path, 100, 'Time', '10-90 Fall Time', 's', 'fall1090_d1b')

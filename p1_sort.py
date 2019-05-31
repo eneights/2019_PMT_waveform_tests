@@ -26,7 +26,7 @@ def p1_sort(file_num, nhdr, fsps, fc, numtaps, data_path, save_path, baseline):
         t2 = t[numtaps:len(v1)-1]           # Splices time array
 
         v_flip = -1 * v2            # Flips voltage array so spe is positive
-        peaks, _ = signal.find_peaks(v_flip, 0.001)     # Finds indeces of peaks above 0.001 V
+        peaks, _ = signal.find_peaks(v_flip, 0.001)     # Finds indices of peaks above 0.001 V
         v_peaks = v2[peaks]         # Creates list of voltages where peaks above 0.001 V occur
         t_peaks = t2[peaks]         # Creates list of times where peaks above 0.001 V occur
         check_peaks, _ = signal.find_peaks(v_flip, [0.001, 0.0025])     # Finds peaks between 0.001 V & 0.0025 V

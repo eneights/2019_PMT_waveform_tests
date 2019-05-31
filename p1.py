@@ -22,7 +22,7 @@ def p1(start, end, date, date_time, filter_band, nhdr, fsps, fc, numtaps, baseli
     for i in range(start, end + 1):
         file_name = 'D1--waveforms--%05d.txt' % i
         if os.path.isfile(data_shift / file_name):
-            subtract_time(i, nhdr, data_shift, save_shift)
+            shift_waveform(i, nhdr, data_shift, save_shift)
 
     # Creates arrays of beginning & end times of spe waveform, time of end of spe, charge, amplitude, fwhm, 10-90 &
     # 20-80 rise times, 10-90 & 20-80 fall times, and 10%, 20%, 80% & 90% jitter

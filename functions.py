@@ -63,7 +63,7 @@ def calculate_average(t, v):
 
 
 # Shifts spes so that baseline = 0 and when t = 0, v = 50% max
-def subtract_time(file_num, nhdr, data_path, save_path):
+def shift_waveform(file_num, nhdr, data_path, save_path):
     file_name = 'D1--waveforms--%05d.txt' % file_num
 
     if os.path.isfile(data_path / file_name):
