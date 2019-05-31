@@ -3,7 +3,7 @@ from functions import *
 
 # Calculates the average waveform of an spe
 def average_waveform(start, end, dest_path, nhdr):
-    data_file = Path(dest_path / 'd1b_shifted')
+    data_file = Path(dest_path / 'd1_shifted')
     save_file = Path(dest_path / 'plots')
     tsum = 0
     vsum = 0
@@ -47,7 +47,7 @@ def average_waveform(start, end, dest_path, nhdr):
     plt.xlabel('Time (s)')
     plt.ylabel('Normalized Voltage')
     plt.title('Average Waveform')
-    plt.savefig(save_file / 'avg_waveform_d1b.png', dpi=360)
+    plt.savefig(save_file / 'avg_waveform.png', dpi=360)
     plt.show()
 
     # Saves average waveform data
