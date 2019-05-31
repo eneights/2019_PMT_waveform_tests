@@ -59,8 +59,7 @@ if __name__ == '__main__':
     parser.add_argument("--fil_band", type=str, help='folder name for data')
     parser.add_argument("--nhdr", type=int, help='number of header lines to skip in raw file (default=5)', default=5)
     parser.add_argument("--fsps", type=float, help='samples per second (Hz) (suggested=20000000000.)')
-    parser.add_argument("--fc", type=float, help='filter cutoff frequency (Hz) (default=250000000.)', default=250000000.
-                        )
+    parser.add_argument("--fc", type=float, help='filter cutoff frequency (Hz) (default=250000000)', default=250000000.)
     parser.add_argument("--numtaps", type=int, help='filter order + 1 (default=51)', default=51)
     parser.add_argument("--baseline", type=float, help='baseline of data set (V) (suggested=0)')
     parser.add_argument("--r", type=int, help='resistance in ohms (suggested=50)')
