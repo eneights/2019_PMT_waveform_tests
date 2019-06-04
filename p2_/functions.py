@@ -89,7 +89,7 @@ def average_waveform(start, end, data_file, dest_path, nhdr, save_name):
     plt.ylabel('Normalized Voltage')
     plt.title('Average Waveform')
     plt.savefig(save_file / (save_name + '.png'), dpi=360)
-    # plt.show()
+    plt.close()
 
     # Saves average waveform data
     file_name = save_file / (save_name + '.txt')
@@ -98,14 +98,13 @@ def average_waveform(start, end, data_file, dest_path, nhdr, save_name):
 
 
 def lowpass_filter(v, tau, fsps):
-    alpha = 1 - np.exp(-1. / (fsps * tau))
     v_filtered = np.array([])
+    alpha = 1 - np.exp(-1. / (fsps * tau))
     for i in range(len(v)):
         if i == 0:
             v_filtered = np.append(v_filtered, v[i])
         else:
-            v2 = v[i] * alpha + (1 - alpha) * v_filtered[i - 1]
-            v_filtered = np.append(v_filtered, v2)
+            v_filtered = np.append(v_filtered, v[i] * alpha + (1 - alpha) * v_filtered[i - 1])
     return v_filtered
 
 
@@ -209,6 +208,13 @@ def rise_time(t, v, r):
 
 
 def rise_time_1090(t, v):
+    idx_start = np.argmin(np.abs(t + 2.5e-8))
+    idx_end = np.argmin(np.abs(t + 5e-9))
+    v_sum = 0
+    for i in range(idx_start.item(), idx_end.item()):
+        v_sum += v[i]
+    avg = v_sum / (idx_end - idx_start)
+
     idx = np.inf
     idx_min_val = np.where(v == min(v))     # Finds index of minimum voltage value in voltage array
     time_min_val = t[idx_min_val]           # Finds time of point of minimum voltage
@@ -216,26 +222,25 @@ def rise_time_1090(t, v):
 
     tvals = np.linspace(t[0], t[len(t) - 1], 5000)  # Creates array of times over entire timespan
     tvals1 = np.linspace(t[0], min_time, 5000)      # Creates array of times from beginning to point of min voltage
-    vvals = np.interp(tvals, t, v)                  # Interpolates & creates array of voltages over entire timespan
     vvals1 = np.interp(tvals1, t, v)   # Interpolates & creates array of voltages from beginning to point of min voltage
     vvals1_flip = np.flip(vvals1)       # Flips array, creating array of voltages from point of min voltage to beginning
-    difference_value = vvals1_flip - (0.1 * min(v))    # Finds difference between points in beginning array and 10% max
-
+    difference_value = vvals1_flip - (0.1 * (min(v) - avg))     # Finds difference between points in beginning array and
+                                                                # 10% max
     for i in range(0, len(difference_value) - 1):  # Starting at point of minimum voltage and going towards beginning
         if difference_value[i] >= 0:               # of waveform, finds where voltage becomes greater than 10% max
             idx = len(difference_value) - i
             break
     if idx == np.inf:       # If voltage never becomes greater than 10% max, finds where voltage is closest to 10% max
         idx = len(difference_value) - 1 - np.argmin(np.abs(difference_value))
-    t1 = tvals[np.argmin(np.abs(tvals - tvals1[idx]))]  # Finds time of beginning of spe
+    t1 = tvals[np.argmin(np.abs(tvals - tvals1[idx]))]      # Finds time of beginning of spe
 
-    val10 = .1 * (min(v))   # Calculates 10% max
-    val90 = 9 * val10       # Calculates 90% max
+    val10 = .1 * (min(v) - avg)     # Calculates 10% max
+    val90 = 9 * val10               # Calculates 90% max
     tvals2 = np.linspace(t1, min_time, 5000)  # Creates array of times from beginning of spe to point of minimum voltage
     vvals2 = np.interp(tvals2, t, v)     # Interpolates & creates array of voltages from beginning of spe to min voltage
 
-    time10 = tvals[np.argmin(np.abs(vvals2 - val10))]  # Finds time of point of 10% max
-    time90 = tvals[np.argmin(np.abs(vvals2 - val90))]  # Finds time of point of 90% max
+    time10 = tvals2[np.argmin(np.abs(vvals2 - val10))]          # Finds time of point of 10% max
+    time90 = tvals2[np.argmin(np.abs(vvals2 - val90))]          # Finds time of point of 90% max
     rise_time1090 = float(format(time90 - time10, '.2e'))       # Calculates 10-90 rise time
 
     return rise_time1090

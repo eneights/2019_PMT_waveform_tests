@@ -26,16 +26,24 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, fc, numtaps, r, pmt
         if os.path.isfile(file_name):
             print('Filtering file #%05d' % i)
             t, v, hdr = rw(file_name, nhdr)
-            rt1090, rt2080 = rise_time(t, v, nhdr)
-            for k in range(5, 3000):
+            rt1090 = rise_time_1090(t, v)
+            print('rise time is', rt1090, 's')
+            for k in range(5, 8000):
                 j = k * 2e-10
                 v_new = lowpass_filter(v, j, fsps)
                 x1 = rise_time_1090(t, v_new)
                 x1_array = np.append(x1_array, x1)
                 j_array = np.append(j_array, j)
+                diff_val = x1 - 8 * rt1090
+                if diff_val >= 0:
+                    break
+
             tau_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090))]
             tau_4 = j_array[np.argmin(np.abs(x1_array - 4 * rt1090))]
             tau_8 = j_array[np.argmin(np.abs(x1_array - 8 * rt1090))]
+            print('tau of 2x rise time is', tau_2)
+            print('tau of 4x rise time is', tau_4)
+            print('tau of 8x rise time is', tau_8)
             v2 = lowpass_filter(v, tau_2, fsps)
             v4 = lowpass_filter(v, tau_4, fsps)
             v8 = lowpass_filter(v, tau_8, fsps)
@@ -48,6 +56,22 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, fc, numtaps, r, pmt
     average_waveform(start, end, filt_path2, dest_path, nhdr, 'avg_waveform2')
     average_waveform(start, end, filt_path4, dest_path, nhdr, 'avg_waveform4')
     average_waveform(start, end, filt_path8, dest_path, nhdr, 'avg_waveform8')
+
+    avg_path = Path(dest_path / 'plots')
+    t1, v1, hdr1 = rw(avg_path / 'avg_waveform1', nhdr)
+    t2, v2, hdr2 = rw(avg_path / 'avg_waveform2', nhdr)
+    t3, v3, hdr3 = rw(avg_path / 'avg_waveform3', nhdr)
+    t4, v4, hdr4 = rw(avg_path / 'avg_waveform4', nhdr)
+
+    rt1 = rise_time_1090(t1, v1)
+    rt2 = rise_time_1090(t2, v2)
+    rt3 = rise_time_1090(t3, v3)
+    rt4 = rise_time_1090(t4, v4)
+
+    print('Average rise time is', rt1)
+    print('Average 2x rise time is', rt2)
+    print('Average 4x rise time is', rt3)
+    print('Average 8x rise time is', rt4)
 
     info_file(date_time, data_path, dest_path, pmt_hv, gain, offset, trig_delay, amp, fsps, band, nfilter, r)
 
