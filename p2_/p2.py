@@ -2,7 +2,7 @@ from functions import *
 from info_file import info_file
 
 
-def p2(start, end, date, date_time, filter_band, nhdr, fsps, fc, numtaps, r, pmt_hv, gain, offset, trig_delay, amp,
+def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, offset, trig_delay, amp,
        band, nfilter):
     gen_path = Path(r'/Volumes/TOSHIBA EXT/data/watchman')
     save_path = Path(str(gen_path / '%08d_watchman_spe/waveforms/%s') % (date, filter_band))
@@ -15,6 +15,7 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, fc, numtaps, r, pmt
 
     x1_array = np.array([])
     j_array = np.array([])
+    error_array = np.array([])
 
     for i in range(start, end + 1):
         file_name = str(data_path / 'd1_shifted' / 'D1--waveforms--%05d.txt') % i
@@ -24,33 +25,48 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, fc, numtaps, r, pmt
         save_name8 = str(filt_path8 / 'D2--waveforms--%05d.txt') % i
 
         if os.path.isfile(file_name):
-            print('Filtering file #%05d' % i)
-            t, v, hdr = rw(file_name, nhdr)
-            rt1090 = rise_time_1090(t, v)
-            print('rise time is', rt1090, 's')
-            for k in range(5, 8000):
-                j = k * 2e-10
-                v_new = lowpass_filter(v, j, fsps)
-                x1 = rise_time_1090(t, v_new)
-                x1_array = np.append(x1_array, x1)
-                j_array = np.append(j_array, j)
-                diff_val = x1 - 8 * rt1090
-                if diff_val >= 0:
-                    break
+            if os.path.isfile(save_name1) and os.path.isfile(save_name2) and os.path.isfile(save_name4) and \
+                    os.path.isfile(save_name8):
+                print('File #%05d has been filtered' % i)
+            else:
+                print('Filtering file #%05d' % i)
+                try:
+                    t, v, hdr = rw(file_name, nhdr)
+                    rt1090 = rise_time_1090(t, v)
+                    print('rise time is', rt1090, 's')
+                    for k in range(5, 8000):
+                        j = k * 2e-10
+                        v_new = lowpass_filter(v, j, fsps)
+                        x1 = rise_time_1090(t, v_new)
+                        x1_array = np.append(x1_array, x1)
+                        j_array = np.append(j_array, j)
+                        diff_val = x1 - 8 * rt1090
+                        if diff_val >= 0:
+                            break
+                        if k == 7999:
+                            error_array = np.append(error_array, i)
+                except Exception:
+                    error_array = np.append(error_array, i)
 
-            tau_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090))]
-            tau_4 = j_array[np.argmin(np.abs(x1_array - 4 * rt1090))]
-            tau_8 = j_array[np.argmin(np.abs(x1_array - 8 * rt1090))]
-            print('tau of 2x rise time is', tau_2)
-            print('tau of 4x rise time is', tau_4)
-            print('tau of 8x rise time is', tau_8)
-            v2 = lowpass_filter(v, tau_2, fsps)
-            v4 = lowpass_filter(v, tau_4, fsps)
-            v8 = lowpass_filter(v, tau_8, fsps)
-            ww(t, v, save_name1, hdr)
-            ww(t, v2, save_name2, hdr)
-            ww(t, v4, save_name4, hdr)
-            ww(t, v8, save_name8, hdr)
+                val = 0
+                for j in range(len(error_array)):
+                    if error_array[j] == i:
+                        val = 1
+                        break
+                if val == 0:
+                    tau_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090))]
+                    tau_4 = j_array[np.argmin(np.abs(x1_array - 4 * rt1090))]
+                    tau_8 = j_array[np.argmin(np.abs(x1_array - 8 * rt1090))]
+                    print('tau of 2x rise time is', tau_2)
+                    print('tau of 4x rise time is', tau_4)
+                    print('tau of 8x rise time is', tau_8)
+                    v2 = lowpass_filter(v, tau_2, fsps)
+                    v4 = lowpass_filter(v, tau_4, fsps)
+                    v8 = lowpass_filter(v, tau_8, fsps)
+                    ww(t, v, save_name1, hdr)
+                    ww(t, v2, save_name2, hdr)
+                    ww(t, v4, save_name4, hdr)
+                    ww(t, v8, save_name8, hdr)
 
     average_waveform(start, end, filt_path1, dest_path, nhdr, 'avg_waveform1')
     average_waveform(start, end, filt_path2, dest_path, nhdr, 'avg_waveform2')
@@ -75,6 +91,8 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, fc, numtaps, r, pmt
 
     info_file(date_time, data_path, dest_path, pmt_hv, gain, offset, trig_delay, amp, fsps, band, nfilter, r)
 
+    print(error_array)
+
 
 if __name__ == '__main__':
     import argparse
@@ -86,8 +104,6 @@ if __name__ == '__main__':
     parser.add_argument("--fil_band", type=str, help='folder name for data')
     parser.add_argument("--nhdr", type=int, help='number of header lines to skip in raw file (default=5)', default=5)
     parser.add_argument("--fsps", type=float, help='samples per second (Hz) (suggested=20000000000.)')
-    parser.add_argument("--fc", type=float, help='filter cutoff frequency (Hz) (default=250000000)', default=250000000.)
-    parser.add_argument("--numtaps", type=int, help='filter order + 1 (default=51)', default=51)
     parser.add_argument("--r", type=int, help='resistance in ohms (suggested=50)')
     parser.add_argument("--pmt_hv", type=int, help='voltage of PMT (V) (suggested=1800)')
     parser.add_argument("--gain", type=int, help='gain of PMT (suggested=1e7)')
@@ -104,9 +120,8 @@ if __name__ == '__main__':
                 args.gain or args.offset or args.trig_delay or args.amp or args.band or args.nfilter):
             print('Error: Must provide an info file or all other arguments')
         else:
-            p2(args.start, args.end, args.date, args.date_time, args.fil_band, args.nhdr, args.fsps, args.fc,
-               args.numtaps, args.r, args.pmt_hv, args.gain, args.offset, args.trig_delay, args.amp,
-               args.band, args.nfilter)
+            p2(args.start, args.end, args.date, args.date_time, args.fil_band, args.nhdr, args.fsps, args.r,
+               args.pmt_hv, args.gain, args.offset, args.trig_delay, args.amp, args.band, args.nfilter)
     else:
         myfile = open(args.info_file, 'r')
         csv_reader = csv.reader(myfile)
@@ -129,7 +144,9 @@ if __name__ == '__main__':
         i_date, watch, spe = fol.split('_')
         i_date = int(i_date)
 
-        p2(args.start, args.end, i_date, i_date_time, i_fil_band, args.nhdr, i_fsps, args.fc, args.numtaps, i_r,
-           i_pmt_hv, i_gain, i_offset, i_trig_delay, i_amp, i_band, i_nfilter)
+        p2(args.start, args.end, i_date, i_date_time, i_fil_band, args.nhdr, i_fsps, i_r, i_pmt_hv, i_gain, i_offset,
+           i_trig_delay, i_amp, i_band, i_nfilter)
 
         myfile.close()
+
+# 4991
