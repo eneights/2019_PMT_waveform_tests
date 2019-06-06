@@ -57,7 +57,7 @@ def average_waveform(start, end, data_file, dest_path, nhdr, save_name):
             if min_v == 0:
                 ww(t, v, str(dest_path / 'unusable_data' / 'D2--waveforms--%05d.txt') % i, hdr)
                 os.remove(data_file / file_name)
-                print('WEIRD MINIMUM VOLTAGE IN FILE #%05d' % i, min(v))
+                print('Removing file #%05d because its minimum voltage is 0' % i)
             else:
                 v = v / min_v                                   # Normalizes voltages
                 idx = np.where(t == 0)                          # Finds index of t = 0 point
@@ -220,36 +220,42 @@ def rise_time_1090(t, v):
         v_sum += v[i]
     avg = v_sum / (idx_end - idx_start)
     min_v = min(v)
+    if min_v == 0:
+        return '0 min'
 
-    idx = np.inf
-    idx_min_val = np.where(v == min_v)     # Finds index of minimum voltage value in voltage array
-    time_min_val = t[idx_min_val]           # Finds time of point of minimum voltage
-    min_time = time_min_val[0]
+    else:
+        idx = np.inf
+        idx_min_val = np.where(v == min_v)     # Finds index of minimum voltage value in voltage array
+        time_min_val = t[idx_min_val]           # Finds time of point of minimum voltage
+        min_time = time_min_val[0]
 
-    tvals = np.linspace(t[0], t[len(t) - 1], 5000)  # Creates array of times over entire timespan
-    tvals1 = np.linspace(t[0], min_time, 5000)      # Creates array of times from beginning to point of min voltage
-    vvals1 = np.interp(tvals1, t, v)   # Interpolates & creates array of voltages from beginning to point of min voltage
-    vvals1_flip = np.flip(vvals1)       # Flips array, creating array of voltages from point of min voltage to beginning
-    difference_value = vvals1_flip - (0.1 * (min_v - avg))     # Finds difference between points in beginning array and
-                                                                # 10% max
-    for i in range(0, len(difference_value) - 1):  # Starting at point of minimum voltage and going towards beginning
-        if difference_value[i] >= 0:               # of waveform, finds where voltage becomes greater than 10% max
-            idx = len(difference_value) - i
-            break
-    if idx == np.inf:       # If voltage never becomes greater than 10% max, finds where voltage is closest to 10% max
-        idx = len(difference_value) - 1 - np.argmin(np.abs(difference_value))
-    t1 = tvals[np.argmin(np.abs(tvals - tvals1[idx]))]      # Finds time of beginning of spe
+        tvals = np.linspace(t[0], t[len(t) - 1], 5000)  # Creates array of times over entire timespan
+        tvals1 = np.linspace(t[0], min_time, 5000)      # Creates array of times from beginning to point of min voltage
+        vvals1 = np.interp(tvals1, t, v)    # Interpolates & creates array of voltages from beginning to point of min
+                                            # voltage
+        vvals1_flip = np.flip(vvals1)   # Flips array, creating array of voltages from point of min voltage to beginning
+        difference_value = vvals1_flip - (0.1 * (min_v - avg))      # Finds difference between points in beginning array
+                                                                    # and 10% max
+        for i in range(0, len(difference_value) - 1): # Starting at point of minimum voltage and going towards beginning
+            if difference_value[i] >= 0:              # of waveform, finds where voltage becomes greater than 10% max
+                idx = len(difference_value) - i
+                break
+        if idx == np.inf:     # If voltage never becomes greater than 10% max, finds where voltage is closest to 10% max
+            idx = len(difference_value) - 1 - np.argmin(np.abs(difference_value))
+        t1 = tvals[np.argmin(np.abs(tvals - tvals1[idx]))]      # Finds time of beginning of spe
 
-    val10 = .1 * (min_v - avg)      # Calculates 10% max
-    val90 = 9 * val10               # Calculates 90% max
-    tvals2 = np.linspace(t1, min_time, 5000)  # Creates array of times from beginning of spe to point of minimum voltage
-    vvals2 = np.interp(tvals2, t, v)     # Interpolates & creates array of voltages from beginning of spe to min voltage
+        val10 = .1 * (min_v - avg)      # Calculates 10% max
+        val90 = 9 * val10               # Calculates 90% max
+        tvals2 = np.linspace(t1, min_time, 5000)    # Creates array of times from beginning of spe to point of minimum
+                                                    # voltage
+        vvals2 = np.interp(tvals2, t, v)    # Interpolates & creates array of voltages from beginning of spe to minimum
+                                            # voltage
 
-    time10 = tvals2[np.argmin(np.abs(vvals2 - val10))]          # Finds time of point of 10% max
-    time90 = tvals2[np.argmin(np.abs(vvals2 - val90))]          # Finds time of point of 90% max
-    rise_time1090 = float(format(time90 - time10, '.2e'))       # Calculates 10-90 rise time
+        time10 = tvals2[np.argmin(np.abs(vvals2 - val10))]          # Finds time of point of 10% max
+        time90 = tvals2[np.argmin(np.abs(vvals2 - val90))]          # Finds time of point of 90% max
+        rise_time1090 = float(format(time90 - time10, '.2e'))       # Calculates 10-90 rise time
 
-    return rise_time1090
+        return rise_time1090
 
 
 # Creates text file with 10-90 rise times for an spe file
@@ -333,14 +339,35 @@ def make_arrays(dest_path, save_path, start, end, nhdr):
                 filter_4 = rise_time_1090(t4, v4)  # 10-90 rise time of spe is calculated
                 t8, v8, hdr8 = rw(file_name8, nhdr)  # 8x filtered waveform file is read
                 filter_8 = rise_time_1090(t8, v8)  # 10-90 rise time of spe is calculated
-                t2_2, v2_2, hdr22 = rw(file_name2_2, nhdr)  # 2x 2x filtered waveform file is read
+                t2_2, v2_2, hdr2_2 = rw(file_name2_2, nhdr)  # 2x 2x filtered waveform file is read
                 filter_2_2 = rise_time_1090(t2_2, v2_2)  # 10-90 rise time of spe is calculated
                 t2_2_2, v2_2_2, hdr2_2_2 = rw(file_name2_2_2, nhdr)  # 2x 2x 2x filtered waveform file is read
                 filter_2_2_2 = rise_time_1090(t2_2_2, v2_2_2)  # 10-90 rise time of spe is calculated
-                # Any spe waveform that returns impossible values is put into an array
-                if filter_1 <= 0 or filter_2 <= 0 or filter_4 <= 0 or filter_8 <= 0 or filter_2_2 <= 0 or filter_2_2_2 \
-                        <= 0:
-                    error_array = np.append(error_array, i)
+                # Any spe waveform that returns impossible values is removed
+                if isinstance(filter_1, str) or filter_1 <= 0:
+                    ww(t1, v1, str(dest_path / 'unusable_data' / 'D2--waveforms--%05d.txt') % i, hdr1)
+                    os.remove(file_name1)
+                    print('Removing file #%05d because its minimum voltage is 0' % i)
+                elif isinstance(filter_2, str) or filter_2 <= 0:
+                    ww(t2, v2, str(dest_path / 'unusable_data' / 'D2--waveforms--%05d.txt') % i, hdr2)
+                    os.remove(file_name2)
+                    print('Removing file #%05d because its minimum voltage is 0' % i)
+                elif isinstance(filter_4, str) or filter_4 <= 0:
+                    ww(t4, v4, str(dest_path / 'unusable_data' / 'D2--waveforms--%05d.txt') % i, hdr4)
+                    os.remove(file_name4)
+                    print('Removing file #%05d because its minimum voltage is 0' % i)
+                elif isinstance(filter_8, str) or filter_8 <= 0:
+                    ww(t4, v4, str(dest_path / 'unusable_data' / 'D2--waveforms--%05d.txt') % i, hdr4)
+                    os.remove(file_name4)
+                    print('Removing file #%05d because its minimum voltage is 0' % i)
+                elif isinstance(filter_2_2, str) or filter_2_2 <= 0:
+                    ww(t2_2, v2_2, str(dest_path / 'unusable_data' / 'D2--waveforms--%05d.txt') % i, hdr2_2)
+                    os.remove(file_name2_2)
+                    print('Removing file #%05d because its minimum voltage is 0' % i)
+                elif isinstance(filter_2_2_2, str) or filter_2_2_2 <= 0:
+                    ww(t2_2_2, v2_2_2, str(dest_path / 'unusable_data' / 'D2--waveforms--%05d.txt') % i, hdr2_2_2)
+                    os.remove(file_name2_2_2)
+                    print('Removing file #%05d because its minimum voltage is 0' % i)
                 # All other spe waveforms' calculations are saved in a file & placed into arrays
                 else:
                     save_calculations(save_path, i, filter_1, filter_2, filter_4, filter_8, filter_2_2, filter_2_2_2)
