@@ -20,7 +20,7 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     t, v, hdr = rw(average_file, nhdr)
     v = -1 * v
     rt1090 = rise_time_1090(t, v)
-    '''for i in range(500, 50000):
+    for i in range(500, 50000):
         j = i * 1e-11
         v_new = lowpass_filter(v, j, fsps)
         x1 = rise_time_1090(t, v_new)
@@ -31,10 +31,10 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
             break
     tau_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090))]
     tau_4 = j_array[np.argmin(np.abs(x1_array - 4 * rt1090))]
-    tau_8 = j_array[np.argmin(np.abs(x1_array - 8 * rt1090))]'''
-    tau_2 = 1.3e-8
-    tau_4 = 8.48e-8
-    tau_8 = 3.658e-7
+    tau_8 = j_array[np.argmin(np.abs(x1_array - 8 * rt1090))]
+    # tau_2 = 1.3e-8
+    # tau_4 = 8.48e-8
+    # tau_8 = 3.658e-7
     v = -1 * v
     v2 = lowpass_filter(v, tau_2, fsps)
     v4 = lowpass_filter(v, tau_4, fsps)
@@ -44,17 +44,17 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     x1_array = np.array([])
     j_array = np.array([])
     rt1090_2 = rise_time_1090(t, v2)
-    '''for i in range(500, 50000):
+    for i in range(500, 50000):
         j = i * 1e-11
         v_new = lowpass_filter(v2, j, fsps)
         x1 = rise_time_1090(t, v_new)
         x1_array = np.append(x1_array, x1)
         j_array = np.append(j_array, j)
-        diff_val = x1 - 2 * rt1090
+        diff_val = x1 - 2 * rt1090_2
         if diff_val >= 0:
             break
-    tau_2_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090_2))]'''
-    tau_2_2 = 1.052e-8
+    tau_2_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090_2))]
+    # tau_2_2 = 1.052e-8
     v2 = -1 * v2
     v2_2 = lowpass_filter(v2, tau_2_2, fsps)
 
@@ -62,17 +62,17 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     x1_array = np.array([])
     j_array = np.array([])
     rt1090_2_2 = rise_time_1090(t, v2_2)
-    '''for i in range(500, 50000):
+    for i in range(500, 50000):
         j = i * 1e-11
         v_new = lowpass_filter(v2_2, j, fsps)
         x1 = rise_time_1090(t, v_new)
         x1_array = np.append(x1_array, x1)
         j_array = np.append(j_array, j)
-        diff_val = x1 - 2 * rt1090
+        diff_val = x1 - 2 * rt1090_2_2
         if diff_val >= 0:
             break
-    tau_2_2_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090_2_2))]'''
-    tau_2_2_2 = 3.3459999999999997e-8
+    tau_2_2_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090_2_2))]
+    # tau_2_2_2 = 3.3459999999999997e-8
     v2_2 = -1 * v2_2
     v2_2_2 = lowpass_filter(v2_2, tau_2_2_2, fsps)
 

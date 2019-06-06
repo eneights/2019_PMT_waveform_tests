@@ -242,6 +242,8 @@ def rise_time_1090(t, v):
                 break
         if idx == np.inf:     # If voltage never becomes greater than 10% max, finds where voltage is closest to 10% max
             idx = len(difference_value) - 1 - np.argmin(np.abs(difference_value))
+        if idx == 5000:
+            return 'ignore this file'
         t1 = tvals[np.argmin(np.abs(tvals - tvals1[idx]))]      # Finds time of beginning of spe
 
         val10 = .1 * (min_v - avg)      # Calculates 10% max
@@ -305,7 +307,7 @@ def make_arrays(dest_path, save_path, start, end, nhdr):
                 os.path.isfile(file_name8) and os.path.isfile(file_name2_2) and os.path.isfile(file_name2_2_2):
             if os.path.isfile(file_name):      # If the calculations were done previously, they are read from a file
                 print("Reading calculations from shifted file #%05d" % i)
-                myfile = open(file_name2, 'r')      # Opens file with calculations
+                myfile = open(file_name, 'r')      # Opens file with calculations
                 csv_reader = csv.reader(myfile)
                 file_array = np.array([])
                 for row in csv_reader:      # Creates array with calculation data
@@ -347,27 +349,27 @@ def make_arrays(dest_path, save_path, start, end, nhdr):
                 if isinstance(filter_1, str) or filter_1 <= 0:
                     ww(t1, v1, str(dest_path / 'unusable_data' / 'D2--waveforms--%05d.txt') % i, hdr1)
                     os.remove(file_name1)
-                    print('Removing file #%05d because its minimum voltage is 0' % i)
-                elif isinstance(filter_2, str) or filter_2 <= 0:
+                    print('Removing file #%05d because it is causing problems' % i)
+                if isinstance(filter_2, str) or filter_2 <= 0:
                     ww(t2, v2, str(dest_path / 'unusable_data' / 'D2--waveforms--%05d.txt') % i, hdr2)
                     os.remove(file_name2)
-                    print('Removing file #%05d because its minimum voltage is 0' % i)
-                elif isinstance(filter_4, str) or filter_4 <= 0:
+                    print('Removing file #%05d because it is causing problems' % i)
+                if isinstance(filter_4, str) or filter_4 <= 0:
                     ww(t4, v4, str(dest_path / 'unusable_data' / 'D2--waveforms--%05d.txt') % i, hdr4)
                     os.remove(file_name4)
-                    print('Removing file #%05d because its minimum voltage is 0' % i)
-                elif isinstance(filter_8, str) or filter_8 <= 0:
+                    print('Removing file #%05d because it is causing problems' % i)
+                if isinstance(filter_8, str) or filter_8 <= 0:
                     ww(t4, v4, str(dest_path / 'unusable_data' / 'D2--waveforms--%05d.txt') % i, hdr4)
                     os.remove(file_name4)
-                    print('Removing file #%05d because its minimum voltage is 0' % i)
-                elif isinstance(filter_2_2, str) or filter_2_2 <= 0:
+                    print('Removing file #%05d because it is causing problems' % i)
+                if isinstance(filter_2_2, str) or filter_2_2 <= 0:
                     ww(t2_2, v2_2, str(dest_path / 'unusable_data' / 'D2--waveforms--%05d.txt') % i, hdr2_2)
                     os.remove(file_name2_2)
-                    print('Removing file #%05d because its minimum voltage is 0' % i)
-                elif isinstance(filter_2_2_2, str) or filter_2_2_2 <= 0:
+                    print('Removing file #%05d because it is causing problems' % i)
+                if isinstance(filter_2_2_2, str) or filter_2_2_2 <= 0:
                     ww(t2_2_2, v2_2_2, str(dest_path / 'unusable_data' / 'D2--waveforms--%05d.txt') % i, hdr2_2_2)
                     os.remove(file_name2_2_2)
-                    print('Removing file #%05d because its minimum voltage is 0' % i)
+                    print('Removing file #%05d because it is causing problems' % i)
                 # All other spe waveforms' calculations are saved in a file & placed into arrays
                 else:
                     save_calculations(save_path, i, filter_1, filter_2, filter_4, filter_8, filter_2_2, filter_2_2_2)
