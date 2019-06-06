@@ -52,33 +52,38 @@ def average_waveform(start, end, data_file, dest_path, nhdr, save_name):
     for i in range(start, end + 1):
         file_name = 'D2--waveforms--%05d.txt' % i
         if os.path.isfile(data_file / file_name):
-            print('Reading file #', i)
             t, v, hdr = rw(data_file / file_name, nhdr)     # Reads a waveform file
-            v = v / min(v)                                  # Normalizes voltages
-            idx = np.where(t == 0)                          # Finds index of t = 0 point
-            idx = int(idx[0])
-            t = np.roll(t, -idx)                            # Rolls time array so that t = 0 point is at index 0
-            v = np.roll(v, -idx)                            # Rolls voltage array so that 50% max point is at index 0
-            idx2 = np.where(t == min(t))                    # Finds index of point of minimum t
-            idx2 = int(idx2[0])
-            idx3 = np.where(t == max(t))                    # Finds index of point of maximum t
-            idx3 = int(idx3[0])
-            # Only averages waveform files that have enough points before t = 0 & after the spe
-            if idx2 <= 3430:
-                # Removes points between point of maximum t & chosen minimum t in time & voltage arrays
-                t = np.concatenate((t[:idx3], t[3430:]))
-                v = np.concatenate((v[:idx3], v[3430:]))
-                # Rolls time & voltage arrays so that point of chosen minimum t is at index 0
-                t = np.roll(t, -idx3)
-                v = np.roll(v, -idx3)
-                if len(t) >= 3920:
-                    # Removes points after chosen point of maximum t in time & voltage arrays
-                    t = t[:3920]
-                    v = v[:3920]
-                    # Sums time & voltage arrays
-                    tsum += t
-                    vsum += v
-                    n += 1
+            min_v = min(v)
+            if min_v == 0:
+                ww(t, v, str(dest_path / 'unusable_data' / 'D2--waveforms--%05d.txt') % i, hdr)
+                os.remove(data_file / file_name)
+                print('WEIRD MINIMUM VOLTAGE IN FILE #%05d' % i, min(v))
+            else:
+                v = v / min_v                                   # Normalizes voltages
+                idx = np.where(t == 0)                          # Finds index of t = 0 point
+                idx = int(idx[0])
+                t = np.roll(t, -idx)                            # Rolls time array so that t = 0 point is at index 0
+                v = np.roll(v, -idx)                            # Rolls voltage array so that 50% max point is at index 0
+                idx2 = np.where(t == min(t))                    # Finds index of point of minimum t
+                idx2 = int(idx2[0])
+                idx3 = np.where(t == max(t))                    # Finds index of point of maximum t
+                idx3 = int(idx3[0])
+                # Only averages waveform files that have enough points before t = 0 & after the spe
+                if idx2 <= 3430:
+                    # Removes points between point of maximum t & chosen minimum t in time & voltage arrays
+                    t = np.concatenate((t[:idx3], t[3430:]))
+                    v = np.concatenate((v[:idx3], v[3430:]))
+                    # Rolls time & voltage arrays so that point of chosen minimum t is at index 0
+                    t = np.roll(t, -idx3)
+                    v = np.roll(v, -idx3)
+                    if len(t) >= 3920:
+                        # Removes points after chosen point of maximum t in time & voltage arrays
+                        t = t[:3920]
+                        v = v[:3920]
+                        # Sums time & voltage arrays
+                        tsum += t
+                        vsum += v
+                        n += 1
     # Finds average time & voltage arrays
     t_avg = tsum / n
     v_avg = vsum / n
@@ -93,7 +98,7 @@ def average_waveform(start, end, data_file, dest_path, nhdr, save_name):
 
     # Saves average waveform data
     file_name = save_file / (save_name + '.txt')
-    hdr = 'Average Waveform\n\n\n\nTime,Ampl'
+    hdr = 'Average Waveform\n\n\n\nTime,Ampl\n'
     ww(t_avg, v_avg, file_name, hdr)
 
 
@@ -214,9 +219,10 @@ def rise_time_1090(t, v):
     for i in range(idx_start.item(), idx_end.item()):
         v_sum += v[i]
     avg = v_sum / (idx_end - idx_start)
+    min_v = min(v)
 
     idx = np.inf
-    idx_min_val = np.where(v == min(v))     # Finds index of minimum voltage value in voltage array
+    idx_min_val = np.where(v == min_v)     # Finds index of minimum voltage value in voltage array
     time_min_val = t[idx_min_val]           # Finds time of point of minimum voltage
     min_time = time_min_val[0]
 
@@ -224,7 +230,7 @@ def rise_time_1090(t, v):
     tvals1 = np.linspace(t[0], min_time, 5000)      # Creates array of times from beginning to point of min voltage
     vvals1 = np.interp(tvals1, t, v)   # Interpolates & creates array of voltages from beginning to point of min voltage
     vvals1_flip = np.flip(vvals1)       # Flips array, creating array of voltages from point of min voltage to beginning
-    difference_value = vvals1_flip - (0.1 * (min(v) - avg))     # Finds difference between points in beginning array and
+    difference_value = vvals1_flip - (0.1 * (min_v - avg))     # Finds difference between points in beginning array and
                                                                 # 10% max
     for i in range(0, len(difference_value) - 1):  # Starting at point of minimum voltage and going towards beginning
         if difference_value[i] >= 0:               # of waveform, finds where voltage becomes greater than 10% max
@@ -234,7 +240,7 @@ def rise_time_1090(t, v):
         idx = len(difference_value) - 1 - np.argmin(np.abs(difference_value))
     t1 = tvals[np.argmin(np.abs(tvals - tvals1[idx]))]      # Finds time of beginning of spe
 
-    val10 = .1 * (min(v) - avg)     # Calculates 10% max
+    val10 = .1 * (min_v - avg)      # Calculates 10% max
     val90 = 9 * val10               # Calculates 90% max
     tvals2 = np.linspace(t1, min_time, 5000)  # Creates array of times from beginning of spe to point of minimum voltage
     vvals2 = np.interp(tvals2, t, v)     # Interpolates & creates array of voltages from beginning of spe to min voltage
@@ -244,3 +250,142 @@ def rise_time_1090(t, v):
     rise_time1090 = float(format(time90 - time10, '.2e'))       # Calculates 10-90 rise time
 
     return rise_time1090
+
+
+# Creates text file with 10-90 rise times for an spe file
+def save_calculations(save_path, i, filter_1, filter_2, filter_4, filter_8, filter_2_2, filter_2_2_2):
+    file_name = str(save_path / 'D2--waveforms--%05d.txt') % i
+    myfile = open(file_name, 'w')
+    myfile.write('rise1090 no filter,' + str(filter_1))
+    myfile.write('\nrise1090 2x filter,' + str(filter_2))
+    myfile.write('\nrise1090 4x filter,' + str(filter_4))
+    myfile.write('\nrise1090 8x filter,' + str(filter_8))
+    myfile.write('\nrise1090 2x 2x filter,' + str(filter_2_2))
+    myfile.write('\nrise1090 2x 2x 2x filter,' + str(filter_2_2_2))
+    myfile.close()
+
+
+# Creates text file with data from an array
+def write_hist_data(array, dest_path, name):
+    array = np.sort(array)
+    file_name = Path(dest_path / 'hist_data' / name)
+
+    myfile = open(file_name, 'w')
+    for item in array:          # Writes an array item on each line of file
+        myfile.write(str(item) + '\n')
+    myfile.close()
+
+
+# Calculates 10-90 rise time for each filter for each spe file
+# Returns arrays of 10-90 rise times
+def make_arrays(dest_path, save_path, start, end, nhdr):
+    filter_1_array = np.array([])
+    filter_2_array = np.array([])
+    filter_4_array = np.array([])
+    filter_8_array = np.array([])
+    filter_2_2_array = np.array([])
+    filter_2_2_2_array = np.array([])
+    error_array = np.array([])
+
+    for i in range(start, end + 1):
+        file_name1 = str(dest_path / 'filter1' / 'D2--waveforms--%05d.txt') % i
+        file_name2 = str(dest_path / 'filter2' / 'D2--waveforms--%05d.txt') % i
+        file_name4 = str(dest_path / 'filter4' / 'D2--waveforms--%05d.txt') % i
+        file_name8 = str(dest_path / 'filter8' / 'D2--waveforms--%05d.txt') % i
+        file_name2_2 = str(dest_path / 'filter2_2' / 'D2--waveforms--%05d.txt') % i
+        file_name2_2_2 = str(dest_path / 'filter2_2_2' / 'D2--waveforms--%05d.txt') % i
+        file_name = str(save_path / 'D2--waveforms--%05d.txt') % i
+        if os.path.isfile(file_name1) and os.path.isfile(file_name2) and os.path.isfile(file_name4) and \
+                os.path.isfile(file_name8) and os.path.isfile(file_name2_2) and os.path.isfile(file_name2_2_2):
+            if os.path.isfile(file_name):      # If the calculations were done previously, they are read from a file
+                print("Reading calculations from shifted file #%05d" % i)
+                myfile = open(file_name2, 'r')      # Opens file with calculations
+                csv_reader = csv.reader(myfile)
+                file_array = np.array([])
+                for row in csv_reader:      # Creates array with calculation data
+                    file_array = np.append(file_array, float(row[1]))
+                myfile.close()
+                filter_1 = file_array[0]
+                filter_2 = file_array[1]
+                filter_4 = file_array[2]
+                filter_8 = file_array[3]
+                filter_2_2 = file_array[4]
+                filter_2_2_2 = file_array[5]
+                # Any spe waveform that returns impossible values is put into an array
+                if filter_1 <= 0 or filter_2 <= 0 or filter_4 <= 0 or filter_8 <= 0 or filter_2_2 <= 0 or filter_2_2_2 \
+                        <= 0:
+                    error_array = np.append(error_array, i)
+                # All other spe waveforms' calculations are placed into arrays
+                else:
+                    filter_1_array = np.append(filter_1_array, filter_1)
+                    filter_2_array = np.append(filter_2_array, filter_2)
+                    filter_4_array = np.append(filter_4_array, filter_4)
+                    filter_8_array = np.append(filter_8_array, filter_8)
+                    filter_2_2_array = np.append(filter_2_2_array, filter_2_2)
+                    filter_2_2_2_array = np.append(filter_2_2_2_array, filter_2_2_2)
+            else:           # If the calculations were not done yet, they are calculated
+                print("Calculating shifted file #%05d" % i)
+                t1, v1, hdr1 = rw(file_name1, nhdr)        # Unfiltered waveform file is read
+                filter_1 = rise_time_1090(t1, v1)     # 10-90 rise time of spe is calculated
+                t2, v2, hdr2 = rw(file_name2, nhdr)  # 2x filtered waveform file is read
+                filter_2 = rise_time_1090(t2, v2)  # 10-90 rise time of spe is calculated
+                t4, v4, hdr4 = rw(file_name4, nhdr)  # 4x filtered waveform file is read
+                filter_4 = rise_time_1090(t4, v4)  # 10-90 rise time of spe is calculated
+                t8, v8, hdr8 = rw(file_name8, nhdr)  # 8x filtered waveform file is read
+                filter_8 = rise_time_1090(t8, v8)  # 10-90 rise time of spe is calculated
+                t2_2, v2_2, hdr22 = rw(file_name2_2, nhdr)  # 2x 2x filtered waveform file is read
+                filter_2_2 = rise_time_1090(t2_2, v2_2)  # 10-90 rise time of spe is calculated
+                t2_2_2, v2_2_2, hdr2_2_2 = rw(file_name2_2_2, nhdr)  # 2x 2x 2x filtered waveform file is read
+                filter_2_2_2 = rise_time_1090(t2_2_2, v2_2_2)  # 10-90 rise time of spe is calculated
+                # Any spe waveform that returns impossible values is put into an array
+                if filter_1 <= 0 or filter_2 <= 0 or filter_4 <= 0 or filter_8 <= 0 or filter_2_2 <= 0 or filter_2_2_2 \
+                        <= 0:
+                    error_array = np.append(error_array, i)
+                # All other spe waveforms' calculations are saved in a file & placed into arrays
+                else:
+                    save_calculations(save_path, i, filter_1, filter_2, filter_4, filter_8, filter_2_2, filter_2_2_2)
+                    filter_1_array = np.append(filter_1_array, filter_1)
+                    filter_2_array = np.append(filter_2_array, filter_2)
+                    filter_4_array = np.append(filter_4_array, filter_4)
+                    filter_8_array = np.append(filter_8_array, filter_8)
+                    filter_2_2_array = np.append(filter_2_2_array, filter_2_2)
+                    filter_2_2_2_array = np.append(filter_2_2_2_array, filter_2_2_2)
+
+    return filter_1_array, filter_2_array, filter_4_array, filter_8_array, filter_2_2_array, filter_2_2_2_array
+
+
+# Creates histogram given an array
+def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename):
+
+    def func(x, a, b, c):           # Defines Gaussian function (a is amplitude, b is mean, c is standard deviation)
+        return a * np.exp(-(x - b) ** 2.0 / (2 * c ** 2))
+
+    path = Path(dest_path / 'plots')
+    n, bins, patches = plt.hist(array, nbins)       # Plots histogram
+    b_est, c_est = norm.fit(array)          # Calculates mean & standard deviation based on entire array
+    range_min1 = b_est - c_est              # Calculates lower limit of Gaussian fit (1sigma estimation)
+    range_max1 = b_est + c_est              # Calculates upper limit of Gaussian fit (1sigma estimation)
+    bins = np.delete(bins, len(bins) - 1)
+    bins_diff = bins[1] - bins[0]
+    bins = np.linspace(bins[0] + bins_diff / 2, bins[len(bins) - 1] + bins_diff / 2, len(bins))
+    bins_range1 = np.linspace(range_min1, range_max1, 10000)    # Creates array of bins between upper & lower limits
+    n_range1 = np.interp(bins_range1, bins, n)      # Interpolates & creates array of y axis values
+    guess1 = [1, float(b_est), float(c_est)]        # Defines guess for values of a, b & c in Gaussian fit
+    popt1, pcov1 = curve_fit(func, bins_range1, n_range1, p0=guess1, maxfev=10000)  # Finds Gaussian fit
+    mu1 = float(format(popt1[1], '.2e'))        # Calculates mean based on 1sigma guess
+    sigma1 = np.abs(float(format(popt1[2], '.2e')))     # Calculates standard deviation based on 1sigma estimation
+    range_min2 = mu1 - 2 * sigma1       # Calculates lower limit of Gaussian fit (2sigma)
+    range_max2 = mu1 + 2 * sigma1       # Calculates upper limit of Gaussian fit (2sigma)
+    bins_range2 = np.linspace(range_min2, range_max2, 10000)    # Creates array of bins between upper & lower limits
+    n_range2 = np.interp(bins_range2, bins, n)      # Interpolates & creates array of y axis values
+    guess2 = [1, mu1, sigma1]       # Defines guess for values of a, b & c in Gaussian fit
+    popt2, pcov2 = curve_fit(func, bins_range2, n_range2, p0=guess2, maxfev=10000)  # Finds Gaussian fit
+    plt.plot(bins_range2, func(bins_range2, *popt2), color='red')       # Plots Gaussian fit (mean +/- 2sigma)
+    mu2 = float(format(popt2[1], '.2e'))    # Calculates mean
+    sigma2 = np.abs(float(format(popt2[2], '.2e')))     # Calculates standard deviation
+    plt.xlabel(xaxis + ' (' + units + ')')
+    plt.title(title + ' of SPE\n mean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2) + ' ' + units)
+    plt.savefig(path / str(filename + '.png'), dpi=360)
+    plt.close()
+
+    write_hist_data(array, dest_path, filename + '.txt')
