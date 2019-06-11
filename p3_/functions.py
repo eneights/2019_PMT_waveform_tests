@@ -62,8 +62,8 @@ def digitize(v, noise):
     v_bits = np.array([])
     for i in range(len(v)):
         v_bits = np.append(v_bits, (v[i] * (2 ** 14 - 1) * 2 + 0.5))    # Converts voltage array to bits
-    noise_array = np.random.normal(scale=noise, size=len(v_new))        # Creates noise array
-    v_digitized = np.add(v_new, noise_array)        # Adds noise to digitized values
+    noise_array = np.random.normal(scale=noise, size=len(v_bits))        # Creates noise array
+    v_digitized = np.add(v_bits, noise_array)        # Adds noise to digitized values
     v_digitized = v_digitized.astype(int)
     return v_digitized
 
@@ -75,34 +75,35 @@ def average_waveform(start, end, data_file, dest_path, nhdr, save_name):
     vsum = 0
     n = 0
     for i in range(start, end + 1):
-        file_name = 'D2--waveforms--%05d.txt' % i
+        file_name = 'D3--waveforms--%05d.txt' % i
         if os.path.isfile(data_file / file_name):
             t, v, hdr = rw(data_file / file_name, nhdr)     # Reads a waveform file
-            v = v / min(v)                                  # Normalizes voltages
-            idx = np.where(t == 0)                          # Finds index of t = 0 point
-            idx = int(idx[0])
-            t = np.roll(t, -idx)                            # Rolls time array so that t = 0 point is at index 0
-            v = np.roll(v, -idx)                            # Rolls voltage array so that 50% max point is at index 0
-            idx2 = np.where(t == min(t))                    # Finds index of point of minimum t
-            idx2 = int(idx2[0])
-            idx3 = np.where(t == max(t))                    # Finds index of point of maximum t
-            idx3 = int(idx3[0])
-            # Only averages waveform files that have enough points before t = 0 & after the spe
-            if idx2 <= 3430:
-                # Removes points between point of maximum t & chosen minimum t in time & voltage arrays
-                t = np.concatenate((t[:idx3], t[3430:]))
-                v = np.concatenate((v[:idx3], v[3430:]))
-                # Rolls time & voltage arrays so that point of chosen minimum t is at index 0
-                t = np.roll(t, -idx3)
-                v = np.roll(v, -idx3)
-                if len(t) >= 3920:
-                    # Removes points after chosen point of maximum t in time & voltage arrays
-                    t = t[:3920]
-                    v = v[:3920]
-                    # Sums time & voltage arrays
-                    tsum += t
-                    vsum += v
-                    n += 1
+            if not min(v) == 0:
+                v = v / min(v)                              # Normalizes voltages
+                diff_val = np.abs(t)
+                idx = int(np.argmin(diff_val))              # Finds index of t = 0 point
+                t = np.roll(t, -idx)                        # Rolls time array so that t = 0 point is at index 0
+                v = np.roll(v, -idx)                        # Rolls voltage array so that 50% max point is at index 0
+                idx2 = np.where(t == min(t))                # Finds index of point of minimum t
+                idx2 = int(idx2[0])
+                idx3 = np.where(t == max(t))                # Finds index of point of maximum t
+                idx3 = int(idx3[0])
+                # Only averages waveform files that have enough points before t = 0 & after the spe
+                if idx2 <= 86:
+                    # Removes points between point of maximum t & chosen minimum t in time & voltage arrays
+                    t = np.concatenate((t[:idx3], t[86:]))
+                    v = np.concatenate((v[:idx3], v[86:]))
+                    # Rolls time & voltage arrays so that point of chosen minimum t is at index 0
+                    t = np.roll(t, -idx3)
+                    v = np.roll(v, -idx3)
+                    if len(t) >= 97:
+                        # Removes points after chosen point of maximum t in time & voltage arrays
+                        t = t[:97]
+                        v = v[:97]
+                        # Sums time & voltage arrays
+                        tsum += t
+                        vsum += v
+                        n += 1
     # Finds average time & voltage arrays
     t_avg = tsum / n
     v_avg = vsum / n

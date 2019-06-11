@@ -15,7 +15,7 @@ def p3(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     filt_path_8 = Path(dest_path / 'rt_8')
 
     # Copies waveforms with 1x, 2x, 4x, and 8x initial rise times to d3 folder
-    for i in range(start, end + 1):
+    '''for i in range(start, end + 1):
         file_name1 = str(data_path / 'filter1' / 'D2--waveforms--%05d.txt') % i
         file_name2 = str(data_path / 'filter2' / 'D2--waveforms--%05d.txt') % i
         file_name4 = str(data_path / 'filter2_2' / 'D2--waveforms--%05d.txt') % i
@@ -125,7 +125,7 @@ def p3(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
                 if not os.path.isfile(save_name8):
                     t, v, hdr = rw(file_name8, nhdr)
                     v_dig = digitize(v, noise)
-                    ww(t, v_dig, save_name8, hdr)
+                    ww(t, v_dig, save_name8, hdr)'''
 
     # Plots average waveforms for 1x, 2x, 4x, and 8x initial rise times after downsampling and digitizing
     print('Calculating rt_1 average waveforms...')
