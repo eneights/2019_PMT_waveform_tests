@@ -2,25 +2,27 @@ from functions import *
 from info_file import info_file
 
 
+# Creates data sets of spe waveforms with 2x, 4x, and 8x the initial rise times
 def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, offset, trig_delay, amp,
        band, nfilter):
     gen_path = Path(r'/Volumes/TOSHIBA EXT/data/watchman')
     save_path = Path(str(gen_path / '%08d_watchman_spe/waveforms/%s') % (date, filter_band))
     data_path = Path(save_path / 'd1')
-    dest_path_gen = Path(save_path / 'd2')
-    dest_path = Path(dest_path_gen / 'no_noise')
+    dest_path = Path(save_path / 'd2')
     filt_path1 = Path(dest_path / 'filter1')
     filt_path2 = Path(dest_path / 'filter2')
     filt_path2_2 = Path(dest_path / 'filter2_2')
     filt_path2_2_2 = Path(dest_path / 'filter2_2_2')
 
-    tau_2 = 1.3e-8
-    tau_2_2 = 1.052e-8
-    tau_2_2_2 = 3.3459999999999997e-8
+    # tau_2 = 1.3e-8
+    # tau_2_2 = 1.052e-8
+    # tau_2_2_2 = 3.3459999999999997e-8
 
-    '''x1_array = np.array([])
+    print('Calculating taus...')
+    x1_array = np.array([])
     j_array = np.array([])
 
+    # Uses average spe waveform to calculate tau to use in lowpass filter for 2x rise time
     average_file = str(data_path / 'hist_data' / 'avg_waveform.txt')
     t, v, hdr = rw(average_file, nhdr)
     v = -1 * v
@@ -35,10 +37,10 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
         if diff_val >= 0:
             break
     tau_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090))]
-    tau_2 = 1.3e-8
     v = -1 * v
-    v2 = lowpass_filter(v, tau_2, fsps)
+    v2 = lowpass_filter(v, tau_2, fsps)     # Creates new average waveform with 2x the rise time
 
+    # Uses average waveform with 2x the rise time to calculate tau to use in lowpass filter for 4x rise time
     v2 = -1 * v2
     x1_array = np.array([])
     j_array = np.array([])
@@ -53,10 +55,10 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
         if diff_val >= 0:
             break
     tau_2_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090_2))]
-    tau_2_2 = 1.052e-8
     v2 = -1 * v2
-    v2_2 = lowpass_filter(v2, tau_2_2, fsps)
+    v2_2 = lowpass_filter(v2, tau_2_2, fsps)    # Creates new average waveform with 4x the rise time
 
+    # Uses average waveform with 4x the rise time to calculate tau to use in lowpass filter for 8x rise time
     v2_2 = -1 * v2_2
     x1_array = np.array([])
     j_array = np.array([])
@@ -71,10 +73,10 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
         if diff_val >= 0:
             break
     tau_2_2_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090_2_2))]
-    tau_2_2_2 = 3.3459999999999997e-8
     v2_2 = -1 * v2_2
-    v2_2_2 = lowpass_filter(v2_2, tau_2_2_2, fsps)
+    v2_2_2 = lowpass_filter(v2_2, tau_2_2_2, fsps)      # Creates new average waveform with 8x the rise time
 
+    # Plots average spe waveforms with 1x, 2x, 4x, and 8x the rise time
     plt.plot(t, v)
     plt.plot(t, v2)
     plt.plot(t, v2_2)
@@ -84,8 +86,9 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     plt.title('Average Waveforms\norange tau = ' + str(format(tau_2, '.2e')) + ' s, green tau = ' +
               str(format(tau_2_2, '.2e')) + ' s, red tau = ' + str(format(tau_2_2_2, '.2e')) + ' s')
     plt.savefig(dest_path / 'plots' / 'avg_waveforms_2.png', dpi=360)
-    plt.close()'''
+    plt.close()
 
+    # For each spe waveform file, calculates and saves waveforms with 1x, 2x, 4x, and 8x the rise time
     for i in range(start, end + 1):
         file_name = str(data_path / 'd1_shifted' / 'D1--waveforms--%05d.txt') % i
         save_name1 = str(filt_path1 / 'D2--waveforms--%05d.txt') % i
@@ -128,6 +131,7 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
                 ww(t, v8, save_name8, hdr)
                 print('File #%05d in filter2_2_2 folder' % i)
 
+    # Plots average waveform for 1x rise time
     print('Calculating filter1 average waveform...')
     average_file = str(data_path / 'hist_data' / 'avg_waveform.txt')
     t, v, hdr = rw(average_file, nhdr)
@@ -139,19 +143,24 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     plt.close()
     ww(t, v, dest_path / 'hist_data' / 'avg_waveform1.txt', 'Average Waveform\n\n\n\nTime,Ampl\n')
 
+    # Plots average waveform for 2x rise time
     print('Calculating filter2 average waveform...')
     average_waveform(start, end, filt_path2, dest_path, nhdr, 'avg_waveform2')
 
+    # Plots average waveform for 4x rise time
     print('Calculating filter2_2 average waveform...')
     average_waveform(start, end, filt_path2_2, dest_path, nhdr, 'avg_waveform2_2')
 
+    # Plots average waveform for 8x rise time
     print('Calculating filter2_2_2 average waveform...')
     average_waveform(start, end, filt_path2_2_2, dest_path, nhdr, 'avg_waveform2_2_2')
 
+    # Calculates 10-90 rise times for each waveform and puts them into arrays
     print('Doing calculations...')
     filter_1_array, filter_2_array, filter_2_2_array, filter_2_2_2_array = \
         make_arrays(dest_path, dest_path / 'calculations', start, end, nhdr)
 
+    # Creates histograms of 10-90 rise times for 1x, 2x, 4x, and 8x the initial rise time
     print('Creating histograms...')
     plot_histogram(filter_1_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'filter_1')
     plot_histogram(filter_2_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'filter_2')

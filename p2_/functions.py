@@ -96,6 +96,7 @@ def average_waveform(start, end, data_file, dest_path, nhdr, save_name):
     ww(t_avg, v_avg, file_name, hdr)
 
 
+# Puts voltage array through a lowpass filter given a tau and sample rate
 def lowpass_filter(v, tau, fsps):
     v_filtered = np.array([])
     alpha = 1 - np.exp(-1. / (fsps * tau))
@@ -107,6 +108,7 @@ def lowpass_filter(v, tau, fsps):
     return v_filtered
 
 
+# Calculates 10-90 rise time
 def rise_time_1090(t, v):
     idx_start = np.argmin(np.abs(t + 2.5e-8))
     idx_end = np.argmin(np.abs(t + 5e-9))
