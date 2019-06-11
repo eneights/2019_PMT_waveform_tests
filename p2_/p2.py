@@ -3,8 +3,7 @@ from info_file import info_file
 
 
 # Creates data sets of spe waveforms with 2x, 4x, and 8x the initial rise times
-def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, offset, trig_delay, amp,
-       band, nfilter):
+def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, offset, trig_delay, amp, band, nfilter):
     gen_path = Path(r'/Volumes/TOSHIBA EXT/data/watchman')
     save_path = Path(str(gen_path / '%08d_watchman_spe/waveforms/%s') % (date, filter_band))
     data_path = Path(save_path / 'd1')
@@ -192,7 +191,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if not args.info_file:
-        if not (args.date or args.date_time or args.fil_band or args.fsps or args.baseline or args.r or args.pmt_hv or
+        if not (args.date or args.date_time or args.fil_band or args.fsps or args.r or args.pmt_hv or
                 args.gain or args.offset or args.trig_delay or args.amp or args.band or args.nfilter):
             print('Error: Must provide an info file or all other arguments')
         else:
