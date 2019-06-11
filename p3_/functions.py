@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from scipy.optimize import curve_fit
 from scipy.stats import norm
+import random
 
 
 # Reads csv file with header and time & voltage columns

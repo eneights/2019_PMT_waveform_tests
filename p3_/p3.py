@@ -2,6 +2,7 @@ from functions import *
 from info_file import info_file
 
 
+# Downsamples and digitizes spe waveforms
 def p3(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, offset, trig_delay, amp, band, nfilter,
        fsps_new, noise):
     gen_path = Path(r'/Volumes/TOSHIBA EXT/data/watchman')
@@ -13,6 +14,7 @@ def p3(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     filt_path_4 = Path(dest_path / 'rt_4')
     filt_path_8 = Path(dest_path / 'rt_8')
 
+    # Copies waveforms with 1x, 2x, 4x, and 8x initial rise times to d3 folder
     for i in range(start, end + 1):
         file_name1 = str(data_path / 'filter1' / 'D2--waveforms--%05d.txt') % i
         file_name2 = str(data_path / 'filter2' / 'D2--waveforms--%05d.txt') % i
@@ -55,6 +57,7 @@ def p3(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
                 ww(t, v, save_name8, hdr)
                 print('File #%05d in rt_8 folder' % i)
 
+    # Downsamples waveforms using given fsps
     for i in range(start, end + 1):
         file_name1 = str(filt_path_1 / 'raw' / 'D3--waveforms--%05d.txt') % i
         file_name2 = str(filt_path_2 / 'raw' / 'D3--waveforms--%05d.txt') % i
@@ -89,6 +92,7 @@ def p3(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
                     t_ds, v_ds = downsample(t, v, fsps, fsps_new)
                     ww(t_ds, v_ds, save_name8, hdr)
 
+    # Digitizes waveforms using given noise
     for i in range(start, end + 1):
         file_name1 = str(filt_path_1 / 'downsampled' / 'D3--waveforms--%05d.txt') % i
         file_name2 = str(filt_path_2 / 'downsampled' / 'D3--waveforms--%05d.txt') % i
@@ -123,6 +127,7 @@ def p3(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
                     v_dig = digitize(v, noise)
                     ww(t, v_dig, save_name8, hdr)
 
+    # Plots average waveforms for 1x, 2x, 4x, and 8x initial rise times after downsampling and digitizing
     print('Calculating rt_1 average waveforms...')
     average_waveform(start, end, filt_path_1 / 'downsampled', dest_path, nhdr, 'avg_waveform_1_ds')
     average_waveform(start, end, filt_path_1 / 'digitized', dest_path, nhdr, 'avg_waveform_1_dig')
@@ -139,6 +144,7 @@ def p3(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     average_waveform(start, end, filt_path_8 / 'downsampled', dest_path, nhdr, 'avg_waveform_8_ds')
     average_waveform(start, end, filt_path_8 / 'digitized', dest_path, nhdr, 'avg_waveform_8_dig')
 
+    # Writes info file
     info_file(date_time, source_path, dest_path, pmt_hv, gain, offset, trig_delay, amp, fsps, band, nfilter, r)
 
 
@@ -160,7 +166,7 @@ if __name__ == '__main__':
     parser.add_argument("--amp", type=float, help='amplitude of pulse generator (V) (suggested=3.5)')
     parser.add_argument("--band", type=str, help='bandwidth of oscilloscope (Hz)')
     parser.add_argument("--nfilter", type=float, help='noise filter on oscilloscope (bits)')
-    parser.add_argument("--fsps_new", type=float, help='new samples per second (Hz) (suggested=500.)')
+    parser.add_argument("--fsps_new", type=float, help='new samples per second (Hz) (suggested=500000000.)')
     parser.add_argument("--noise", type=float, help='noise to add (bits) (suggested=3.30)')
     parser.add_argument("--info_file", type=str, help='path to d2 info file')
     args = parser.parse_args()

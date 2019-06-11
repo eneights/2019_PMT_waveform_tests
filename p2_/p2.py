@@ -166,6 +166,7 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     plot_histogram(filter_2_2_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'filter_2_2')
     plot_histogram(filter_2_2_2_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'filter_2_2_2')
 
+    # Writes info file
     info_file(date_time, data_path, dest_path, pmt_hv, gain, offset, trig_delay, amp, fsps, band, nfilter, r)
 
 
