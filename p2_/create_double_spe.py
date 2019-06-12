@@ -14,43 +14,50 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
     file_array = np.array([])
     double_file_array = np.array([])
 
+    print('Looping through files...')
     for i in range(99999):
         file_name = 'D2--waveforms--%05d.txt' % i
         if os.path.isfile(filt_path / file_name):
             file_array = np.append(file_array, i)
 
+    print('Checking existing files...')
     for filename in os.listdir(path1 / delay_folder):
+        print(filename, 'is a file')
         files_added = filename[15:27]
         double_file_array = np.append(double_file_array, files_added)
 
-    for i in range(nloops - len([name for name in os.listdir(path1 / delay_folder) if os.path.isfile(name)])):
+    for i in range(nloops - len(double_file_array)):
         idx1 = np.random.randint(len(file_array))
         idx2 = np.random.randint(len(file_array))
         file_1 = file_array[idx1]
         file_2 = file_array[idx2]
+        print('Adding files #%05d & #%05d' % (file_1, file_2))
         files_added = '%05d--%05d' % (file_1, file_2)
         double_file_array = np.append(double_file_array, files_added)
         file_name_1 = str(filt_path / 'D2--waveforms--%05d.txt') % file_1
         file_name_2 = str(filt_path / 'D2--waveforms--%05d.txt') % file_2
         t1, v1, hdr1 = rw(file_name_1, nhdr)
         t2, v2, hdr2 = rw(file_name_2, nhdr)
+        delay_idx = int(delay / (t1[1] - t1[0]))
+        delay_amt = delay_idx * (t1[1] - t1[0])
         if min(t1) > min(t2):
-            t2 += delay
+            t2 += delay_amt
         else:
-            t1 += delay
+            t1 += delay_amt
         min_time = max(min(t1), min(t2))
         idx_min_1 = int(np.where(t1 == min_time)[0])
         idx_min_2 = int(np.where(t2 == min_time)[0])
         max_time = min(max(t1), max(t2))
         idx_max_1 = int(np.where(t1 == max_time)[0])
         idx_max_2 = int(np.where(t2 == max_time)[0])
-        t = np.concatenate((t1[idx_min_1:], t1[:idx_max_1 + 1]))
-        v1 = np.concatenate((v1[idx_min_1:], v1[:idx_max_1 + 1]))
-        v2 = np.concatenate((v2[idx_min_2:], v2[:idx_max_2 + 1]))
+        t = t1[idx_min_1:idx_max_1 + 1]
+        v1 = v1[idx_min_1:idx_max_1 + 1]
+        v2 = v2[idx_min_2:idx_max_2 + 1]
         v = np.add(v1, v2)
         file_name = 'D2--waveforms--%s.txt' % files_added
         ww(t, v, path1 / delay_folder / file_name, hdr1)
 
+    print('Calculating average double spe waveform...')
     save_file = Path(dest_path / 'plots')
     tsum = 0
     vsum = 0
@@ -68,17 +75,17 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
         idx3 = np.where(t == max(t))        # Finds index of point of maximum t
         idx3 = int(idx3[0])
         # Only averages waveform files that have enough points before t = 0 & after the spe
-        if idx2 <= 3430:
+        if idx2 <= 3445:
             # Removes points between point of maximum t & chosen minimum t in time & voltage arrays
-            t = np.concatenate((t[:idx3], t[3430:]))
-            v = np.concatenate((v[:idx3], v[3430:]))
+            t = np.concatenate((t[:idx3], t[3445:]))
+            v = np.concatenate((v[:idx3], v[3445:]))
             # Rolls time & voltage arrays so that point of chosen minimum t is at index 0
             t = np.roll(t, -idx3)
             v = np.roll(v, -idx3)
-            if len(t) >= 3920:
+            if len(t) >= 3800:
                 # Removes points after chosen point of maximum t in time & voltage arrays
-                t = t[:3920]
-                v = v[:3920]
+                t = t[:3800]
+                v = v[:3800]
                 # Sums time & voltage arrays
                 tsum += t
                 vsum += v
@@ -200,7 +207,8 @@ if __name__ == '__main__':
     parser.add_argument("--nhdr", type=int, help='number of header lines to skip in raw file (default=5)', default=5)
     parser.add_argument("--delay", type=float, help='delay time (s) (default=0.)', default=0.)
     parser.add_argument("--delay_folder", type=str, help='folder name for delay (default=no_delay)', default='no_delay')
-    parser.add_argument("--fsps", type=float, help='samples per second (Hz) (suggested=20000000000.)')
+    parser.add_argument("--fsps", type=float, help='samples per second (Hz) (default=20000000000.)',
+                        default=20000000000.)
     args = parser.parse_args()
 
     create_double_spe(args.nloops, args.date, args.fil_band, args.nhdr, args.delay, args.delay_folder, args.fsps)
