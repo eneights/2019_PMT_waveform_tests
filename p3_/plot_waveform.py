@@ -1,7 +1,7 @@
 from functions import *
 
 gen_path = Path(r'/Volumes/TOSHIBA EXT/data/watchman/20190513_watchman_spe/waveforms/full_bdw_no_nf/d3')
-folder = str('rt_1/downsampled')
+folder = str('rt_1/digitized')
 file_num = 3
 file_name = str(gen_path / folder / 'D3--waveforms--%05d.txt') % file_num
 

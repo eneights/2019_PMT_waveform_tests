@@ -116,6 +116,6 @@ def average_waveform(start, end, data_file, dest_path, nhdr, save_name):
     plt.close()
 
     # Saves average waveform data
-    file_name = dest_path / 'plots' / (save_name + '.txt')
+    file_name = dest_path / 'hist_data' / (save_name + '.txt')
     hdr = 'Average Waveform\n\n\n\nTime,Ampl\n'
     ww(t_avg, v_avg, file_name, hdr)
