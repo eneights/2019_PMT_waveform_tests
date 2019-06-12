@@ -47,13 +47,12 @@ def ww(x, y, file_name, hdr):
 # Given a time array, voltage array, sample rate, and new sample rate, creates downsampled time and voltage arrays
 def downsample(t, v, fsps, fsps_new):
     steps = int(fsps / fsps_new + 0.5)
-    idx_start = random.randint(0, steps - 1)    # Picks a random index to start at
-    idx_max = len(v) - 1 - idx_start            # Calculates max value that can be added to starting index
+    idx_start = random.randint(0, steps - 1)        # Picks a random index to start at
     t_ds = np.array([])
     v_ds = np.array([])
-    for i in range(int(idx_max / steps) + 1):  # Creates time & voltage arrays out of values that digitizer would detect
-        t_ds = np.append(t_ds, t[idx_start + i])
-        v_ds = np.append(v_ds, v[idx_start + i])
+    for i in range(idx_start, len(v) - 1, steps):   # Creates time & voltage arrays that digitizer would detect
+        t_ds = np.append(t_ds, t[i])
+        v_ds = np.append(v_ds, v[i])
     return t_ds, v_ds
 
 
