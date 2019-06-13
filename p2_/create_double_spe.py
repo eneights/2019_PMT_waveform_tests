@@ -44,7 +44,12 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
             t2 += delay_amt
         else:
             t1 += delay_amt
+        for j in range(len(t1)):
+            t1[j] = float(format(t1[j], '.4e'))
+        for j in range(len(t2)):
+            t2[j] = float(format(t2[j], '.4e'))
         min_time = max(min(t1), min(t2))
+        min_time = float(format(min_time, '.4e'))
         idx_min_1 = int(np.where(t1 == min_time)[0])
         idx_min_2 = int(np.where(t2 == min_time)[0])
         max_time = min(max(t1), max(t2))
@@ -66,8 +71,7 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
         file_name = 'D2--waveforms--%s.txt' % item
         t, v, hdr = rw(path1 / delay_folder / file_name, nhdr)      # Reads a waveform file
         v = v / min(v)                                              # Normalizes voltages
-        idx = np.where(t == 0)                                      # Finds index of t = 0 point
-        idx = int(idx[0])
+        idx = int(np.argmin(np.abs(t)))               # Finds index of t = 0 point
         t = np.roll(t, -idx)        # Rolls time array so that t = 0 point is at index 0
         v = np.roll(v, -idx)        # Rolls voltage array so that 50% max point is at index 0
         idx2 = np.where(t == min(t))        # Finds index of point of minimum t
@@ -199,7 +203,7 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
 
 if __name__ == '__main__':
     import argparse
-    parser = argparse.ArgumentParser(prog="p2", description="Creating D2")
+    parser = argparse.ArgumentParser(prog="create_double_spe", description="Adds spe waveforms")
     parser.add_argument("--nloops", type=int, help='number of double spe files to create (default=1000)', default=1000)
     parser.add_argument("--date", type=int, help='date of data acquisition (default=20190513)', default=20190513)
     parser.add_argument("--fil_band", type=str, help='folder name for data (default=full_bdw_no_nf)',
