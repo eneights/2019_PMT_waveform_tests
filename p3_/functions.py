@@ -108,7 +108,8 @@ def average_waveform(start, end, data_file, dest_path, nhdr, save_name):
     v_avg = vsum / n
 
     # Plots average waveform & saves image
-    plt.scatter(t_avg, v_avg)
+    plt.scatter(t_avg, v_avg, s=15)
+    plt.xlim([min(t_avg) - 8 * (t_avg[1] - t_avg[0]), max(t_avg) + 8 * (t_avg[1] - t_avg[0])])
     plt.plot(t_avg, v_avg)
     plt.xlabel('Time (s)')
     plt.ylabel('Normalized Voltage')
@@ -342,6 +343,6 @@ def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename):
     plt.xlabel(xaxis + ' (' + units + ')')
     plt.title(title + ' of SPE\n mean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2) + ' ' + units)
     plt.savefig(path / str(filename + '.png'), dpi=360)
-    plt.show()      # Plots histogram with Gaussian fit
+    plt.close()
 
     write_hist_data(array, dest_path, filename + '.txt')
