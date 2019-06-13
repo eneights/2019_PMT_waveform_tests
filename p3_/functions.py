@@ -215,11 +215,12 @@ def calculate_fwhm(t, v):
         if differential[i] < 0:                                 # negative value equal to infinity
             difference_value[i] = np.inf
     difference_value = difference_value[index_min.item():len(vvals) - 1]
-    idx = np.argmin(difference_value)       # Finds index of 50% max in voltage array
-    half_max_time = tvals[idx + index_min.item()]   # Finds time of 50% max
-
-    return half_max_time
-
+    try:
+        idx = np.argmin(difference_value)       # Finds index of 50% max in voltage array
+        half_max_time = tvals[idx + index_min.item()]   # Finds time of 50% max
+        return half_max_time
+    except Exception:
+        return -1
 
 # Creates text file with time of beginning of spe, time of end of spe, charge, amplitude, fwhm, 10-90 & 20-80 rise
 # times, 10-90 & 20-80 fall times, and 10%, 20%, 80% & 90% jitter for an spe file
@@ -298,7 +299,6 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
                     print('Removing file #%s' % item)
                     os.remove(raw_file)
                     os.remove(file_name1)
-                    os.remove(file_name2)
                     os.remove(str(dest_path / double_folder / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') %
                               item)
                 # All other double spe waveforms' calculations are saved in a file & placed into arrays
@@ -322,6 +322,8 @@ def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename):
     b_est, c_est = norm.fit(array)          # Calculates mean & standard deviation based on entire array
     range_min1 = b_est - c_est              # Calculates lower limit of Gaussian fit (1sigma estimation)
     range_max1 = b_est + c_est              # Calculates upper limit of Gaussian fit (1sigma estimation)
+    # range_min1 = b_est - (b_est / 3) - (c_est / 2)    # FOR AMP_DOUBLE_SPE_4_3X_RT ONLY (1/2sigma estimation)
+    # range_max1 = b_est - (b_est / 3) + (c_est / 2)    # FOR AMP_DOUBLE_SPE_4_3X_RT ONLY (1/2sigma estimation)
     bins = np.delete(bins, len(bins) - 1)
     bins_diff = bins[1] - bins[0]
     bins = np.linspace(bins[0] + bins_diff / 2, bins[len(bins) - 1] + bins_diff / 2, len(bins))

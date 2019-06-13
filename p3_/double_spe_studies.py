@@ -198,17 +198,17 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
         idx3 = np.where(t == max(t))        # Finds index of point of maximum t
         idx3 = int(idx3[0])
         # Only averages waveform files that have enough points before t = 0 & after the spe
-        if idx2 <= 84:
+        if idx2 <= 88:
             # Removes points between point of maximum t & chosen minimum t in time & voltage arrays
-            t = np.concatenate((t[:idx3], t[84:]))
-            v = np.concatenate((v[:idx3], v[84:]))
+            t = np.concatenate((t[:idx3], t[88:]))
+            v = np.concatenate((v[:idx3], v[88:]))
             # Rolls time & voltage arrays so that point of chosen minimum t is at index 0
             t = np.roll(t, -idx3)
             v = np.roll(v, -idx3)
-            if len(t) >= 95:
+            if len(t) >= 65:
                 # Removes points after chosen point of maximum t in time & voltage arrays
-                t = t[:95]
-                v = v[:95]
+                t = t[:65]
+                v = v[:65]
                 # Sums time & voltage arrays
                 tsum += t
                 vsum += v
@@ -258,10 +258,10 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
                    str(delay_folder))
     plot_histogram(amplitude_array_8, dest_path, 100, 'Voltage', 'Amplitude', 'bits', 'amp_double_spe_8_' +
                    str(delay_folder))
-    plot_histogram(fwhm_array, dest_path, 100, 'Time', 'FWHM', 's', 'fwhm_double_spe_')
-    plot_histogram(fwhm_array_2, dest_path, 100, 'Time', 'FWHM', 's', 'fwhm_double_spe_2_')
-    plot_histogram(fwhm_array_4, dest_path, 100, 'Time', 'FWHM', 's', 'fwhm_double_spe_4_')
-    plot_histogram(fwhm_array_8, dest_path, 100, 'Time', 'FWHM', 's', 'fwhm_double_spe_8_')
+    plot_histogram(fwhm_array, dest_path, 100, 'Time', 'FWHM', 's', 'fwhm_double_spe_' + str(delay_folder))
+    plot_histogram(fwhm_array_2, dest_path, 100, 'Time', 'FWHM', 's', 'fwhm_double_spe_2_' + str(delay_folder))
+    plot_histogram(fwhm_array_4, dest_path, 100, 'Time', 'FWHM', 's', 'fwhm_double_spe_4_' + str(delay_folder))
+    plot_histogram(fwhm_array_8, dest_path, 100, 'Time', 'FWHM', 's', 'fwhm_double_spe_8_' + str(delay_folder))
 
 
 if __name__ == '__main__':
