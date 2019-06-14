@@ -151,13 +151,13 @@ def rise_time_1090(t, v):
 
 
 # Creates text file with 10-90 rise times for an spe file
-def save_calculations(save_path, i, filter_1, filter_2, filter_2_2, filter_2_2_2):
+def save_calculations(save_path, i, rt_1, rt_2, rt_4, rt_8):
     file_name = str(save_path / 'D2--waveforms--%05d.txt') % i
     myfile = open(file_name, 'w')
-    myfile.write('rise1090 no filter,' + str(filter_1))
-    myfile.write('\nrise1090 2x filter,' + str(filter_2))
-    myfile.write('\nrise1090 2x 2x filter,' + str(filter_2_2))
-    myfile.write('\nrise1090 2x 2x 2x filter,' + str(filter_2_2_2))
+    myfile.write('rise1090 no filter,' + str(rt_1))
+    myfile.write('\nrise1090 2x filter,' + str(rt_2))
+    myfile.write('\nrise1090 2x 2x filter,' + str(rt_4))
+    myfile.write('\nrise1090 2x 2x 2x filter,' + str(rt_8))
     myfile.close()
 
 
@@ -181,10 +181,10 @@ def make_arrays(dest_path, save_path, start, end, nhdr):
     filter_2_2_2_array = np.array([])
 
     for i in range(start, end + 1):
-        file_name1 = str(dest_path / 'filter1' / 'D2--waveforms--%05d.txt') % i
-        file_name2 = str(dest_path / 'filter2' / 'D2--waveforms--%05d.txt') % i
-        file_name2_2 = str(dest_path / 'filter2_2' / 'D2--waveforms--%05d.txt') % i
-        file_name2_2_2 = str(dest_path / 'filter2_2_2' / 'D2--waveforms--%05d.txt') % i
+        file_name1 = str(dest_path / 'rt_1' / 'D2--waveforms--%05d.txt') % i
+        file_name2 = str(dest_path / 'rt_2' / 'D2--waveforms--%05d.txt') % i
+        file_name2_2 = str(dest_path / 'rt_4' / 'D2--waveforms--%05d.txt') % i
+        file_name2_2_2 = str(dest_path / 'rt_8' / 'D2--waveforms--%05d.txt') % i
         save_name = str(save_path / 'D2--waveforms--%05d.txt') % i
 
         if os.path.isfile(save_name):           # If the calculations were done previously, they are read from a file
@@ -267,18 +267,18 @@ def make_arrays(dest_path, save_path, start, end, nhdr):
                     save_calculations(save_path, i, filter_1, filter_2, filter_2_2, filter_2_2_2)
             else:
                 if os.path.isfile(file_name1):
-                    print('Removing file #%05d from filter1' % i)
+                    print('Removing file #%05d from rt_1' % i)
                     t, v, hdr = rw(file_name1, nhdr)
                     ww(t, v, str(dest_path / 'unusable_data' / 'D2--waveforms--%05d.txt') % i, hdr)
                     os.remove(file_name1)
                 if os.path.isfile(file_name2):
-                    print('Removing file #%05d from filter2' % i)
+                    print('Removing file #%05d from rt_2' % i)
                     os.remove(file_name2)
                 if os.path.isfile(file_name2_2):
-                    print('Removing file #%05d from filter2_2' % i)
+                    print('Removing file #%05d from rt_4' % i)
                     os.remove(file_name2_2)
                 if os.path.isfile(file_name2_2_2):
-                    print('Removing file #%05d from filter2_2_2' % i)
+                    print('Removing file #%05d from rt_8' % i)
                     os.remove(file_name2_2_2)
 
     return filter_1_array, filter_2_array, filter_2_2_array, filter_2_2_2_array

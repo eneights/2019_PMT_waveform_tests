@@ -317,10 +317,10 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
     plot_histogram(amplitude_array_2_s, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_spe_2')
     plot_histogram(amplitude_array_4_s, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_spe_4')
     plot_histogram(amplitude_array_8_s, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_spe_8')
-    plot_histogram(fwhm_array_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_spe')
-    plot_histogram(fwhm_array_2_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_spe_2')
-    plot_histogram(fwhm_array_4_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_spe_4')
-    plot_histogram(fwhm_array_8_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_spe_8')
+    plot_histogram(fwhm_array_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe')
+    plot_histogram(fwhm_array_2_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe_2')
+    plot_histogram(fwhm_array_4_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe_4')
+    plot_histogram(fwhm_array_8_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe_8')
 
     # Creates double & single spe histograms on same plot
     print('Creating histograms...')
@@ -332,23 +332,22 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
                      str(delay_folder), 'charge_rt4_' + str(delay_folder))
     plot_double_hist(dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_spe_8', 'charge_double_spe_8_' +
                      str(delay_folder), 'charge_rt8_' + str(delay_folder))
-    plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 's*bit/ohm', 'amplitude_single_spe',
-                     'amplitude_double_spe_' + str(delay_folder), 'amplitude_rt1_' + str(delay_folder))
-    plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 's*bit/ohm', 'amplitude_single_spe_2',
-                     'amplitude_double_spe_2_' + str(delay_folder), 'amplitude_rt2_' + str(delay_folder))
-    plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 's*bit/ohm', 'amplitude_single_spe_4',
-                     'amplitude_double_spe_4_' + str(delay_folder), 'amplitude_rt4_' + str(delay_folder))
-    plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 's*bit/ohm', 'amplitude_single_spe_8',
-                     'amplitude_double_spe_8_' + str(delay_folder), 'amplitude_rt8_' + str(delay_folder))
-    plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe', 'fwhm_double_spe_' +
-                     str(delay_folder), 'fwhm_rt1_' + str(delay_folder))
-    plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe_2', 'fwhm_double_spe_2_' +
-                     str(delay_folder), 'fwhm_rt2_' + str(delay_folder))
-    plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe_4', 'fwhm_double_spe_4_' +
-                     str(delay_folder), 'fwhm_rt4_' + str(delay_folder))
-    plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe_8', 'fwhm_double_spe_8_' +
-                     str(delay_folder), 'fwhm_rt8_' + str(delay_folder))
-
+    plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_spe', 'amp_double_spe_' +
+                     str(delay_folder), 'amp_rt1_' + str(delay_folder))
+    plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_spe_2', 'amp_double_spe_2_'
+                     + str(delay_folder), 'amp_rt2_' + str(delay_folder))
+    plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_spe_4', 'amp_double_spe_4_'
+                     + str(delay_folder), 'amp_rt4_' + str(delay_folder))
+    plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_spe_8', 'amp_double_spe_8_'
+                     + str(delay_folder), 'amp_rt8_' + str(delay_folder))
+    plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe', 'fwhm_double_spe_' + str(delay_folder),
+                     'fwhm_rt1_' + str(delay_folder))
+    plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe_2', 'fwhm_double_spe_2_' + str(delay_folder),
+                     'fwhm_rt2_' + str(delay_folder))
+    plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe_4', 'fwhm_double_spe_4_' + str(delay_folder),
+                     'fwhm_rt4_' + str(delay_folder))
+    plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe_8', 'fwhm_double_spe_8_' + str(delay_folder),
+                     'fwhm_rt8_' + str(delay_folder))
 
 
 if __name__ == '__main__':

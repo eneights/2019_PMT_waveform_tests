@@ -8,21 +8,17 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     save_path = Path(str(gen_path / '%08d_watchman_spe/waveforms/%s') % (date, filter_band))
     data_path = Path(save_path / 'd1')
     dest_path = Path(save_path / 'd2')
-    filt_path1 = Path(dest_path / 'filter1')
-    filt_path2 = Path(dest_path / 'filter2')
-    filt_path2_2 = Path(dest_path / 'filter2_2')
-    filt_path2_2_2 = Path(dest_path / 'filter2_2_2')
-
-    # tau_2 = 1.3e-8
-    # tau_2_2 = 1.052e-8
-    # tau_2_2_2 = 3.3459999999999997e-8
+    filt_path1 = Path(dest_path / 'rt_1')
+    filt_path2 = Path(dest_path / 'rt_2')
+    filt_path2_2 = Path(dest_path / 'rt_4')
+    filt_path2_2_2 = Path(dest_path / 'rt_8')
 
     print('Calculating taus...')
     x1_array = np.array([])
     j_array = np.array([])
 
     # Uses average spe waveform to calculate tau to use in lowpass filter for 2x rise time
-    average_file = str(data_path / 'hist_data' / 'avg_waveform.txt')
+    average_file = str(data_path / 'hist_data' / 'avg_waveform_d1b.txt')
     t, v, hdr = rw(average_file, nhdr)
     v = -1 * v
     rt1090 = rise_time_1090(t, v)
@@ -89,7 +85,7 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
 
     # For each spe waveform file, calculates and saves waveforms with 1x, 2x, 4x, and 8x the rise time
     for i in range(start, end + 1):
-        file_name = str(data_path / 'd1_shifted' / 'D1--waveforms--%05d.txt') % i
+        file_name = str(data_path / 'd1b_shifted' / 'D1--waveforms--%05d.txt') % i
         save_name1 = str(filt_path1 / 'D2--waveforms--%05d.txt') % i
         save_name2 = str(filt_path2 / 'D2--waveforms--%05d.txt') % i
         save_name4 = str(filt_path2_2 / 'D2--waveforms--%05d.txt') % i
@@ -97,42 +93,42 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
 
         if os.path.isfile(file_name):
             if os.path.isfile(save_name1):
-                print('File #%05d in filter1 folder' % i)
+                print('File #%05d in rt_1 folder' % i)
             else:
                 t, v, hdr = rw(file_name, nhdr)
                 ww(t, v, save_name1, hdr)
-                print('File #%05d in filter1 folder' % i)
+                print('File #%05d in rt_1 folder' % i)
 
         if os.path.isfile(save_name1):
             if os.path.isfile(save_name2):
-                print('File #%05d in filter2 folder' % i)
+                print('File #%05d in rt_2 folder' % i)
             else:
                 t, v, hdr = rw(save_name1, nhdr)
                 v2 = lowpass_filter(v, tau_2, fsps)
                 ww(t, v2, save_name2, hdr)
-                print('File #%05d in filter2 folder' % i)
+                print('File #%05d in rt_2 folder' % i)
 
         if os.path.isfile(save_name2):
             if os.path.isfile(save_name4):
-                print('File #%05d in filter2_2 folder' % i)
+                print('File #%05d in rt_4 folder' % i)
             else:
                 t, v, hdr = rw(save_name2, nhdr)
                 v4 = lowpass_filter(v, tau_2_2, fsps)
                 ww(t, v4, save_name4, hdr)
-                print('File #%05d in filter2_2 folder' % i)
+                print('File #%05d in rt_4 folder' % i)
 
         if os.path.isfile(save_name4):
             if os.path.isfile(save_name8):
-                print('File #%05d in filter2_2_2 folder' % i)
+                print('File #%05d in rt_8 folder' % i)
             else:
                 t, v, hdr = rw(save_name4, nhdr)
                 v8 = lowpass_filter(v, tau_2_2_2, fsps)
                 ww(t, v8, save_name8, hdr)
-                print('File #%05d in filter2_2_2 folder' % i)
+                print('File #%05d in rt_8 folder' % i)
 
     # Plots average waveform for 1x rise time
-    print('Calculating filter1 average waveform...')
-    average_file = str(data_path / 'hist_data' / 'avg_waveform.txt')
+    print('Calculating rt_1 average waveform...')
+    average_file = str(data_path / 'hist_data' / 'avg_waveform_d1b.txt')
     t, v, hdr = rw(average_file, nhdr)
     plt.plot(t, v)
     plt.xlabel('Time (s)')
@@ -143,28 +139,28 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     ww(t, v, dest_path / 'hist_data' / 'avg_waveform1.txt', 'Average Waveform\n\n\n\nTime,Ampl\n')
 
     # Plots average waveform for 2x rise time
-    print('Calculating filter2 average waveform...')
+    print('Calculating rt_2 average waveform...')
     average_waveform(start, end, filt_path2, dest_path, nhdr, 'avg_waveform2')
 
     # Plots average waveform for 4x rise time
-    print('Calculating filter2_2 average waveform...')
+    print('Calculating rt_4 average waveform...')
     average_waveform(start, end, filt_path2_2, dest_path, nhdr, 'avg_waveform2_2')
 
     # Plots average waveform for 8x rise time
-    print('Calculating filter2_2_2 average waveform...')
+    print('Calculating rt_8 average waveform...')
     average_waveform(start, end, filt_path2_2_2, dest_path, nhdr, 'avg_waveform2_2_2')
 
     # Calculates 10-90 rise times for each waveform and puts them into arrays
     print('Doing calculations...')
-    filter_1_array, filter_2_array, filter_2_2_array, filter_2_2_2_array = \
-        make_arrays(dest_path, dest_path / 'calculations', start, end, nhdr)
+    rt_1_array, rt_2_array, rt_4_array, rt_8_array = make_arrays(dest_path, dest_path / 'calculations', start, end,
+                                                                 nhdr)
 
     # Creates histograms of 10-90 rise times for 1x, 2x, 4x, and 8x the initial rise time
     print('Creating histograms...')
-    plot_histogram(filter_1_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'filter_1')
-    plot_histogram(filter_2_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'filter_2')
-    plot_histogram(filter_2_2_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'filter_2_2')
-    plot_histogram(filter_2_2_2_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'filter_2_2_2')
+    plot_histogram(rt_1_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_1')
+    plot_histogram(rt_2_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_2')
+    plot_histogram(rt_4_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_4')
+    plot_histogram(rt_8_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_8')
 
     # Writes info file
     info_file(date_time, data_path, dest_path, pmt_hv, gain, offset, trig_delay, amp, fsps, band, nfilter, r)

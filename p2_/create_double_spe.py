@@ -6,11 +6,8 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
     gen_path = Path(r'/Volumes/TOSHIBA EXT/data/watchman')
     save_path = Path(str(gen_path / '%08d_watchman_spe/waveforms/%s') % (date, filter_band))
     dest_path = Path(save_path / 'd2')
-    filt_path = Path(dest_path / 'filter1')
-    path1 = Path(dest_path / 'double_spe')
-    path2 = Path(dest_path / 'double_spe_2')
-    path4 = Path(dest_path / 'double_spe_4')
-    path8 = Path(dest_path / 'double_spe_8')
+    filt_path = Path(dest_path / 'rt_1')
+    double_path = Path(dest_path / 'double_spe')
     single_path = Path(dest_path / 'single_spe')
 
     file_array = np.array([])
@@ -26,7 +23,7 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
 
     # Checks for existing double spe files
     print('Checking existing double spe files...')
-    for filename in os.listdir(path1 / delay_folder):
+    for filename in os.listdir(double_path / 'rt_1' / delay_folder):
         print(filename, 'is a file')
         files_added = filename[15:27]
         double_file_array = np.append(double_file_array, files_added)
@@ -66,7 +63,7 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
         v2 = v2[idx_min_2:idx_max_2 + 1]
         v = np.add(v1, v2)
         file_name = 'D2--waveforms--%s.txt' % files_added
-        ww(t, v, path1 / delay_folder / file_name, hdr1)
+        ww(t, v, double_path / 'rt_1' / delay_folder / file_name, hdr1)
 
     # Checks for existing single spe files
     print('Checking existing single spe files...')
@@ -95,7 +92,7 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
     n = 0
     for item in double_file_array:
         file_name = 'D2--waveforms--%s.txt' % item
-        t, v, hdr = rw(path1 / delay_folder / file_name, nhdr)      # Reads a waveform file
+        t, v, hdr = rw(double_path / 'rt_1' / delay_folder / file_name, nhdr)      # Reads a waveform file
         v = v / min(v)                                              # Normalizes voltages
         idx = int(np.argmin(np.abs(t)))               # Finds index of t = 0 point
         t = np.roll(t, -idx)        # Rolls time array so that t = 0 point is at index 0
@@ -137,11 +134,7 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
     hdr = 'Average Waveform\n\n\n\nTime,Ampl\n'
     ww(t_avg, v_avg, average_file, hdr)
 
-    tau_2 = 2.6509999999999997e-08
-    tau_2_2 = 1.1079999999999999e-08
-    tau_2_2_2 = 3.454e-08
-
-    '''print('Calculating taus...')
+    print('Calculating taus...')
     x1_array = np.array([])
     j_array = np.array([])
 
@@ -194,14 +187,14 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
         diff_val = x1 - 2 * rt1090_2_2
         if diff_val >= 0:
             break
-    tau_2_2_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090_2_2))]'''
+    tau_2_2_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090_2_2))]
 
     # For each double spe waveform file, calculates and saves waveforms with 1x, 2x, 4x, and 8x the rise time
     for item in double_file_array:
-        file_name = str(path1 / delay_folder / 'D2--waveforms--%s.txt') % item
-        save_name2 = str(path2 / delay_folder / 'D2--waveforms--%s.txt') % item
-        save_name4 = str(path4 / delay_folder / 'D2--waveforms--%s.txt') % item
-        save_name8 = str(path8 / delay_folder / 'D2--waveforms--%s.txt') % item
+        file_name = str(double_path / 'rt_1' / delay_folder / 'D2--waveforms--%s.txt') % item
+        save_name2 = str(double_path / 'rt_2' / delay_folder / 'D2--waveforms--%s.txt') % item
+        save_name4 = str(double_path / 'rt_4' / delay_folder / 'D2--waveforms--%s.txt') % item
+        save_name8 = str(double_path / 'rt_8' / delay_folder / 'D2--waveforms--%s.txt') % item
 
         if os.path.isfile(file_name):
             if os.path.isfile(save_name2):
@@ -233,9 +226,9 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
     # For each single spe waveform file, saves waveforms with 1x, 2x, 4x, and 8x the rise time
     for item in single_file_array:
         file_name = str(single_path / 'rt_1' / 'D2--waveforms--%s.txt') % item
-        file_name2 = str(dest_path / 'filter2')
-        file_name4 = str(dest_path / 'filter2_2')
-        file_name8 = str(dest_path / 'filter2_2_2')
+        file_name2 = str(dest_path / 'rt_2')
+        file_name4 = str(dest_path / 'rt_4')
+        file_name8 = str(dest_path / 'rt_8')
         save_name2 = str(single_path / 'rt_2' / 'D2--waveforms--%s.txt') % item
         save_name4 = str(single_path / 'rt_4' / 'D2--waveforms--%s.txt') % item
         save_name8 = str(single_path / 'rt_8' / 'D2--waveforms--%s.txt') % item
@@ -280,6 +273,3 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     create_double_spe(args.nloops, args.date, args.fil_band, args.nhdr, args.delay, args.delay_folder, args.fsps)
-
-
-
