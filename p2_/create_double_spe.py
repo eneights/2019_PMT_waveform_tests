@@ -1,6 +1,7 @@
 from functions import *
 
 
+# Creates data set of double spe waveforms (and set of single spe waveforms for comparison)
 def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps):
     gen_path = Path(r'/Volumes/TOSHIBA EXT/data/watchman')
     save_path = Path(str(gen_path / '%08d_watchman_spe/waveforms/%s') % (date, filter_band))
@@ -10,22 +11,27 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
     path2 = Path(dest_path / 'double_spe_2')
     path4 = Path(dest_path / 'double_spe_4')
     path8 = Path(dest_path / 'double_spe_8')
+    single_path = Path(dest_path / 'single_spe')
 
     file_array = np.array([])
+    single_file_array = np.array([])
     double_file_array = np.array([])
 
+    # Makes array of all spe file names
     print('Looping through files...')
     for i in range(99999):
         file_name = 'D2--waveforms--%05d.txt' % i
         if os.path.isfile(filt_path / file_name):
             file_array = np.append(file_array, i)
 
-    print('Checking existing files...')
+    # Checks for existing double spe files
+    print('Checking existing double spe files...')
     for filename in os.listdir(path1 / delay_folder):
         print(filename, 'is a file')
         files_added = filename[15:27]
         double_file_array = np.append(double_file_array, files_added)
 
+    # Creates double spe files
     for i in range(nloops - len(double_file_array)):
         idx1 = np.random.randint(len(file_array))
         idx2 = np.random.randint(len(file_array))
@@ -62,6 +68,26 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
         file_name = 'D2--waveforms--%s.txt' % files_added
         ww(t, v, path1 / delay_folder / file_name, hdr1)
 
+    # Checks for existing single spe files
+    print('Checking existing single spe files...')
+    for filename in os.listdir(single_path / 'rt_1'):
+        print(filename, 'is a file')
+        file_added = filename[15:20]
+        single_file_array = np.append(single_file_array, file_added)
+
+    # Creates single spe files
+    for i in range(nloops - len(single_file_array)):
+        idx = np.random.randint(len(file_array))
+        file = file_array[idx]
+        print('Adding file #%05d' % file)
+        file_added = '%05d' % file
+        single_file_array = np.append(single_file_array, file_added)
+        file_name_1 = str(filt_path / 'D2--waveforms--%s.txt') % file_added
+        t, v, hdr = rw(file_name_1, nhdr)
+        file_name_2 = str(single_path / 'rt_1' / 'D2--waveforms--%s.txt') % file_added
+        ww(t, v, file_name_2, hdr)
+
+    # Plots average waveform for double spe
     print('Calculating average double spe waveform...')
     save_file = Path(dest_path / 'plots')
     tsum = 0
@@ -111,7 +137,11 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
     hdr = 'Average Waveform\n\n\n\nTime,Ampl\n'
     ww(t_avg, v_avg, average_file, hdr)
 
-    print('Calculating taus...')
+    tau_2 = 2.6509999999999997e-08
+    tau_2_2 = 1.1079999999999999e-08
+    tau_2_2_2 = 3.454e-08
+
+    '''print('Calculating taus...')
     x1_array = np.array([])
     j_array = np.array([])
 
@@ -164,7 +194,7 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
         diff_val = x1 - 2 * rt1090_2_2
         if diff_val >= 0:
             break
-    tau_2_2_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090_2_2))]
+    tau_2_2_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090_2_2))]'''
 
     # For each double spe waveform file, calculates and saves waveforms with 1x, 2x, 4x, and 8x the rise time
     for item in double_file_array:
@@ -199,6 +229,40 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
                 v8 = lowpass_filter(v, tau_2_2_2, fsps)
                 ww(t, v8, save_name8, hdr)
                 print('File #%s in double_spe_8 folder' % item)
+
+    # For each single spe waveform file, saves waveforms with 1x, 2x, 4x, and 8x the rise time
+    for item in single_file_array:
+        file_name = str(single_path / 'rt_1' / 'D2--waveforms--%s.txt') % item
+        file_name2 = str(dest_path / 'filter2')
+        file_name4 = str(dest_path / 'filter2_2')
+        file_name8 = str(dest_path / 'filter2_2_2')
+        save_name2 = str(single_path / 'rt_2' / 'D2--waveforms--%s.txt') % item
+        save_name4 = str(single_path / 'rt_4' / 'D2--waveforms--%s.txt') % item
+        save_name8 = str(single_path / 'rt_8' / 'D2--waveforms--%s.txt') % item
+
+        if os.path.isfile(file_name):
+            if os.path.isfile(save_name2):
+                print('File #%s in rt_2 folder' % item)
+            else:
+                t, v, hdr = rw(file_name2, nhdr)
+                ww(t, v, save_name2, hdr)
+                print('File #%s in rt_2 folder' % item)
+
+        if os.path.isfile(save_name2):
+            if os.path.isfile(save_name4):
+                print('File #%s in rt_4 folder' % item)
+            else:
+                t, v, hdr = rw(file_name4, nhdr)
+                ww(t, v, save_name4, hdr)
+                print('File #%s in rt_4 folder' % item)
+
+        if os.path.isfile(save_name4):
+            if os.path.isfile(save_name8):
+                print('File #%s in rt_8 folder' % item)
+            else:
+                t, v, hdr = rw(file_name8, nhdr)
+                ww(t, v, save_name8, hdr)
+                print('File #%s in rt_8 folder' % item)
 
 
 if __name__ == '__main__':
