@@ -129,109 +129,6 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
                     v_dig = digitize(v, noise)
                     ww(t, v_dig, save_name8, hdr)
 
-    # Plots average waveforms for 1x, 2x, 4x, and 8x initial rise times after downsampling and digitizing
-    print('Calculating downsampled double spe average waveform...')
-    save_file = Path(dest_path / 'plots')
-    tsum = 0
-    vsum = 0
-    n = 0
-    for item in double_file_array:
-        file_name = 'D3--waveforms--%s.txt' % item
-        t, v, hdr = rw(dest_path / 'double_spe' / delay_folder / 'downsampled' / file_name, nhdr)
-        v = v / min(v)              # Normalizes voltages
-        idx = int(np.argmin(np.abs(t)))         # Finds index of t = 0 point
-        t = np.roll(t, -idx)        # Rolls time array so that t = 0 point is at index 0
-        v = np.roll(v, -idx)        # Rolls voltage array so that 50% max point is at index 0
-        idx2 = np.where(t == min(t))        # Finds index of point of minimum t
-        idx2 = int(idx2[0])
-        idx3 = np.where(t == max(t))        # Finds index of point of maximum t
-        idx3 = int(idx3[0])
-        # Only averages waveform files that have enough points before t = 0 & after the spe
-        if idx2 <= 85:
-            # Removes points between point of maximum t & chosen minimum t in time & voltage arrays
-            t = np.concatenate((t[:idx3], t[85:]))
-            v = np.concatenate((v[:idx3], v[85:]))
-            # Rolls time & voltage arrays so that point of chosen minimum t is at index 0
-            t = np.roll(t, -idx3)
-            v = np.roll(v, -idx3)
-            if len(t) >= 80:
-                # Removes points after chosen point of maximum t in time & voltage arrays
-                t = t[:80]
-                v = v[:80]
-                # Sums time & voltage arrays
-                tsum += t
-                vsum += v
-                n += 1
-    # Finds average time & voltage arrays
-    t_avg = tsum / n
-    v_avg = vsum / n
-
-    # Plots average waveform & saves image
-    plt.scatter(t_avg, v_avg, s=15)
-    plt.xlim([min(t_avg) - 8 * (t_avg[1] - t_avg[0]), max(t_avg) + 8 * (t_avg[1] - t_avg[0])])
-    plt.plot(t_avg, v_avg)
-    plt.xlabel('Time (s)')
-    plt.ylabel('Normalized Voltage')
-    plt.title('Average Waveform')
-    plt.savefig(save_file / ('average_waveform_double_ds_' + delay_folder + '.png'), dpi=360)
-    plt.close()
-
-    # Saves average waveform data
-    average_file = dest_path / 'hist_data' / ('average_waveform_double_ds_' + delay_folder + '.txt')
-    hdr = 'Average Waveform\n\n\n\nTime,Ampl\n'
-    ww(t_avg, v_avg, average_file, hdr)
-
-    print('Calculating digitized double spe average waveform...')
-    save_file = Path(dest_path / 'plots')
-    tsum = 0
-    vsum = 0
-    n = 0
-    for item in double_file_array:
-        file_name = 'D3--waveforms--%s.txt' % item
-        t, v, hdr = rw(dest_path / 'double_spe' / delay_folder / 'digitized' / file_name, nhdr)
-        v = v / min(v)          # Normalizes voltages
-        idx = int(np.argmin(np.abs(t)))         # Finds index of t = 0 point
-        t = np.roll(t, -idx)        # Rolls time array so that t = 0 point is at index 0
-        v = np.roll(v, -idx)        # Rolls voltage array so that 50% max point is at index 0
-        idx2 = np.where(t == min(t))        # Finds index of point of minimum t
-        idx2 = int(idx2[0])
-        idx3 = np.where(t == max(t))        # Finds index of point of maximum t
-        idx3 = int(idx3[0])
-        # Only averages waveform files that have enough points before t = 0 & after the spe
-        if idx2 <= 88:
-            # Removes points between point of maximum t & chosen minimum t in time & voltage arrays
-            t = np.concatenate((t[:idx3], t[88:]))
-            v = np.concatenate((v[:idx3], v[88:]))
-            # Rolls time & voltage arrays so that point of chosen minimum t is at index 0
-            t = np.roll(t, -idx3)
-            v = np.roll(v, -idx3)
-            if len(t) >= 65:
-                # Removes points after chosen point of maximum t in time & voltage arrays
-                t = t[:65]
-                v = v[:65]
-                # Sums time & voltage arrays
-                tsum += t
-                vsum += v
-                n += 1
-    # Finds average time & voltage arrays
-    t_avg = tsum / n
-    v_avg = vsum / n
-
-    # Plots average waveform & saves image
-    plt.scatter(t_avg, v_avg, s=15)
-    plt.xlim([min(t_avg) - 8 * (t_avg[1] - t_avg[0]), max(t_avg) + 8 * (t_avg[1] - t_avg[0])])
-    plt.plot(t_avg, v_avg)
-    plt.xlabel('Time (s)')
-    plt.ylabel('Normalized Voltage')
-    plt.title('Average Waveform')
-    plt.savefig(save_file / ('average_waveform_double_dig_' + delay_folder + '.png'), dpi=360)
-    plt.close()
-
-    # Saves average waveform data
-    average_file = dest_path / 'hist_data' / ('average_waveform_double_dig_' + delay_folder + '.txt')
-    hdr = 'Average Waveform\n\n\n\nTime,Ampl\n'
-    ww(t_avg, v_avg, average_file, hdr)
-
     charge_array, amplitude_array, fwhm_array = make_arrays(double_file_array, 'double_spe', delay_folder, dest_path,
                                                             nhdr, r)
     charge_array_2, amplitude_array_2, fwhm_array_2 = make_arrays(double_file_array, 'double_spe_2', delay_folder,
@@ -242,26 +139,26 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
                                                                   dest_path, nhdr, r)
 
     print('Creating histograms...')
-    plot_histogram(charge_array, dest_path, 100, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_spe_' +
+    plot_histogram(charge_array, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_spe_' +
                    str(delay_folder))
-    plot_histogram(charge_array_2, dest_path, 100, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_spe_2_' +
+    plot_histogram(charge_array_2, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_spe_2_' +
                    str(delay_folder))
-    plot_histogram(charge_array_4, dest_path, 100, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_spe_4_' +
+    plot_histogram(charge_array_4, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_spe_4_' +
                    str(delay_folder))
-    plot_histogram(charge_array_8, dest_path, 100, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_spe_8_' +
+    plot_histogram(charge_array_8, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_spe_8_' +
                    str(delay_folder))
-    plot_histogram(amplitude_array, dest_path, 100, 'Voltage', 'Amplitude', 'bits', 'amp_double_spe_' +
+    plot_histogram(amplitude_array, dest_path, 75, 'Voltage', 'Amplitude', 'bits', 'amp_double_spe_' +
                    str(delay_folder))
-    plot_histogram(amplitude_array_2, dest_path, 100, 'Voltage', 'Amplitude', 'bits', 'amp_double_spe_2_' +
+    plot_histogram(amplitude_array_2, dest_path, 75, 'Voltage', 'Amplitude', 'bits', 'amp_double_spe_2_' +
                    str(delay_folder))
-    plot_histogram(amplitude_array_4, dest_path, 100, 'Voltage', 'Amplitude', 'bits', 'amp_double_spe_4_' +
+    plot_histogram(amplitude_array_4, dest_path, 75, 'Voltage', 'Amplitude', 'bits', 'amp_double_spe_4_' +
                    str(delay_folder))
-    plot_histogram(amplitude_array_8, dest_path, 100, 'Voltage', 'Amplitude', 'bits', 'amp_double_spe_8_' +
+    plot_histogram(amplitude_array_8, dest_path, 75, 'Voltage', 'Amplitude', 'bits', 'amp_double_spe_8_' +
                    str(delay_folder))
-    plot_histogram(fwhm_array, dest_path, 100, 'Time', 'FWHM', 's', 'fwhm_double_spe_' + str(delay_folder))
-    plot_histogram(fwhm_array_2, dest_path, 100, 'Time', 'FWHM', 's', 'fwhm_double_spe_2_' + str(delay_folder))
-    plot_histogram(fwhm_array_4, dest_path, 100, 'Time', 'FWHM', 's', 'fwhm_double_spe_4_' + str(delay_folder))
-    plot_histogram(fwhm_array_8, dest_path, 100, 'Time', 'FWHM', 's', 'fwhm_double_spe_8_' + str(delay_folder))
+    plot_histogram(fwhm_array, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_spe_' + str(delay_folder))
+    plot_histogram(fwhm_array_2, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_spe_2_' + str(delay_folder))
+    plot_histogram(fwhm_array_4, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_spe_4_' + str(delay_folder))
+    plot_histogram(fwhm_array_8, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_spe_8_' + str(delay_folder))
 
 
 if __name__ == '__main__':

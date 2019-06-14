@@ -127,23 +127,6 @@ def p3(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
                     v_dig = digitize(v, noise)
                     ww(t, v_dig, save_name8, hdr)
 
-    # Plots average waveforms for 1x, 2x, 4x, and 8x initial rise times after downsampling and digitizing
-    print('Calculating rt_1 average waveforms...')
-    average_waveform(start, end, filt_path_1 / 'downsampled', dest_path, nhdr, 'avg_waveform_1_ds')
-    average_waveform(start, end, filt_path_1 / 'digitized', dest_path, nhdr, 'avg_waveform_1_dig')
-
-    print('Calculating rt_2 average waveforms...')
-    average_waveform(start, end, filt_path_2 / 'downsampled', dest_path, nhdr, 'avg_waveform_2_ds')
-    average_waveform(start, end, filt_path_2 / 'digitized', dest_path, nhdr, 'avg_waveform_2_dig')
-
-    print('Calculating rt_4 average waveforms...')
-    average_waveform(start, end, filt_path_4 / 'downsampled', dest_path, nhdr, 'avg_waveform_4_ds')
-    average_waveform(start, end, filt_path_4 / 'digitized', dest_path, nhdr, 'avg_waveform_4_dig')
-
-    print('Calculating rt_8 average waveforms...')
-    average_waveform(start, end, filt_path_8 / 'downsampled', dest_path, nhdr, 'avg_waveform_8_ds')
-    average_waveform(start, end, filt_path_8 / 'digitized', dest_path, nhdr, 'avg_waveform_8_dig')
-
     # Writes info file
     info_file(date_time, data_path, dest_path, pmt_hv, gain, offset, trig_delay, amp, fsps, band, nfilter, r)
 
