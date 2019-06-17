@@ -47,6 +47,7 @@ def ww(x, y, file_name, hdr):
 
 # Given a time array, voltage array, sample rate, and new sample rate, creates downsampled time and voltage arrays
 def downsample(t, v, fsps, fsps_new):
+    factor = int(fsps / fsps_new)
     steps = int(fsps / fsps_new + 0.5)
     idx_start = random.randint(0, steps - 1)            # Picks a random index to start at
     t = t[idx_start:]
@@ -54,7 +55,7 @@ def downsample(t, v, fsps, fsps_new):
     t_ds = np.array([])
     for i in range(0, len(t) - 1, steps):               # Creates time array that digitizer would detect
         t_ds = np.append(t_ds, t[i])
-    v_ds = signal.decimate(v, int(fsps / fsps_new))     # Creates voltage array that digitizer would detect
+    v_ds = signal.decimate(v, factor)                   # Creates voltage array that digitizer would detect
     return t_ds, v_ds
 
 
@@ -212,8 +213,10 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
     fwhm_array = np.array([])
 
     for item in double_file_array:
-        file_name1 = str(dest_path / double_folder / delay_folder / 'digitized' / 'D3--waveforms--%s.txt') % item
-        file_name2 = str(dest_path / 'calculations' / double_folder / delay_folder / 'D3--waveforms--%s.txt') % item
+        file_name1 = str(dest_path / 'double_spe' / double_folder / delay_folder / 'digitized' / 'D3--waveforms--%s.txt'
+                         ) % item
+        file_name2 = str(dest_path / 'calculations' / 'double_spe' / double_folder / delay_folder /
+                         'D3--waveforms--%s.txt') % item
         if os.path.isfile(file_name1):
             if os.path.isfile(file_name2):      # If the calculations were done previously, they are read from a file
                 print("Reading calculations from file #%s" % item)
@@ -236,8 +239,8 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
                     os.remove(raw_file)
                     os.remove(file_name1)
                     os.remove(file_name2)
-                    os.remove(str(dest_path / double_folder / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') %
-                              item)
+                    os.remove(str(dest_path / 'double_spe' / double_folder / delay_folder / 'downsampled' /
+                                  'D3--waveforms--%s.txt') % item)
                 # All other double spe waveforms' calculations are placed into arrays
                 else:
                     charge_array = np.append(charge_array, charge)
@@ -258,8 +261,8 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
                     print('Removing file #%s' % item)
                     os.remove(raw_file)
                     os.remove(file_name1)
-                    os.remove(str(dest_path / double_folder / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') %
-                              item)
+                    os.remove(str(dest_path / 'double_spe' / double_folder / delay_folder / 'downsampled' /
+                                  'D3--waveforms--%s.txt') % item)
                 # All other double spe waveforms' calculations are saved in a file & placed into arrays
                 else:
                     save_calculations(file_name2, charge, amplitude, fwhm)
@@ -272,14 +275,14 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
 
 # Calculates charge, amplitude, and fwhm for each spe file
 # Returns arrays of charge, amplitude, and fwhm
-def make_arrays_s(single_file_array, dest_path, rt_folder, single_folder, nhdr, r):
+def make_arrays_s(single_file_array, dest_path, single_folder, nhdr, r):
     charge_array = np.array([])
     amplitude_array = np.array([])
     fwhm_array = np.array([])
 
     for item in single_file_array:
-        file_name1 = str(dest_path / 'single_spe' / rt_folder / 'digitized' / 'D3--waveforms--%s.txt') % item
-        file_name2 = str(dest_path / 'calculations' / single_folder / 'D3--waveforms--%s.txt') % item
+        file_name1 = str(dest_path / 'single_spe' / single_folder / 'digitized' / 'D3--waveforms--%s.txt') % item
+        file_name2 = str(dest_path / 'calculations' / 'single_spe' / single_folder / 'D3--waveforms--%s.txt') % item
         if os.path.isfile(file_name1):
             if os.path.isfile(file_name2):      # If the calculations were done previously, they are read from a file
                 print("Reading calculations from file #%s" % item)
@@ -294,7 +297,7 @@ def make_arrays_s(single_file_array, dest_path, rt_folder, single_folder, nhdr, 
                 fwhm = file_array[2]
                 # Any spe waveform that returns impossible values is put into the not_spe folder
                 if charge <= 0 or amplitude <= 0 or fwhm <= 0:
-                    raw_file = str(dest_path / 'single_spe' / rt_folder / 'raw' / 'D3--waveforms--%s.txt') % item
+                    raw_file = str(dest_path / 'single_spe' / single_folder / 'raw' / 'D3--waveforms--%s.txt') % item
                     save_file = str(dest_path / 'unusable_data' / 'D3--waveforms--%s.txt') % item
                     t, v, hdr = rw(raw_file, nhdr)
                     ww(t, v, save_file, hdr)
@@ -302,7 +305,7 @@ def make_arrays_s(single_file_array, dest_path, rt_folder, single_folder, nhdr, 
                     os.remove(raw_file)
                     os.remove(file_name1)
                     os.remove(file_name2)
-                    os.remove(str(dest_path / 'single_spe' / rt_folder / 'downsampled' / 'D3--waveforms--%s.txt') %
+                    os.remove(str(dest_path / 'single_spe' / single_folder / 'downsampled' / 'D3--waveforms--%s.txt') %
                               item)
                 # All other spe waveforms' calculations are placed into arrays
                 else:
@@ -317,14 +320,14 @@ def make_arrays_s(single_file_array, dest_path, rt_folder, single_folder, nhdr, 
                 fwhm = calculate_fwhm(t, v)         # FWHM of spe is calculated
                 # Any spe waveform that returns impossible values is put into the not_spe folder
                 if charge <= 0 or amplitude <= 0 or fwhm <= 0:
-                    raw_file = str(dest_path / 'single_spe' / rt_folder / 'raw' / 'D3--waveforms--%s.txt') % item
+                    raw_file = str(dest_path / 'single_spe' / single_folder / 'raw' / 'D3--waveforms--%s.txt') % item
                     save_file = str(dest_path / 'unusable_data' / 'D3--waveforms--%s.txt') % item
                     t, v, hdr = rw(raw_file, nhdr)
                     ww(t, v, save_file, hdr)
                     print('Removing file #%s' % item)
                     os.remove(raw_file)
                     os.remove(file_name1)
-                    os.remove(str(dest_path / 'single_spe' / rt_folder / 'downsampled' / 'D3--waveforms--%s.txt') %
+                    os.remove(str(dest_path / 'single_spe' / single_folder / 'downsampled' / 'D3--waveforms--%s.txt') %
                               item)
                 # All other spe waveforms' calculations are saved in a file & placed into arrays
                 else:

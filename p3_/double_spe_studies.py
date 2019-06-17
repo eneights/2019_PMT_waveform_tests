@@ -12,7 +12,7 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
     double_file_array = np.array([])
 
     print('Checking existing files...')
-    for filename in os.listdir(data_path / 'double_spe' / delay_folder):
+    for filename in os.listdir(data_path / 'double_spe' / 'rt_1' / delay_folder):
         print(filename, 'is a file')
         files_added = filename[15:27]
         double_file_array = np.append(double_file_array, files_added)
@@ -24,14 +24,14 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
     # Copies double spe waveforms with 1x, 2x, 4x, and 8x initial rise times to d3 folder
     for item in double_file_array:
-        file_name1 = str(data_path / 'double_spe' / delay_folder / 'D2--waveforms--%s.txt') % item
-        file_name2 = str(data_path / 'double_spe_2' / delay_folder / 'D2--waveforms--%s.txt') % item
-        file_name4 = str(data_path / 'double_spe_4' / delay_folder / 'D2--waveforms--%s.txt') % item
-        file_name8 = str(data_path / 'double_spe_8' / delay_folder / 'D2--waveforms--%s.txt') % item
-        save_name1 = str(dest_path / 'double_spe' / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
-        save_name2 = str(dest_path / 'double_spe_2' / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
-        save_name4 = str(dest_path / 'double_spe_4' / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
-        save_name8 = str(dest_path / 'double_spe_8' / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
+        file_name1 = str(data_path / 'double_spe' / 'rt_1' / delay_folder / 'D2--waveforms--%s.txt') % item
+        file_name2 = str(data_path / 'double_spe' / 'rt_2' / delay_folder / 'D2--waveforms--%s.txt') % item
+        file_name4 = str(data_path / 'double_spe' / 'rt_4' / delay_folder / 'D2--waveforms--%s.txt') % item
+        file_name8 = str(data_path / 'double_spe' / 'rt_8' / delay_folder / 'D2--waveforms--%s.txt') % item
+        save_name1 = str(dest_path / 'double_spe' / 'rt_1' / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
+        save_name2 = str(dest_path / 'double_spe' / 'rt_2' / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
+        save_name4 = str(dest_path / 'double_spe' / 'rt_4' / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
+        save_name8 = str(dest_path / 'double_spe' / 'rt_8' / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
 
         if os.path.isfile(file_name1):
             if os.path.isfile(save_name1):
@@ -110,14 +110,18 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
     # Downsamples double spe waveforms using given fsps
     for item in double_file_array:
-        file_name1 = str(dest_path / 'double_spe' / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
-        file_name2 = str(dest_path / 'double_spe_2' / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
-        file_name4 = str(dest_path / 'double_spe_4' / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
-        file_name8 = str(dest_path / 'double_spe_8' / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
-        save_name1 = str(dest_path / 'double_spe' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % item
-        save_name2 = str(dest_path / 'double_spe_2' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % item
-        save_name4 = str(dest_path / 'double_spe_4' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % item
-        save_name8 = str(dest_path / 'double_spe_8' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % item
+        file_name1 = str(dest_path / 'double_spe' / 'rt_1' / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
+        file_name2 = str(dest_path / 'double_spe' / 'rt_2' / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
+        file_name4 = str(dest_path / 'double_spe' / 'rt_4' / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
+        file_name8 = str(dest_path / 'double_spe' / 'rt_8' / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
+        save_name1 = str(dest_path / 'double_spe' / 'rt_1' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % \
+                     item
+        save_name2 = str(dest_path / 'double_spe' / 'rt_2' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % \
+                     item
+        save_name4 = str(dest_path / 'double_spe' / 'rt_4' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % \
+                     item
+        save_name8 = str(dest_path / 'double_spe' / 'rt_8' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % \
+                     item
 
         if os.path.isfile(save_name1) and os.path.isfile(save_name2) and os.path.isfile(save_name4) and \
                 os.path.isfile(save_name8):
@@ -188,14 +192,22 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
     # Digitizes double spe waveforms using given noise
     for item in double_file_array:
-        file_name1 = str(dest_path / 'double_spe' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % item
-        file_name2 = str(dest_path / 'double_spe_2' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % item
-        file_name4 = str(dest_path / 'double_spe_4' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % item
-        file_name8 = str(dest_path / 'double_spe_8' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % item
-        save_name1 = str(dest_path / 'double_spe' / delay_folder / 'digitized' / 'D3--waveforms--%s.txt') % item
-        save_name2 = str(dest_path / 'double_spe_2' / delay_folder / 'digitized' / 'D3--waveforms--%s.txt') % item
-        save_name4 = str(dest_path / 'double_spe_4' / delay_folder / 'digitized' / 'D3--waveforms--%s.txt') % item
-        save_name8 = str(dest_path / 'double_spe_8' / delay_folder / 'digitized' / 'D3--waveforms--%s.txt') % item
+        file_name1 = str(dest_path / 'double_spe' / 'rt_1' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % \
+                     item
+        file_name2 = str(dest_path / 'double_spe' / 'rt_2' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % \
+                     item
+        file_name4 = str(dest_path / 'double_spe' / 'rt_4' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % \
+                     item
+        file_name8 = str(dest_path / 'double_spe' / 'rt_8' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % \
+                     item
+        save_name1 = str(dest_path / 'double_spe' / 'rt_1' / delay_folder / 'digitized' / 'D3--waveforms--%s.txt') % \
+                     item
+        save_name2 = str(dest_path / 'double_spe' / 'rt_2' / delay_folder / 'digitized' / 'D3--waveforms--%s.txt') % \
+                     item
+        save_name4 = str(dest_path / 'double_spe' / 'rt_4' / delay_folder / 'digitized' / 'D3--waveforms--%s.txt') % \
+                     item
+        save_name8 = str(dest_path / 'double_spe' / 'rt_8' / delay_folder / 'digitized' / 'D3--waveforms--%s.txt') % \
+                     item
 
         if os.path.isfile(save_name1) and os.path.isfile(save_name2) and os.path.isfile(save_name4) and \
                 os.path.isfile(save_name8):
@@ -265,24 +277,20 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
                 print('File #%s in rt_8 folder' % item)
 
     # Creates double spe arrays for charge, amplitude, and FWHM
-    charge_array, amplitude_array, fwhm_array = make_arrays(double_file_array, 'double_spe', delay_folder, dest_path,
+    charge_array, amplitude_array, fwhm_array = make_arrays(double_file_array, 'rt_1', delay_folder, dest_path,
                                                             nhdr, r)
-    charge_array_2, amplitude_array_2, fwhm_array_2 = make_arrays(double_file_array, 'double_spe_2', delay_folder,
+    charge_array_2, amplitude_array_2, fwhm_array_2 = make_arrays(double_file_array, 'rt_2', delay_folder,
                                                                   dest_path, nhdr, r)
-    charge_array_4, amplitude_array_4, fwhm_array_4 = make_arrays(double_file_array, 'double_spe_4', delay_folder,
+    charge_array_4, amplitude_array_4, fwhm_array_4 = make_arrays(double_file_array, 'rt_4', delay_folder,
                                                                   dest_path, nhdr, r)
-    charge_array_8, amplitude_array_8, fwhm_array_8 = make_arrays(double_file_array, 'double_spe_8', delay_folder,
+    charge_array_8, amplitude_array_8, fwhm_array_8 = make_arrays(double_file_array, 'rt_8', delay_folder,
                                                                   dest_path, nhdr, r)
 
     # Creates single spe arrays for charge, amplitude, and FWHM
-    charge_array_s, amplitude_array_s, fwhm_array_s = make_arrays_s(single_file_array, dest_path, 'rt_1', 'single_spe',
-                                                                    nhdr, r)
-    charge_array_2_s, amplitude_array_2_s, fwhm_array_2_s = make_arrays_s(single_file_array, dest_path, 'rt_2',
-                                                                          'single_spe_2', nhdr, r)
-    charge_array_4_s, amplitude_array_4_s, fwhm_array_4_s = make_arrays_s(single_file_array, dest_path, 'rt_4',
-                                                                          'single_spe_4', nhdr, r)
-    charge_array_8_s, amplitude_array_8_s, fwhm_array_8_s = make_arrays_s(single_file_array, dest_path, 'rt_8',
-                                                                          'single_spe_8', nhdr, r)
+    charge_array_s, amplitude_array_s, fwhm_array_s = make_arrays_s(single_file_array, dest_path, 'rt_1', nhdr, r)
+    charge_array_2_s, amplitude_array_2_s, fwhm_array_2_s = make_arrays_s(single_file_array, dest_path, 'rt_2', nhdr, r)
+    charge_array_4_s, amplitude_array_4_s, fwhm_array_4_s = make_arrays_s(single_file_array, dest_path, 'rt_4', nhdr, r)
+    charge_array_8_s, amplitude_array_8_s, fwhm_array_8_s = make_arrays_s(single_file_array, dest_path, 'rt_8', nhdr, r)
 
     # Creates double spe histograms for charge, amplitude, and FWHM
     print('Creating double spe histograms...')

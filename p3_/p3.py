@@ -16,10 +16,10 @@ def p3(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
 
     # Copies waveforms with 1x, 2x, 4x, and 8x initial rise times to d3 folder
     for i in range(start, end + 1):
-        file_name1 = str(data_path / 'filter1' / 'D2--waveforms--%05d.txt') % i
-        file_name2 = str(data_path / 'filter2' / 'D2--waveforms--%05d.txt') % i
-        file_name4 = str(data_path / 'filter2_2' / 'D2--waveforms--%05d.txt') % i
-        file_name8 = str(data_path / 'filter2_2_2' / 'D2--waveforms--%05d.txt') % i
+        file_name1 = str(data_path / 'rt_1' / 'D2--waveforms--%05d.txt') % i
+        file_name2 = str(data_path / 'rt_2' / 'D2--waveforms--%05d.txt') % i
+        file_name4 = str(data_path / 'rt_4' / 'D2--waveforms--%05d.txt') % i
+        file_name8 = str(data_path / 'rt_8' / 'D2--waveforms--%05d.txt') % i
         save_name1 = str(filt_path_1 / 'raw' / 'D3--waveforms--%05d.txt') % i
         save_name2 = str(filt_path_2 / 'raw' / 'D3--waveforms--%05d.txt') % i
         save_name4 = str(filt_path_4 / 'raw' / 'D3--waveforms--%05d.txt') % i
