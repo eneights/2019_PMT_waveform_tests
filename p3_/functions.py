@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from scipy.optimize import curve_fit
 from scipy.stats import norm
+from scipy import signal
 import random
 
 
@@ -46,6 +47,19 @@ def ww(x, y, file_name, hdr):
 
 # Given a time array, voltage array, sample rate, and new sample rate, creates downsampled time and voltage arrays
 def downsample(t, v, fsps, fsps_new):
+    steps = int(fsps / fsps_new + 0.5)
+    idx_start = random.randint(0, steps - 1)            # Picks a random index to start at
+    t = t[idx_start:]
+    v = v[idx_start:]
+    t_ds = np.array([])
+    for i in range(0, len(t) - 1, steps):               # Creates time array that digitizer would detect
+        t_ds = np.append(t_ds, t[i])
+    v_ds = signal.decimate(v, int(fsps / fsps_new))     # Creates voltage array that digitizer would detect
+    return t_ds, v_ds
+
+
+# Given a time array, voltage array, sample rate, and new sample rate, creates downsampled time and voltage arrays
+def downsample_2(t, v, fsps, fsps_new):
     steps = int(fsps / fsps_new + 0.5)
     idx_start = random.randint(0, steps - 1)        # Picks a random index to start at
     t_ds = np.array([])
