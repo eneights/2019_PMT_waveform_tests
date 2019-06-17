@@ -111,13 +111,13 @@ def calculate_charge(t, v, r):
     difference_value1 = vvals1_flip - (0.1 * min_val)   # Finds difference between points in beginning array and 10% max
     difference_value2 = vvals2 - (0.1 * min_val)        # Finds difference between points in end array and 10% max
 
-    for i in range(0, len(difference_value1) - 1):  # Starting at point of minimum voltage and going towards beginning
+    for i in range(len(difference_value1) - 1):  # Starting at point of minimum voltage and going towards beginning
         if difference_value1[i] >= 0:               # of waveform, finds where voltage becomes greater than 10% max
-            idx1 = len(difference_value1) - i
+            idx1 = len(difference_value1) - 1 - i
             break
     if idx1 == np.inf:      # If voltage never becomes greater than 10% max, finds where voltage is closest to 10% max
         idx1 = len(difference_value1) - 1 - np.argmin(np.abs(difference_value1))
-    for i in range(0, len(difference_value2) - 1):  # Starting at point of minimum voltage and going towards end of
+    for i in range(len(difference_value2) - 1):  # Starting at point of minimum voltage and going towards end of
         if difference_value2[i] >= 0:               # waveform, finds where voltage becomes greater than 10% max
             idx2 = i
             break
@@ -222,10 +222,15 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
                     t, v, hdr = rw(raw_file, nhdr)
                     ww(t, v, save_file, hdr)
                     print('Removing file #%s' % item)
-                    os.remove(raw_file)
-                    os.remove(file_name1)
-                    os.remove(file_name2)
-                    os.remove(str(dest_path / 'double_spe' / double_folder / delay_folder / 'downsampled' /
+                    if os.path.isfile(raw_file):
+                        os.remove(raw_file)
+                    if os.path.isfile(file_name1):
+                        os.remove(file_name1)
+                    if os.path.isfile(file_name2):
+                        os.remove(file_name2)
+                    if os.path.isfile(str(dest_path / 'double_spe' / double_folder / delay_folder / 'downsampled' /
+                                          'D3--waveforms--%s.txt') % item):
+                        os.remove(str(dest_path / 'double_spe' / double_folder / delay_folder / 'downsampled' /
                                   'D3--waveforms--%s.txt') % item)
                 # All other double spe waveforms' calculations are placed into arrays
                 else:
@@ -245,9 +250,13 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
                     t, v, hdr = rw(raw_file, nhdr)
                     ww(t, v, save_file, hdr)
                     print('Removing file #%s' % item)
-                    os.remove(raw_file)
-                    os.remove(file_name1)
-                    os.remove(str(dest_path / 'double_spe' / double_folder / delay_folder / 'downsampled' /
+                    if os.path.isfile(raw_file):
+                        os.remove(raw_file)
+                    if os.path.isfile(file_name1):
+                        os.remove(file_name1)
+                    if os.path.isfile(str(dest_path / 'double_spe' / double_folder / delay_folder / 'downsampled' /
+                                          'D3--waveforms--%s.txt') % item):
+                        os.remove(str(dest_path / 'double_spe' / double_folder / delay_folder / 'downsampled' /
                                   'D3--waveforms--%s.txt') % item)
                 # All other double spe waveforms' calculations are saved in a file & placed into arrays
                 else:
@@ -335,42 +344,47 @@ def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename):
     n, bins, patches = plt.hist(array, nbins)       # Plots histogram
     b_est, c_est = norm.fit(array)                  # Calculates mean & standard deviation based on entire array
     if filename == 'amp_double_spe_4_3x_rt':
-        range_min1 = b_est - (b_est / 3) - (c_est / 2)    # Calculates lower limit of Gaussian fit (1/2sigma estimation)
-        range_max1 = b_est - (b_est / 3) + (c_est / 2)    # Calculates lower limit of Gaussian fit (1/2sigma estimation)
-    elif filename == 'fwhm_double_spe_2_3x_rt':
-        range_min1 = b_est - (c_est / 3)                  # Calculates lower limit of Gaussian fit (1/3sigma estimation)
-        range_max1 = b_est + (c_est / 3)                  # Calculates lower limit of Gaussian fit (1/3sigma estimation)
-    elif filename == 'fwhm_double_spe_4_3x_rt':
-        range_min1 = b_est - (c_est / 2)                  # Calculates lower limit of Gaussian fit (1/2sigma estimation)
-        range_max1 = b_est + (c_est / 2)                  # Calculates lower limit of Gaussian fit (1/2sigma estimation)
-    elif filename == 'fwhm_double_spe_8_3x_rt':
-        range_min1 = b_est                                # Calculates lower limit of Gaussian fit (1sigma estimation)
-        range_max1 = b_est + 2 * c_est                    # Calculates lower limit of Gaussian fit (1sigma estimation)
+        range_min1 = b_est + (c_est / 2) - c_est        # Calculates lower limit of Gaussian fit (1sigma estimation)
+        range_max1 = b_est + (c_est / 2) + c_est        # Calculates lower limit of Gaussian fit (1sigma estimation)
+    elif filename == 'fwhm_double_spe_2_3x_rt' or filename == 'fwhm_double_spe_4_3x_rt' or filename == \
+            'fwhm_double_spe_8_3x_rt' or filename == 'charge_double_spe_2_3x_rt' or filename == \
+            'charge_double_spe_4_3x_rt' or filename == 'charge_double_spe_8_3x_rt':
+        b_est = float(format(b_est, '.2e'))
+        c_est = float(format(c_est, '.2e'))
     else:
         range_min1 = b_est - c_est              # Calculates lower limit of Gaussian fit (1sigma estimation)
         range_max1 = b_est + c_est              # Calculates upper limit of Gaussian fit (1sigma estimation)
-    bins = np.delete(bins, len(bins) - 1)
-    bins_diff = bins[1] - bins[0]
-    bins = np.linspace(bins[0] + bins_diff / 2, bins[len(bins) - 1] + bins_diff / 2, len(bins))
-    bins_range1 = np.linspace(range_min1, range_max1, 10000)    # Creates array of bins between upper & lower limits
-    n_range1 = np.interp(bins_range1, bins, n)      # Interpolates & creates array of y axis values
-    guess1 = [1, float(b_est), float(c_est)]        # Defines guess for values of a, b & c in Gaussian fit
-    popt1, pcov1 = curve_fit(func, bins_range1, n_range1, p0=guess1, maxfev=10000)  # Finds Gaussian fit
-    mu1 = float(format(popt1[1], '.2e'))        # Calculates mean based on 1sigma guess
-    sigma1 = np.abs(float(format(popt1[2], '.2e')))     # Calculates standard deviation based on 1sigma estimation
-    range_min2 = mu1 - 2 * sigma1       # Calculates lower limit of Gaussian fit (2sigma)
-    range_max2 = mu1 + 2 * sigma1       # Calculates upper limit of Gaussian fit (2sigma)
-    bins_range2 = np.linspace(range_min2, range_max2, 10000)    # Creates array of bins between upper & lower limits
-    n_range2 = np.interp(bins_range2, bins, n)      # Interpolates & creates array of y axis values
-    guess2 = [1, mu1, sigma1]       # Defines guess for values of a, b & c in Gaussian fit
-    popt2, pcov2 = curve_fit(func, bins_range2, n_range2, p0=guess2, maxfev=10000)  # Finds Gaussian fit
-    plt.plot(bins_range2, func(bins_range2, *popt2), color='red')       # Plots Gaussian fit (mean +/- 2sigma)
-    mu2 = float(format(popt2[1], '.2e'))    # Calculates mean
-    sigma2 = np.abs(float(format(popt2[2], '.2e')))     # Calculates standard deviation
-    plt.xlabel(xaxis + ' (' + units + ')')
-    plt.title(title + ' of SPE\n mean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2) + ' ' + units)
-    plt.savefig(path / str(filename + '.png'), dpi=360)
-    plt.close()
+
+    if filename == 'fwhm_double_spe_2_3x_rt' or filename == 'fwhm_double_spe_4_3x_rt' or filename == \
+            'fwhm_double_spe_8_3x_rt' or filename == 'charge_double_spe_2_3x_rt' or filename == \
+            'charge_double_spe_4_3x_rt' or filename == 'charge_double_spe_8_3x_rt':
+        plt.xlabel(xaxis + ' (' + units + ')')
+        plt.title(title + ' of SPE\n mean: ' + str(b_est) + ' ' + units + ', SD: ' + str(c_est) + ' ' + units)
+        plt.savefig(path / str(filename + '.png'), dpi=360)
+        plt.close()
+    else:
+        bins = np.delete(bins, len(bins) - 1)
+        bins_diff = bins[1] - bins[0]
+        bins = np.linspace(bins[0] + bins_diff / 2, bins[len(bins) - 1] + bins_diff / 2, len(bins))
+        bins_range1 = np.linspace(range_min1, range_max1, 10000)  # Creates array of bins between upper & lower limits
+        n_range1 = np.interp(bins_range1, bins, n)  # Interpolates & creates array of y axis values
+        guess1 = [1, float(b_est), float(c_est)]  # Defines guess for values of a, b & c in Gaussian fit
+        popt1, pcov1 = curve_fit(func, bins_range1, n_range1, p0=guess1, maxfev=10000)  # Finds Gaussian fit
+        mu1 = float(format(popt1[1], '.2e'))        # Calculates mean based on 1sigma guess
+        sigma1 = np.abs(float(format(popt1[2], '.2e')))     # Calculates standard deviation based on 1sigma estimation
+        range_min2 = mu1 - 2 * sigma1       # Calculates lower limit of Gaussian fit (2sigma)
+        range_max2 = mu1 + 2 * sigma1       # Calculates upper limit of Gaussian fit (2sigma)
+        bins_range2 = np.linspace(range_min2, range_max2, 10000)    # Creates array of bins between upper & lower limits
+        n_range2 = np.interp(bins_range2, bins, n)      # Interpolates & creates array of y axis values
+        guess2 = [1, mu1, sigma1]       # Defines guess for values of a, b & c in Gaussian fit
+        popt2, pcov2 = curve_fit(func, bins_range2, n_range2, p0=guess2, maxfev=10000)  # Finds Gaussian fit
+        plt.plot(bins_range2, func(bins_range2, *popt2), color='red')       # Plots Gaussian fit (mean +/- 2sigma)
+        mu2 = float(format(popt2[1], '.2e'))                # Calculates mean
+        sigma2 = np.abs(float(format(popt2[2], '.2e')))     # Calculates standard deviation
+        plt.xlabel(xaxis + ' (' + units + ')')
+        plt.title(title + ' of SPE\n mean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2) + ' ' + units)
+        plt.savefig(path / str(filename + '.png'), dpi=360)
+        plt.close()
 
     write_hist_data(array, dest_path, filename + '.txt')
 
@@ -427,43 +441,49 @@ def plot_double_hist(dest_path, nbins, xaxis, title, units, filename1, filename2
     b_est2, c_est2 = norm.fit(array2)                   # Calculates mean & standard deviation based on entire array 2
 
     if filename2 == 'amp_double_spe_4_3x_rt':
-        range_min1_2 = b_est2 - (b_est2 / 3) - (c_est2 / 2)     # Calculates lower limit of fit (1/2sigma estimation)
-        range_max1_2 = b_est2 - (b_est2 / 3) + (c_est2 / 2)     # Calculates lower limit of fit (1/2sigma estimation)
-    elif filename2 == 'fwhm_double_spe_2_3x_rt':
-        range_min1_2 = b_est2 - (c_est2 / 3)            # Calculates lower limit of Gaussian fit (1/3sigma estimation)
-        range_max1_2 = b_est2 + (c_est2 / 3)            # Calculates lower limit of Gaussian fit (1/3sigma estimation)
-    elif filename2 == 'fwhm_double_spe_4_3x_rt':
-        range_min1_2 = b_est2 - (c_est2 / 2)            # Calculates lower limit of Gaussian fit (1/2sigma estimation)
-        range_max1_2 = b_est2 + (c_est2 / 2)            # Calculates lower limit of Gaussian fit (1/2sigma estimation)
-    elif filename2 == 'fwhm_double_spe_8_3x_rt':
-        range_min1_2 = b_est2                           # Calculates lower limit of Gaussian fit (1sigma estimation)
-        range_max1_2 = b_est2 + 2 * c_est2              # Calculates lower limit of Gaussian fit (1sigma estimation)
+        range_min1_2 = b_est2 + (c_est2 / 2) - c_est2   # Calculates lower limit of Gaussian fit (1sigma estimation)
+        range_max1_2 = b_est2 + (c_est2 / 2) + c_est2   # Calculates lower limit of Gaussian fit (1sigma estimation)
+    elif filename2 == 'fwhm_double_spe_2_3x_rt' or filename2 == 'fwhm_double_spe_4_3x_rt' or filename2 == \
+            'fwhm_double_spe_8_3x_rt' or filename2 == 'charge_double_spe_2_3x_rt' or filename2 == \
+            'charge_double_spe_4_3x_rt' or filename2 == 'charge_double_spe_8_3x_rt':
+        b_est2 = float(format(b_est2, '.2e'))
+        c_est2 = float(format(c_est2, '.2e'))
     else:
         range_min1_2 = b_est2 - c_est2              # Calculates lower limit of Gaussian fit (1sigma estimation)
         range_max1_2 = b_est2 + c_est2              # Calculates upper limit of Gaussian fit (1sigma estimation)
 
-    bins2 = np.delete(bins2, len(bins2) - 1)
-    bins_diff2 = bins2[1] - bins2[0]
-    bins2 = np.linspace(bins2[0] + bins_diff2 / 2, bins2[len(bins2) - 1] + bins_diff2 / 2, len(bins2))
-    bins_range1_2 = np.linspace(range_min1_2, range_max1_2, 10000)  # Creates array of bins between upper & lower limits
-    n_range1_2 = np.interp(bins_range1_2, bins2, n2)        # Interpolates & creates array of y axis values
-    guess1_2 = [1, float(b_est2), float(c_est2)]            # Defines guess for values of a, b & c in Gaussian fit
-    popt1_2, pcov1_2 = curve_fit(func, bins_range1_2, n_range1_2, p0=guess1_2, maxfev=10000)  # Finds Gaussian fit
-    mu1_2 = float(format(popt1_2[1], '.2e'))                # Calculates mean based on 1sigma guess
-    sigma1_2 = np.abs(float(format(popt1_2[2], '.2e')))     # Calculates standard deviation based on 1sigma estimation
-    range_min2_2 = mu1_2 - 2 * sigma1_2                     # Calculates lower limit of Gaussian fit (2sigma)
-    range_max2_2 = mu1_2 + 2 * sigma1_2                     # Calculates upper limit of Gaussian fit (2sigma)
-    bins_range2_2 = np.linspace(range_min2_2, range_max2_2, 10000)  # Creates array of bins between upper & lower limits
-    n_range2_2 = np.interp(bins_range2_2, bins2, n2)        # Interpolates & creates array of y axis values
-    guess2_2 = [1, mu1_2, sigma1_2]                         # Defines guess for values of a, b & c in Gaussian fit
-    popt2_2, pcov2_2 = curve_fit(func, bins_range2_2, n_range2_2, p0=guess2_2, maxfev=10000)  # Finds Gaussian fit
-    plt.plot(bins_range2_2, func(bins_range2_2, *popt2_2), color='green')   # Plots Gaussian fit (mean +/- 2sigma)
-    mu2_2 = float(format(popt2_2[1], '.2e'))                # Calculates mean
-    sigma2_2 = np.abs(float(format(popt2_2[2], '.2e')))     # Calculates standard deviation
+    if filename2 == 'fwhm_double_spe_2_3x_rt' or filename2 == 'fwhm_double_spe_4_3x_rt' or filename2 == \
+            'fwhm_double_spe_8_3x_rt' or filename2 == 'charge_double_spe_2_3x_rt' or filename2 == \
+            'charge_double_spe_4_3x_rt' or filename2 == 'charge_double_spe_8_3x_rt':
+        plt.xlabel(xaxis + ' (' + units + ')')
+        plt.title(title + ' of SPE\n mean (single): ' + str(mu2_1) + ' ' + units + ', SD (single): ' + str(sigma2_1) +
+                  ' ' + units + '\n mean (double): ' + str(b_est2) + ' ' + units + ', SD (double): ' + str(c_est2) + ' '
+                  + units, fontsize='medium')
+        plt.savefig(path / str(filename + '.png'), dpi=360)
+        plt.close()
+    else:
+        bins2 = np.delete(bins2, len(bins2) - 1)
+        bins_diff2 = bins2[1] - bins2[0]
+        bins2 = np.linspace(bins2[0] + bins_diff2 / 2, bins2[len(bins2) - 1] + bins_diff2 / 2, len(bins2))
+        bins_range1_2 = np.linspace(range_min1_2, range_max1_2, 10000)  # Creates array of bins between upper & lower limits
+        n_range1_2 = np.interp(bins_range1_2, bins2, n2)        # Interpolates & creates array of y axis values
+        guess1_2 = [1, float(b_est2), float(c_est2)]            # Defines guess for values of a, b & c in Gaussian fit
+        popt1_2, pcov1_2 = curve_fit(func, bins_range1_2, n_range1_2, p0=guess1_2, maxfev=10000)  # Finds Gaussian fit
+        mu1_2 = float(format(popt1_2[1], '.2e'))                # Calculates mean based on 1sigma guess
+        sigma1_2 = np.abs(float(format(popt1_2[2], '.2e')))     # Calculates standard deviation based on 1sigma estimation
+        range_min2_2 = mu1_2 - 2 * sigma1_2                     # Calculates lower limit of Gaussian fit (2sigma)
+        range_max2_2 = mu1_2 + 2 * sigma1_2                     # Calculates upper limit of Gaussian fit (2sigma)
+        bins_range2_2 = np.linspace(range_min2_2, range_max2_2, 10000)  # Creates array of bins between upper & lower limits
+        n_range2_2 = np.interp(bins_range2_2, bins2, n2)        # Interpolates & creates array of y axis values
+        guess2_2 = [1, mu1_2, sigma1_2]                         # Defines guess for values of a, b & c in Gaussian fit
+        popt2_2, pcov2_2 = curve_fit(func, bins_range2_2, n_range2_2, p0=guess2_2, maxfev=10000)  # Finds Gaussian fit
+        plt.plot(bins_range2_2, func(bins_range2_2, *popt2_2), color='green')   # Plots Gaussian fit (mean +/- 2sigma)
+        mu2_2 = float(format(popt2_2[1], '.2e'))                # Calculates mean
+        sigma2_2 = np.abs(float(format(popt2_2[2], '.2e')))     # Calculates standard deviation
 
-    plt.xlabel(xaxis + ' (' + units + ')')
-    plt.title(title + ' of SPE\n mean (single): ' + str(mu2_1) + ' ' + units + ', SD (single): ' + str(sigma2_1) + ' ' +
-              units + '\n mean (double): ' + str(mu2_2) + ' ' + units + ', SD (double): ' + str(sigma2_2) + ' ' + units,
-              fontsize='medium')
-    plt.savefig(path / str(filename + '.png'), dpi=360)
-    plt.close()
+        plt.xlabel(xaxis + ' (' + units + ')')
+        plt.title(title + ' of SPE\n mean (single): ' + str(mu2_1) + ' ' + units + ', SD (single): ' + str(sigma2_1) +
+                  ' ' + units + '\n mean (double): ' + str(mu2_2) + ' ' + units + ', SD (double): ' + str(sigma2_2) +
+                  ' ' + units, fontsize='medium')
+        plt.savefig(path / str(filename + '.png'), dpi=360)
+        plt.close()
