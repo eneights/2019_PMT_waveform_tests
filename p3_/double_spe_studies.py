@@ -315,21 +315,21 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
     # Creates double spe histograms for charge, amplitude, and FWHM
     print('Creating double spe histograms...')
     plot_histogram(charge_array, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_rt1_' +
-                   str(delay_folder), fsps_new)
+                   str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
     plot_histogram(charge_array_2, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_rt2_' +
-                   str(delay_folder), fsps_new)
+                   str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
     plot_histogram(charge_array_4, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_rt4_' +
-                   str(delay_folder), fsps_new)
+                   str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
     plot_histogram(charge_array_8, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_rt8_' +
-                   str(delay_folder), fsps_new)
+                   str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
     plot_histogram(amplitude_array, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_double_rt1_' +
-                   str(delay_folder), fsps_new)
+                   str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
     plot_histogram(amplitude_array_2, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_double_rt2_' +
-                   str(delay_folder), fsps_new)
+                   str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
     plot_histogram(amplitude_array_4, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_double_rt4_' +
-                   str(delay_folder), fsps_new)
+                   str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
     plot_histogram(amplitude_array_8, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_double_rt8_' +
-                   str(delay_folder), fsps_new)
+                   str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
     plot_histogram(fwhm_array, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_rt1_' + str(delay_folder), fsps_new)
     plot_histogram(fwhm_array_2, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_rt2_' + str(delay_folder), fsps_new)
     plot_histogram(fwhm_array_4, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_rt4_' + str(delay_folder), fsps_new)
@@ -337,45 +337,65 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
     # Creates single spe histograms for charge, amplitude, and FWHM
     print('Creating single spe histograms...')
-    plot_histogram(charge_array_s, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt1', fsps_new)
-    plot_histogram(charge_array_2_s, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt2', fsps_new)
-    plot_histogram(charge_array_4_s, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt4', fsps_new)
-    plot_histogram(charge_array_8_s, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt8', fsps_new)
-    plot_histogram(amplitude_array_s, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt1', fsps_new)
-    plot_histogram(amplitude_array_2_s, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt2', fsps_new)
-    plot_histogram(amplitude_array_4_s, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt4', fsps_new)
-    plot_histogram(amplitude_array_8_s, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt8', fsps_new)
-    plot_histogram(fwhm_array_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt1', fsps_new)
-    plot_histogram(fwhm_array_2_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt2', fsps_new)
-    plot_histogram(fwhm_array_4_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt4', fsps_new)
-    plot_histogram(fwhm_array_8_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt8', fsps_new)
+    plot_histogram(charge_array_s, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt1' + '_' +
+                   str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
+    plot_histogram(charge_array_2_s, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt2' + '_' +
+                   str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
+    plot_histogram(charge_array_4_s, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt4' + '_' +
+                   str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
+    plot_histogram(charge_array_8_s, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt8' + '_' +
+                   str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
+    plot_histogram(amplitude_array_s, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt1' + '_' +
+                   str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
+    plot_histogram(amplitude_array_2_s, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt2' + '_' +
+                   str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
+    plot_histogram(amplitude_array_4_s, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt4' + '_' +
+                   str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
+    plot_histogram(amplitude_array_8_s, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt8' + '_' +
+                   str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
+    plot_histogram(fwhm_array_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt1' + '_' +
+                   str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
+    plot_histogram(fwhm_array_2_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt2' + '_' +
+                   str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
+    plot_histogram(fwhm_array_4_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt4' + '_' +
+                   str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
+    plot_histogram(fwhm_array_8_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt8' + '_' +
+                   str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
 
     # Creates double & single spe histograms on same plot
     print('Creating histograms...')
     plot_double_hist(dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt1', 'charge_double_rt1_' +
-                     str(delay_folder), 'charge_rt1_' + str(delay_folder), fsps_new)
+                     str(delay_folder), 'charge_rt1_' + str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps',
+                     fsps_new)
     plot_double_hist(dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt2', 'charge_double_rt2_' +
-                     str(delay_folder), 'charge_rt2_' + str(delay_folder), fsps_new)
+                     str(delay_folder), 'charge_rt2_' + str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps',
+                     fsps_new)
     plot_double_hist(dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt4', 'charge_double_rt4_' +
-                     str(delay_folder), 'charge_rt4_' + str(delay_folder), fsps_new)
+                     str(delay_folder), 'charge_rt4_' + str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps',
+                     fsps_new)
     plot_double_hist(dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt8', 'charge_double_rt8_' +
-                     str(delay_folder), 'charge_rt8_' + str(delay_folder), fsps_new)
+                     str(delay_folder), 'charge_rt8_' + str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps',
+                     fsps_new)
     plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt1', 'amp_double_rt1_' +
-                     str(delay_folder), 'amp_rt1_' + str(delay_folder), fsps_new)
+                     str(delay_folder), 'amp_rt1_' + str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps',
+                     fsps_new)
     plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt2', 'amp_double_rt2_'
-                     + str(delay_folder), 'amp_rt2_' + str(delay_folder), fsps_new)
+                     + str(delay_folder), 'amp_rt2_' + str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps',
+                     fsps_new)
     plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt4', 'amp_double_rt4_'
-                     + str(delay_folder), 'amp_rt4_' + str(delay_folder), fsps_new)
+                     + str(delay_folder), 'amp_rt4_' + str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps',
+                     fsps_new)
     plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt8', 'amp_double_rt8_'
-                     + str(delay_folder), 'amp_rt8_' + str(delay_folder), fsps_new)
+                     + str(delay_folder), 'amp_rt8_' + str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps',
+                     fsps_new)
     plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt1', 'fwhm_double_rt1_' + str(delay_folder),
-                     'fwhm_rt1_' + str(delay_folder), fsps_new)
+                     'fwhm_rt1_' + str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
     plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt2', 'fwhm_double_rt2_' + str(delay_folder),
-                     'fwhm_rt2_' + str(delay_folder), fsps_new)
+                     'fwhm_rt2_' + str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
     plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt4', 'fwhm_double_rt4_' + str(delay_folder),
-                     'fwhm_rt4_' + str(delay_folder), fsps_new)
+                     'fwhm_rt4_' + str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
     plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt8', 'fwhm_double_rt8_' + str(delay_folder),
-                     'fwhm_rt8_' + str(delay_folder), fsps_new)
+                     'fwhm_rt8_' + str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
 
 
 if __name__ == '__main__':

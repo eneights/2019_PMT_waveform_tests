@@ -2,6 +2,7 @@ import os
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 from pathlib import Path
 from scipy.optimize import curve_fit
 from scipy.stats import norm
@@ -478,4 +479,121 @@ def plot_double_hist(dest_path, nbins, xaxis, title, units, filename1, filename2
               units + '\n mean (double): ' + str(mu2_2) + ' ' + units + ', SD (double): ' + str(sigma2_2) + ' ' + units,
               fontsize='medium')
     plt.savefig(path / str(filename + '_' + str(int(fsps_new / 1e6)) + '_Msps' + '.png'), dpi=360)
+    plt.close()
+
+
+def read_hist_file(path, filename, fsps_new):
+    array = np.array([])
+
+    myfile = open(path / str(filename + '_' + str(int(fsps_new / 1e6)) + '_Msps' + '.txt'), 'r')    # Opens file
+    for line in myfile:                         # Reads values & saves in an array
+        line = line.strip()
+        line = float(line)
+        array = np.append(array, line)          # Closes histogram file
+    myfile.close()
+
+    return array
+
+
+def false_spes_vs_delay(start, end, factor, parameter, parameter_title, units, fsps_new, means, mean5, mean1,
+                        mean15, mean2, mean25, mean3, sds, sd5, sd1, sd15, sd2, sd25, sd3, dest_path):
+    cutoff_array = np.array([])
+    spes_as_mpes_array = np.array([])
+    mpes_as_spes_array = np.array([])
+    mpes_as_spes_5x_array = np.array([])
+    mpes_as_spes_1x_array = np.array([])
+    mpes_as_spes_15x_array = np.array([])
+    mpes_as_spes_2x_array = np.array([])
+    mpes_as_spes_25x_array = np.array([])
+    mpes_as_spes_3x_array = np.array([])
+
+    for i in range(start, end):
+        x = i * factor
+        cutoff_array = np.append(cutoff_array, x)
+        spes_as_mpes = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - means) / (sds * math.sqrt(2))))))
+        mpes_as_spes_5x = 100 * ((1 / 2) * (2 - math.erfc((x - mean5) / (sd5 * math.sqrt(2)))))
+        mpes_as_spes_1x = 100 * ((1 / 2) * (2 - math.erfc((x - mean1) / (sd1 * math.sqrt(2)))))
+        mpes_as_spes_15x = 100 * ((1 / 2) * (2 - math.erfc((x - mean15) / (sd15 * math.sqrt(2)))))
+        mpes_as_spes_2x = 100 * ((1 / 2) * (2 - math.erfc((x - mean2) / (sd2 * math.sqrt(2)))))
+        mpes_as_spes_25x = 100 * ((1 / 2) * (2 - math.erfc((x - mean25) / (sd25 * math.sqrt(2)))))
+        mpes_as_spes_3x = 100 * ((1 / 2) * (2 - math.erfc((x - mean3) / (sd3 * math.sqrt(2)))))
+        spes_as_mpes_array = np.append(spes_as_mpes_array, spes_as_mpes)
+        mpes_as_spes_5x_array = np.append(mpes_as_spes_5x_array, mpes_as_spes_5x)
+        mpes_as_spes_1x_array = np.append(mpes_as_spes_1x_array, mpes_as_spes_1x)
+        mpes_as_spes_15x_array = np.append(mpes_as_spes_15x_array, mpes_as_spes_15x)
+        mpes_as_spes_2x_array = np.append(mpes_as_spes_2x_array, mpes_as_spes_2x)
+        mpes_as_spes_25x_array = np.append(mpes_as_spes_25x_array, mpes_as_spes_25x)
+        mpes_as_spes_3x_array = np.append(mpes_as_spes_3x_array, mpes_as_spes_3x)
+
+    cutoff_array_2 = np.linspace(start * factor, end * factor, 1000)
+    spes_as_mpes_array_2 = np.interp(cutoff_array_2, cutoff_array, spes_as_mpes_array)
+    mpes_as_spes_5x_array_2 = np.interp(cutoff_array_2, cutoff_array, mpes_as_spes_5x_array)
+    mpes_as_spes_1x_array_2 = np.interp(cutoff_array_2, cutoff_array, mpes_as_spes_1x_array)
+    mpes_as_spes_15x_array_2 = np.interp(cutoff_array_2, cutoff_array, mpes_as_spes_15x_array)
+    mpes_as_spes_2x_array_2 = np.interp(cutoff_array_2, cutoff_array, mpes_as_spes_2x_array)
+    mpes_as_spes_25x_array_2 = np.interp(cutoff_array_2, cutoff_array, mpes_as_spes_25x_array)
+    mpes_as_spes_3x_array_2 = np.interp(cutoff_array_2, cutoff_array, mpes_as_spes_3x_array)
+
+    idx = np.argmin(np.abs(spes_as_mpes_array_2 - 1))
+    mpes_as_spes_array = np.append(mpes_as_spes_array, mpes_as_spes_5x_array_2[idx])
+    mpes_as_spes_array = np.append(mpes_as_spes_array, mpes_as_spes_1x_array_2[idx])
+    mpes_as_spes_array = np.append(mpes_as_spes_array, mpes_as_spes_15x_array_2[idx])
+    mpes_as_spes_array = np.append(mpes_as_spes_array, mpes_as_spes_2x_array_2[idx])
+    mpes_as_spes_array = np.append(mpes_as_spes_array, mpes_as_spes_25x_array_2[idx])
+    mpes_as_spes_array = np.append(mpes_as_spes_array, mpes_as_spes_3x_array_2[idx])
+
+    delay_array = np.array([1.52e-9, 3.04e-9, 4.56e-9, 6.08e-9, 7.6e-9, 9.12e-9])
+    cutoff = str(float(format(cutoff_array_2[idx], '.2e')))
+
+    plt.scatter(delay_array, mpes_as_spes_array)
+    plt.plot(delay_array, mpes_as_spes_array)
+    plt.xlim(1.3e-9, 9.4e-9)
+    plt.ylim(-5, 100)
+    plt.xlabel('Delay (s)')
+    plt.ylabel('% MPES Misidentified as SPEs')
+    plt.title('False SPEs\n' + parameter_title + ' Cutoff = ' + cutoff + ' (' + units + ') (1% False MPEs)')
+    for i in range(len(mpes_as_spes_array) - 1):
+        pt = str(float(format(mpes_as_spes_array[i], '.1e')))
+        plt.annotate(pt + '%', (delay_array[i], mpes_as_spes_array[i] + 1))
+    plt.savefig(dest_path / 'plots' / str('false_spes_delay_' + parameter + '_' + str(int(fsps_new / 1e6)) + '_Msps' +
+                                          '.png'), dpi=360)
+    plt.close()
+
+
+def false_spes_mpes(start, end, factor, parameter, parameter_title, units, means, meand, sds, sdd, fsps_new, dest_path):
+    cutoff_array = np.array([])
+    spes_as_mpes_array = np.array([])
+    mpes_as_spes_array = np.array([])
+
+    for i in range(start, end):
+        x = i * factor
+        cutoff_array = np.append(cutoff_array, x)
+        spes_as_mpes = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - means) / (sds * math.sqrt(2))))))
+        mpes_as_spes = 100 * ((1 / 2) * (2 - math.erfc((x - meand) / (sdd * math.sqrt(2)))))
+        spes_as_mpes_array = np.append(spes_as_mpes_array, spes_as_mpes)
+        mpes_as_spes_array = np.append(mpes_as_spes_array, mpes_as_spes)
+
+    cutoff_array_2 = np.linspace(start * factor, end * factor, 1000)
+    spes_as_mpes_array_2 = np.interp(cutoff_array_2, cutoff_array, spes_as_mpes_array)
+    idx = np.argmin(np.abs(spes_as_mpes_array_2 - 1))
+    cutoff = float(format(cutoff_array_2[idx], '.2e'))
+
+    plt.plot(cutoff_array, spes_as_mpes_array)
+    plt.ylim(-5, 100)
+    plt.hlines(1)
+    plt.xlabel(parameter_title + ' Cutoff (' + units + ')')
+    plt.ylabel('% SPES Misidentified as MPEs')
+    plt.title('False MPEs')
+    plt.savefig(dest_path / 'plots' / str('false_mpes_' + parameter + '_' + str(int(fsps_new / 1e6)) + '_Msps' +
+                                          '.png'), dpi=360)
+    plt.close()
+
+    plt.plot(cutoff_array, mpes_as_spes_array)
+    plt.ylim(-5, 100)
+    plt.vlines(cutoff)
+    plt.xlabel(parameter_title + ' Cutoff (' + units + ')')
+    plt.ylabel('% MPES Misidentified as SPEs')
+    plt.title('False SPEs')
+    plt.savefig(dest_path / 'plots' / str('false_spes_' + parameter + '_' + str(int(fsps_new / 1e6)) + '_Msps' +
+                                          '.png'), dpi=360)
     plt.close()
