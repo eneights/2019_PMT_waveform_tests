@@ -14,6 +14,10 @@ def double_spe_studies_2(date, filter_band):
     array_2x = np.array([])
     array_25x = np.array([])
     array_3x = np.array([])
+    array_single_amp = np.array([])
+    array_single_charge = np.array([])
+    array_double_amp = np.array([])
+    array_double_charge = np.array([])
 
     spes_as_mpes_array = np.array([])
     mpes_as_spes_5x_array = np.array([])
@@ -24,6 +28,12 @@ def double_spe_studies_2(date, filter_band):
     mpes_as_spes_3x_array = np.array([])
     fwhm_cutoff_array = np.array([])
     mpes_as_spes_array = np.array([])
+    amp_cutoff_array = np.array([])
+    charge_cutoff_array = np.array([])
+    spes_as_mpes_array_3 = np.array([])
+    spes_as_mpes_array_4 = np.array([])
+    mpes_as_spes_array_2 = np.array([])
+    mpes_as_spes_array_3 = np.array([])
 
     filename1 = 'fwhm_single_rt1'
     filename2 = 'fwhm_double_rt1_0.5x_rt'
@@ -32,6 +42,10 @@ def double_spe_studies_2(date, filter_band):
     filename5 = 'fwhm_double_rt1_2x_rt'
     filename6 = 'fwhm_double_rt1_2.5x_rt'
     filename7 = 'fwhm_double_rt1_3x_rt'
+    filename8 = 'amp_single_rt1'
+    filename9 = 'amp_double_rt1_no_delay'
+    filename10 = 'charge_single_rt1'
+    filename11 = 'charge_double_rt1_no_delay'
 
     myfile1 = open(dest_path / 'hist_data' / str(filename1 + '.txt'), 'r')      # Opens histogram file
     for line in myfile1:
@@ -82,6 +96,34 @@ def double_spe_studies_2(date, filter_band):
         array_3x = np.append(array_3x, line)                # Reads values & saves in an array
     myfile7.close()                                         # Closes histogram file
 
+    myfile8 = open(dest_path / 'hist_data' / str(filename8 + '.txt'), 'r')      # Opens histogram file
+    for line in myfile8:
+        line = line.strip()
+        line = float(line)
+        array_single_amp = np.append(array_single_amp, line)    # Reads values & saves in an array
+    myfile8.close()                                             # Closes histogram file
+
+    myfile9 = open(dest_path / 'hist_data' / str(filename9 + '.txt'), 'r')  # Opens histogram file
+    for line in myfile9:
+        line = line.strip()
+        line = float(line)
+        array_double_amp = np.append(array_double_amp, line)    # Reads values & saves in an array
+    myfile9.close()                                             # Closes histogram file
+
+    myfile10 = open(dest_path / 'hist_data' / str(filename10 + '.txt'), 'r')  # Opens histogram file
+    for line in myfile10:
+        line = line.strip()
+        line = float(line)
+        array_single_charge = np.append(array_single_charge, line)  # Reads values & saves in an array
+    myfile10.close()                                                # Closes histogram file
+
+    myfile11 = open(dest_path / 'hist_data' / str(filename11 + '.txt'), 'r')  # Opens histogram file
+    for line in myfile11:
+        line = line.strip()
+        line = float(line)
+        array_double_charge = np.append(array_double_charge, line)  # Reads values & saves in an array
+    myfile11.close()                                                # Closes histogram file
+
     mean_single = np.mean(array_single).item()
     sd_single = np.std(array_single).item()
     mean_5x = np.mean(array_5x).item()
@@ -96,6 +138,14 @@ def double_spe_studies_2(date, filter_band):
     sd_25x = np.std(array_25x).item()
     mean_3x = np.mean(array_3x).item()
     sd_3x = np.std(array_3x).item()
+    mean_single_amp = np.mean(array_single_amp).item()
+    sd_single_amp = np.std(array_single_amp).item()
+    mean_double_amp = np.mean(array_double_amp).item()
+    sd_double_amp = np.std(array_double_amp).item()
+    mean_single_charge = np.mean(array_single_charge).item()
+    sd_single_charge = np.std(array_single_charge).item()
+    mean_double_charge = np.mean(array_double_charge).item()
+    sd_double_charge = np.std(array_double_charge).item()
 
     print('Calculating FWHM cutoff...')
 
@@ -147,7 +197,57 @@ def double_spe_studies_2(date, filter_band):
     for i in range(len(mpes_as_spes_array) - 1):
         pt = str(float(format(mpes_as_spes_array[i], '.1e')))
         plt.annotate(pt + '%', (delay_array[i], mpes_as_spes_array[i] + 1))
-    plt.savefig(dest_path / 'plots' / 'false_spes.png', dpi=360)
+    plt.savefig(dest_path / 'plots' / 'false_spes_fwhm.png', dpi=360)
+    plt.close()
+
+    for i in range(100, 500):
+        x = i
+        amp_cutoff_array = np.append(amp_cutoff_array, x)
+        spes_as_mpes = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - mean_single_amp) / (sd_single_amp * math.sqrt(2))))))
+        mpes_as_spes = 100 * ((1 / 2) * (2 - math.erfc((x - mean_double_amp) / (sd_double_amp * math.sqrt(2)))))
+        spes_as_mpes_array_3 = np.append(spes_as_mpes_array_3, spes_as_mpes)
+        mpes_as_spes_array_2 = np.append(mpes_as_spes_array_2, mpes_as_spes)
+
+    for i in range(20, 120):
+        x = i * 10**-9
+        charge_cutoff_array = np.append(charge_cutoff_array, x)
+        spes_as_mpes = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - mean_single_charge) / (sd_single_charge *
+                                                                                         math.sqrt(2))))))
+        mpes_as_spes = 100 * ((1 / 2) * (2 - math.erfc((x - mean_double_charge) / (sd_double_charge * math.sqrt(2)))))
+        spes_as_mpes_array_4 = np.append(spes_as_mpes_array_4, spes_as_mpes)
+        mpes_as_spes_array_3 = np.append(mpes_as_spes_array_3, mpes_as_spes)
+
+    plt.plot(amp_cutoff_array, spes_as_mpes_array_3)
+    plt.ylim(-5, 100)
+    plt.xlabel('Amplitude Cutoff (bits)')
+    plt.ylabel('% SPES Misidentified as MPEs')
+    plt.title('False MPEs')
+    plt.savefig(dest_path / 'plots' / 'false_mpes_amp.png', dpi=360)
+    plt.close()
+
+    plt.plot(amp_cutoff_array, mpes_as_spes_array_2)
+    plt.ylim(-5, 100)
+    plt.xlabel('Amplitude Cutoff (bits)')
+    plt.ylabel('% MPES Misidentified as SPEs')
+    plt.title('False SPEs')
+    plt.savefig(dest_path / 'plots' / 'false_spes_amp.png', dpi=360)
+    plt.close()
+
+    plt.plot(charge_cutoff_array, spes_as_mpes_array_4)
+    plt.ylim(-5, 100)
+    plt.xlabel('Charge Cutoff (s*bit/ohm)')
+    plt.ylabel('% SPES Misidentified as MPEs')
+    plt.title('False MPEs')
+    plt.savefig(dest_path / 'plots' / 'false_mpes_charge.png', dpi=360)
+    plt.close()
+
+    plt.plot(charge_cutoff_array, mpes_as_spes_array_3)
+    plt.ylim(-5, 100)
+    plt.xlabel('Charge Cutoff (s*bit/ohm)')
+    plt.ylabel('% MPES Misidentified as SPEs')
+    plt.title('False SPEs')
+    plt.savefig(dest_path / 'plots' / 'false_spes_charge.png', dpi=360)
+    plt.close()
 
 
 if __name__ == '__main__':
