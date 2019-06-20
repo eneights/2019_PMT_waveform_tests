@@ -114,14 +114,14 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
         file_name2 = str(dest_path / 'double_spe' / 'rt_2' / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
         file_name4 = str(dest_path / 'double_spe' / 'rt_4' / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
         file_name8 = str(dest_path / 'double_spe' / 'rt_8' / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
-        save_name1 = str(dest_path / 'double_spe' / 'rt_1' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % \
-                     item
-        save_name2 = str(dest_path / 'double_spe' / 'rt_2' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % \
-                     item
-        save_name4 = str(dest_path / 'double_spe' / 'rt_4' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % \
-                     item
-        save_name8 = str(dest_path / 'double_spe' / 'rt_8' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % \
-                     item
+        save_name1 = str(dest_path / 'double_spe' / 'rt_1' / delay_folder /
+                         str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
+        save_name2 = str(dest_path / 'double_spe' / 'rt_2' / delay_folder /
+                         str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
+        save_name4 = str(dest_path / 'double_spe' / 'rt_4' / delay_folder /
+                         str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
+        save_name8 = str(dest_path / 'double_spe' / 'rt_8' / delay_folder /
+                         str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
 
         if os.path.isfile(save_name1) and os.path.isfile(save_name2) and os.path.isfile(save_name4) and \
                 os.path.isfile(save_name8):
@@ -149,14 +149,22 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
     # Copies downsampled single spe waveforms
     for item in single_file_array:
-        file_name1 = str(dest_path / 'rt_1' / 'downsampled' / 'D3--waveforms--%s.txt') % item
-        file_name2 = str(dest_path / 'rt_2' / 'downsampled' / 'D3--waveforms--%s.txt') % item
-        file_name4 = str(dest_path / 'rt_4' / 'downsampled' / 'D3--waveforms--%s.txt') % item
-        file_name8 = str(dest_path / 'rt_8' / 'downsampled' / 'D3--waveforms--%s.txt') % item
-        save_name1 = str(dest_path / 'single_spe' / 'rt_1' / 'downsampled' / 'D3--waveforms--%s.txt') % item
-        save_name2 = str(dest_path / 'single_spe' / 'rt_2' / 'downsampled' / 'D3--waveforms--%s.txt') % item
-        save_name4 = str(dest_path / 'single_spe' / 'rt_4' / 'downsampled' / 'D3--waveforms--%s.txt') % item
-        save_name8 = str(dest_path / 'single_spe' / 'rt_8' / 'downsampled' / 'D3--waveforms--%s.txt') % item
+        file_name1 = str(dest_path / 'rt_1' / str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%s.txt') % item
+        file_name2 = str(dest_path / 'rt_2' / str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%s.txt') % item
+        file_name4 = str(dest_path / 'rt_4' / str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%s.txt') % item
+        file_name8 = str(dest_path / 'rt_8' / str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%s.txt') % item
+        save_name1 = str(dest_path / 'single_spe' / 'rt_1' / str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%s.txt') % item
+        save_name2 = str(dest_path / 'single_spe' / 'rt_2' / str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%s.txt') % item
+        save_name4 = str(dest_path / 'single_spe' / 'rt_4' / str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%s.txt') % item
+        save_name8 = str(dest_path / 'single_spe' / 'rt_8' / str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%s.txt') % item
 
         if os.path.isfile(file_name1):
             if os.path.isfile(save_name1):
@@ -192,22 +200,22 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
     # Digitizes double spe waveforms using given noise
     for item in double_file_array:
-        file_name1 = str(dest_path / 'double_spe' / 'rt_1' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % \
-                     item
-        file_name2 = str(dest_path / 'double_spe' / 'rt_2' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % \
-                     item
-        file_name4 = str(dest_path / 'double_spe' / 'rt_4' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % \
-                     item
-        file_name8 = str(dest_path / 'double_spe' / 'rt_8' / delay_folder / 'downsampled' / 'D3--waveforms--%s.txt') % \
-                     item
-        save_name1 = str(dest_path / 'double_spe' / 'rt_1' / delay_folder / 'digitized' / 'D3--waveforms--%s.txt') % \
-                     item
-        save_name2 = str(dest_path / 'double_spe' / 'rt_2' / delay_folder / 'digitized' / 'D3--waveforms--%s.txt') % \
-                     item
-        save_name4 = str(dest_path / 'double_spe' / 'rt_4' / delay_folder / 'digitized' / 'D3--waveforms--%s.txt') % \
-                     item
-        save_name8 = str(dest_path / 'double_spe' / 'rt_8' / delay_folder / 'digitized' / 'D3--waveforms--%s.txt') % \
-                     item
+        file_name1 = str(dest_path / 'double_spe' / 'rt_1' / delay_folder /
+                         str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
+        file_name2 = str(dest_path / 'double_spe' / 'rt_2' / delay_folder /
+                         str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
+        file_name4 = str(dest_path / 'double_spe' / 'rt_4' / delay_folder /
+                         str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
+        file_name8 = str(dest_path / 'double_spe' / 'rt_8' / delay_folder /
+                         str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
+        save_name1 = str(dest_path / 'double_spe' / 'rt_1' / delay_folder /
+                         str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
+        save_name2 = str(dest_path / 'double_spe' / 'rt_2' / delay_folder /
+                         str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
+        save_name4 = str(dest_path / 'double_spe' / 'rt_4' / delay_folder /
+                         str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
+        save_name8 = str(dest_path / 'double_spe' / 'rt_8' / delay_folder /
+                         str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
 
         if os.path.isfile(save_name1) and os.path.isfile(save_name2) and os.path.isfile(save_name4) and \
                 os.path.isfile(save_name8):
@@ -235,14 +243,22 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
     # Copies digitized single spe waveforms
     for item in single_file_array:
-        file_name1 = str(dest_path / 'rt_1' / 'digitized' / 'D3--waveforms--%s.txt') % item
-        file_name2 = str(dest_path / 'rt_2' / 'digitized' / 'D3--waveforms--%s.txt') % item
-        file_name4 = str(dest_path / 'rt_4' / 'digitized' / 'D3--waveforms--%s.txt') % item
-        file_name8 = str(dest_path / 'rt_8' / 'digitized' / 'D3--waveforms--%s.txt') % item
-        save_name1 = str(dest_path / 'single_spe' / 'rt_1' / 'digitized' / 'D3--waveforms--%s.txt') % item
-        save_name2 = str(dest_path / 'single_spe' / 'rt_2' / 'digitized' / 'D3--waveforms--%s.txt') % item
-        save_name4 = str(dest_path / 'single_spe' / 'rt_4' / 'digitized' / 'D3--waveforms--%s.txt') % item
-        save_name8 = str(dest_path / 'single_spe' / 'rt_8' / 'digitized' / 'D3--waveforms--%s.txt') % item
+        file_name1 = str(dest_path / 'rt_1' / str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%s.txt') % item
+        file_name2 = str(dest_path / 'rt_2' / str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%s.txt') % item
+        file_name4 = str(dest_path / 'rt_4' / str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%s.txt') % item
+        file_name8 = str(dest_path / 'rt_8' / str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%s.txt') % item
+        save_name1 = str(dest_path / 'single_spe' / 'rt_1' / str('digitized_' + str(int(fsps_new / 1e6)) +
+                                                                 '_Msps') / 'D3--waveforms--%s.txt') % item
+        save_name2 = str(dest_path / 'single_spe' / 'rt_2' / str('digitized_' + str(int(fsps_new / 1e6)) +
+                                                                 '_Msps') / 'D3--waveforms--%s.txt') % item
+        save_name4 = str(dest_path / 'single_spe' / 'rt_4' / str('digitized_' + str(int(fsps_new / 1e6)) +
+                                                                 '_Msps') / 'D3--waveforms--%s.txt') % item
+        save_name8 = str(dest_path / 'single_spe' / 'rt_8' / str('digitized_' + str(int(fsps_new / 1e6)) +
+                                                                 '_Msps') / 'D3--waveforms--%s.txt') % item
 
         if os.path.isfile(file_name1):
             if os.path.isfile(save_name1):
@@ -278,84 +294,88 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
     # Creates double spe arrays for charge, amplitude, and FWHM
     charge_array, amplitude_array, fwhm_array = make_arrays(double_file_array, 'rt_1', delay_folder, dest_path,
-                                                            nhdr, r)
+                                                            nhdr, r, fsps_new)
     charge_array_2, amplitude_array_2, fwhm_array_2 = make_arrays(double_file_array, 'rt_2', delay_folder,
-                                                                  dest_path, nhdr, r)
+                                                                  dest_path, nhdr, r, fsps_new)
     charge_array_4, amplitude_array_4, fwhm_array_4 = make_arrays(double_file_array, 'rt_4', delay_folder,
-                                                                  dest_path, nhdr, r)
+                                                                  dest_path, nhdr, r, fsps_new)
     charge_array_8, amplitude_array_8, fwhm_array_8 = make_arrays(double_file_array, 'rt_8', delay_folder,
-                                                                  dest_path, nhdr, r)
+                                                                  dest_path, nhdr, r, fsps_new)
 
     # Creates single spe arrays for charge, amplitude, and FWHM
-    charge_array_s, amplitude_array_s, fwhm_array_s = make_arrays_s(single_file_array, dest_path, 'rt_1', nhdr, r)
-    charge_array_2_s, amplitude_array_2_s, fwhm_array_2_s = make_arrays_s(single_file_array, dest_path, 'rt_2', nhdr, r)
-    charge_array_4_s, amplitude_array_4_s, fwhm_array_4_s = make_arrays_s(single_file_array, dest_path, 'rt_4', nhdr, r)
-    charge_array_8_s, amplitude_array_8_s, fwhm_array_8_s = make_arrays_s(single_file_array, dest_path, 'rt_8', nhdr, r)
+    charge_array_s, amplitude_array_s, fwhm_array_s = make_arrays_s(single_file_array, dest_path, 'rt_1', nhdr, r,
+                                                                    fsps_new)
+    charge_array_2_s, amplitude_array_2_s, fwhm_array_2_s = make_arrays_s(single_file_array, dest_path, 'rt_2', nhdr, r,
+                                                                          fsps_new)
+    charge_array_4_s, amplitude_array_4_s, fwhm_array_4_s = make_arrays_s(single_file_array, dest_path, 'rt_4', nhdr, r,
+                                                                          fsps_new)
+    charge_array_8_s, amplitude_array_8_s, fwhm_array_8_s = make_arrays_s(single_file_array, dest_path, 'rt_8', nhdr, r,
+                                                                          fsps_new)
 
     # Creates double spe histograms for charge, amplitude, and FWHM
     print('Creating double spe histograms...')
-    plot_histogram(charge_array, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_spe_' +
-                   str(delay_folder))
-    plot_histogram(charge_array_2, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_spe_2_' +
-                   str(delay_folder))
-    plot_histogram(charge_array_4, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_spe_4_' +
-                   str(delay_folder))
-    plot_histogram(charge_array_8, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_spe_8_' +
-                   str(delay_folder))
-    plot_histogram(amplitude_array, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_double_spe_' +
-                   str(delay_folder))
-    plot_histogram(amplitude_array_2, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_double_spe_2_' +
-                   str(delay_folder))
-    plot_histogram(amplitude_array_4, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_double_spe_4_' +
-                   str(delay_folder))
-    plot_histogram(amplitude_array_8, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_double_spe_8_' +
-                   str(delay_folder))
-    plot_histogram(fwhm_array, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_spe_' + str(delay_folder))
-    plot_histogram(fwhm_array_2, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_spe_2_' + str(delay_folder))
-    plot_histogram(fwhm_array_4, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_spe_4_' + str(delay_folder))
-    plot_histogram(fwhm_array_8, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_spe_8_' + str(delay_folder))
+    plot_histogram(charge_array, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_rt1_' +
+                   str(delay_folder), fsps_new)
+    plot_histogram(charge_array_2, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_rt2_' +
+                   str(delay_folder), fsps_new)
+    plot_histogram(charge_array_4, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_rt4_' +
+                   str(delay_folder), fsps_new)
+    plot_histogram(charge_array_8, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_double_rt8_' +
+                   str(delay_folder), fsps_new)
+    plot_histogram(amplitude_array, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_double_rt1_' +
+                   str(delay_folder), fsps_new)
+    plot_histogram(amplitude_array_2, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_double_rt2_' +
+                   str(delay_folder), fsps_new)
+    plot_histogram(amplitude_array_4, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_double_rt4_' +
+                   str(delay_folder), fsps_new)
+    plot_histogram(amplitude_array_8, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_double_rt8_' +
+                   str(delay_folder), fsps_new)
+    plot_histogram(fwhm_array, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_rt1_' + str(delay_folder), fsps_new)
+    plot_histogram(fwhm_array_2, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_rt2_' + str(delay_folder), fsps_new)
+    plot_histogram(fwhm_array_4, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_rt4_' + str(delay_folder), fsps_new)
+    plot_histogram(fwhm_array_8, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_rt8_' + str(delay_folder), fsps_new)
 
     # Creates single spe histograms for charge, amplitude, and FWHM
     print('Creating single spe histograms...')
-    plot_histogram(charge_array_s, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_spe')
-    plot_histogram(charge_array_2_s, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_spe_2')
-    plot_histogram(charge_array_4_s, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_spe_4')
-    plot_histogram(charge_array_8_s, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_spe_8')
-    plot_histogram(amplitude_array_s, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_spe')
-    plot_histogram(amplitude_array_2_s, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_spe_2')
-    plot_histogram(amplitude_array_4_s, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_spe_4')
-    plot_histogram(amplitude_array_8_s, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_spe_8')
-    plot_histogram(fwhm_array_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe')
-    plot_histogram(fwhm_array_2_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe_2')
-    plot_histogram(fwhm_array_4_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe_4')
-    plot_histogram(fwhm_array_8_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe_8')
+    plot_histogram(charge_array_s, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt1', fsps_new)
+    plot_histogram(charge_array_2_s, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt2', fsps_new)
+    plot_histogram(charge_array_4_s, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt4', fsps_new)
+    plot_histogram(charge_array_8_s, dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt8', fsps_new)
+    plot_histogram(amplitude_array_s, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt1', fsps_new)
+    plot_histogram(amplitude_array_2_s, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt2', fsps_new)
+    plot_histogram(amplitude_array_4_s, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt4', fsps_new)
+    plot_histogram(amplitude_array_8_s, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt8', fsps_new)
+    plot_histogram(fwhm_array_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt1', fsps_new)
+    plot_histogram(fwhm_array_2_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt2', fsps_new)
+    plot_histogram(fwhm_array_4_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt4', fsps_new)
+    plot_histogram(fwhm_array_8_s, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt8', fsps_new)
 
     # Creates double & single spe histograms on same plot
     print('Creating histograms...')
-    plot_double_hist(dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_spe', 'charge_double_spe_' +
-                     str(delay_folder), 'charge_rt1_' + str(delay_folder))
-    plot_double_hist(dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_spe_2', 'charge_double_spe_2_' +
-                     str(delay_folder), 'charge_rt2_' + str(delay_folder))
-    plot_double_hist(dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_spe_4', 'charge_double_spe_4_' +
-                     str(delay_folder), 'charge_rt4_' + str(delay_folder))
-    plot_double_hist(dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_spe_8', 'charge_double_spe_8_' +
-                     str(delay_folder), 'charge_rt8_' + str(delay_folder))
-    plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_spe', 'amp_double_spe_' +
-                     str(delay_folder), 'amp_rt1_' + str(delay_folder))
-    plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_spe_2', 'amp_double_spe_2_'
-                     + str(delay_folder), 'amp_rt2_' + str(delay_folder))
-    plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_spe_4', 'amp_double_spe_4_'
-                     + str(delay_folder), 'amp_rt4_' + str(delay_folder))
-    plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_spe_8', 'amp_double_spe_8_'
-                     + str(delay_folder), 'amp_rt8_' + str(delay_folder))
-    plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe', 'fwhm_double_spe_' + str(delay_folder),
-                     'fwhm_rt1_' + str(delay_folder))
-    plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe_2', 'fwhm_double_spe_2_' + str(delay_folder),
-                     'fwhm_rt2_' + str(delay_folder))
-    plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe_4', 'fwhm_double_spe_4_' + str(delay_folder),
-                     'fwhm_rt4_' + str(delay_folder))
-    plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_spe_8', 'fwhm_double_spe_8_' + str(delay_folder),
-                     'fwhm_rt8_' + str(delay_folder))
+    plot_double_hist(dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt1', 'charge_double_rt1_' +
+                     str(delay_folder), 'charge_rt1_' + str(delay_folder), fsps_new)
+    plot_double_hist(dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt2', 'charge_double_rt2_' +
+                     str(delay_folder), 'charge_rt2_' + str(delay_folder), fsps_new)
+    plot_double_hist(dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt4', 'charge_double_rt4_' +
+                     str(delay_folder), 'charge_rt4_' + str(delay_folder), fsps_new)
+    plot_double_hist(dest_path, 75, 'Charge', 'Charge', 's*bit/ohm', 'charge_single_rt8', 'charge_double_rt8_' +
+                     str(delay_folder), 'charge_rt8_' + str(delay_folder), fsps_new)
+    plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt1', 'amp_double_rt1_' +
+                     str(delay_folder), 'amp_rt1_' + str(delay_folder), fsps_new)
+    plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt2', 'amp_double_rt2_'
+                     + str(delay_folder), 'amp_rt2_' + str(delay_folder), fsps_new)
+    plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt4', 'amp_double_rt4_'
+                     + str(delay_folder), 'amp_rt4_' + str(delay_folder), fsps_new)
+    plot_double_hist(dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_single_rt8', 'amp_double_rt8_'
+                     + str(delay_folder), 'amp_rt8_' + str(delay_folder), fsps_new)
+    plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt1', 'fwhm_double_rt1_' + str(delay_folder),
+                     'fwhm_rt1_' + str(delay_folder), fsps_new)
+    plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt2', 'fwhm_double_rt2_' + str(delay_folder),
+                     'fwhm_rt2_' + str(delay_folder), fsps_new)
+    plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt4', 'fwhm_double_rt4_' + str(delay_folder),
+                     'fwhm_rt4_' + str(delay_folder), fsps_new)
+    plot_double_hist(dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_single_rt8', 'fwhm_double_rt8_' + str(delay_folder),
+                     'fwhm_rt8_' + str(delay_folder), fsps_new)
 
 
 if __name__ == '__main__':

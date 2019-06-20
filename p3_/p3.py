@@ -63,10 +63,14 @@ def p3(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
         file_name2 = str(filt_path_2 / 'raw' / 'D3--waveforms--%05d.txt') % i
         file_name4 = str(filt_path_4 / 'raw' / 'D3--waveforms--%05d.txt') % i
         file_name8 = str(filt_path_8 / 'raw' / 'D3--waveforms--%05d.txt') % i
-        save_name1 = str(filt_path_1 / 'downsampled' / 'D3--waveforms--%05d.txt') % i
-        save_name2 = str(filt_path_2 / 'downsampled' / 'D3--waveforms--%05d.txt') % i
-        save_name4 = str(filt_path_4 / 'downsampled' / 'D3--waveforms--%05d.txt') % i
-        save_name8 = str(filt_path_8 / 'downsampled' / 'D3--waveforms--%05d.txt') % i
+        save_name1 = str(filt_path_1 / str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%05d.txt') % i
+        save_name2 = str(filt_path_2 / str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%05d.txt') % i
+        save_name4 = str(filt_path_4 / str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%05d.txt') % i
+        save_name8 = str(filt_path_8 / str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%05d.txt') % i
 
         if os.path.isfile(save_name1) and os.path.isfile(save_name2) and os.path.isfile(save_name4) and \
                 os.path.isfile(save_name8):
@@ -94,14 +98,22 @@ def p3(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
 
     # Digitizes waveforms using given noise
     for i in range(start, end + 1):
-        file_name1 = str(filt_path_1 / 'downsampled' / 'D3--waveforms--%05d.txt') % i
-        file_name2 = str(filt_path_2 / 'downsampled' / 'D3--waveforms--%05d.txt') % i
-        file_name4 = str(filt_path_4 / 'downsampled' / 'D3--waveforms--%05d.txt') % i
-        file_name8 = str(filt_path_8 / 'downsampled' / 'D3--waveforms--%05d.txt') % i
-        save_name1 = str(filt_path_1 / 'digitized' / 'D3--waveforms--%05d.txt') % i
-        save_name2 = str(filt_path_2 / 'digitized' / 'D3--waveforms--%05d.txt') % i
-        save_name4 = str(filt_path_4 / 'digitized' / 'D3--waveforms--%05d.txt') % i
-        save_name8 = str(filt_path_8 / 'digitized' / 'D3--waveforms--%05d.txt') % i
+        file_name1 = str(filt_path_1 / str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%05d.txt') % i
+        file_name2 = str(filt_path_2 / str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%05d.txt') % i
+        file_name4 = str(filt_path_4 / str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%05d.txt') % i
+        file_name8 = str(filt_path_8 / str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%05d.txt') % i
+        save_name1 = str(filt_path_1 / str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%05d.txt') % i
+        save_name2 = str(filt_path_2 / str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%05d.txt') % i
+        save_name4 = str(filt_path_4 / str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%05d.txt') % i
+        save_name8 = str(filt_path_8 / str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                         'D3--waveforms--%05d.txt') % i
 
         if os.path.isfile(save_name1) and os.path.isfile(save_name2) and os.path.isfile(save_name4) and \
                 os.path.isfile(save_name8):

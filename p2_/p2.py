@@ -13,7 +13,7 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     filt_path2_2 = Path(dest_path / 'rt_4')
     filt_path2_2_2 = Path(dest_path / 'rt_8')
 
-    print('Calculating taus...')
+    '''print('Calculating taus...')
     x1_array = np.array([])
     j_array = np.array([])
 
@@ -71,6 +71,12 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     v2_2 = -1 * v2_2
     v2_2_2 = lowpass_filter(v2_2, tau_2_2_2, fsps)      # Creates new average waveform with 8x the rise time
 
+    print(tau_2, tau_2_2, tau_2_2_2)
+
+    tau_2 = 1.3279999999999999e-08
+    tau_2_2 = 1.035e-08
+    tau_2_2_2 = 3.3249999999999997e-08
+
     # Plots average spe waveforms with 1x, 2x, 4x, and 8x the rise time
     plt.plot(t, v)
     plt.plot(t, v2)
@@ -80,8 +86,12 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     plt.ylabel('Normalized Voltage')
     plt.title('Average Waveforms\norange tau = ' + str(format(tau_2, '.2e')) + ' s, green tau = ' +
               str(format(tau_2_2, '.2e')) + ' s, red tau = ' + str(format(tau_2_2_2, '.2e')) + ' s')
-    plt.savefig(dest_path / 'plots' / 'avg_waveforms_2.png', dpi=360)
-    plt.close()
+    plt.savefig(dest_path / 'plots' / 'avg_waveforms.png', dpi=360)
+    plt.close()'''
+
+    tau_2 = 1.3279999999999999e-08
+    tau_2_2 = 1.035e-08
+    tau_2_2_2 = 3.3249999999999997e-08
 
     # For each spe waveform file, calculates and saves waveforms with 1x, 2x, 4x, and 8x the rise time
     for i in range(start, end + 1):
@@ -144,16 +154,16 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
 
     # Plots average waveform for 4x rise time
     print('Calculating rt_4 average waveform...')
-    average_waveform(start, end, filt_path2_2, dest_path, nhdr, 'avg_waveform2_2')
+    average_waveform(start, end, filt_path2_2, dest_path, nhdr, 'avg_waveform4')
 
     # Plots average waveform for 8x rise time
     print('Calculating rt_8 average waveform...')
-    average_waveform(start, end, filt_path2_2_2, dest_path, nhdr, 'avg_waveform2_2_2')
+    average_waveform(start, end, filt_path2_2_2, dest_path, nhdr, 'avg_waveform8')
 
     # Calculates 10-90 rise times for each waveform and puts them into arrays
     print('Doing calculations...')
-    rt_1_array, rt_2_array, rt_4_array, rt_8_array = make_arrays(dest_path, dest_path / 'calculations', start, end,
-                                                                 nhdr)
+    rt_1_array, rt_2_array, rt_4_array, rt_8_array = make_arrays(dest_path, dest_path / 'calculations' / 'single_spe',
+                                                                 start, end, nhdr)
 
     # Creates histograms of 10-90 rise times for 1x, 2x, 4x, and 8x the initial rise time
     print('Creating histograms...')

@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from scipy.optimize import curve_fit
 from scipy.stats import norm
-from scipy import signal
 import random
 
 
@@ -148,7 +147,9 @@ def calculate_amp(t, v):
 
 # Returns the full width half max (FWHM) of spe
 def calculate_fwhm(t, v):
-    half_max = min(v) / 2       # Calculates 50% max value
+    idx_max = -1
+    half_max = min(v) / 2                       # Calculates 50% max value
+    val_10 = min(v) / 10                        # Calculates 10% max value
     half_max = half_max.item()
     tvals = np.linspace(t[0], t[len(t) - 1], 5000)      # Creates array of times over entire timespan
     vvals = np.interp(tvals, t, v)                      # Interpolates & creates array of voltages over entire timespan
@@ -156,13 +157,19 @@ def calculate_fwhm(t, v):
     diff_val = np.abs(vvals - min(v))           # Finds difference between points in voltage array and minimum voltage
     index_min = np.argmin(diff_val)             # Finds index of minimum voltage in voltage array
     differential = np.diff(vvals)               # Finds derivative at every point in voltage array
-    for i in range(index_min.item(), len(differential) - 1):    # Sets every value in difference_value array with a
+    for i in range(len(differential) - 1):    # Sets every value in difference_value array with a
         if differential[i] < 0:                                 # negative value equal to infinity
             difference_value[i] = np.inf
-    difference_value = difference_value[index_min.item():len(vvals) - 1]
+    for i in range(index_min.item(), len(vvals - 1)):
+        if vvals[i] >= val_10:
+            idx_max = i
+            break
     try:
-        idx = np.argmin(difference_value)       # Finds index of 50% max in voltage array
-        half_max_time = tvals[idx + index_min.item()]   # Finds time of 50% max
+        for i in range(idx_max, index_min.item(), -1):
+            if vvals[i] <= half_max:
+                idx = i
+                break
+        half_max_time = tvals[idx]          # Finds time of 50% max
         return half_max_time
     except Exception:
         return -1
@@ -193,16 +200,16 @@ def write_hist_data(array, dest_path, name):
 # fall times, and 10%, 20%, 80% & 90% jitter for each spe file
 # Returns arrays of beginning & end times of spe waveform, charge, amplitude, fwhm, 10-90 & 20-80 rise times, 10-90 &
 # 20-80 fall times, and 10%, 20%, 80% & 90% jitter
-def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr, r):
+def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr, r, fsps_new):
     charge_array = np.array([])
     amplitude_array = np.array([])
     fwhm_array = np.array([])
 
     for item in double_file_array:
-        file_name1 = str(dest_path / 'double_spe' / double_folder / delay_folder / 'digitized' / 'D3--waveforms--%s.txt'
-                         ) % item
+        file_name1 = str(dest_path / 'double_spe' / double_folder / delay_folder /
+                         str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
         file_name2 = str(dest_path / 'calculations' / 'double_spe' / double_folder / delay_folder /
-                         'D3--waveforms--%s.txt') % item
+                         str(str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
         if os.path.isfile(file_name1):
             if os.path.isfile(file_name2):      # If the calculations were done previously, they are read from a file
                 print("Reading calculations from file #%s" % item)
@@ -224,14 +231,14 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
                     print('Removing file #%s' % item)
                     if os.path.isfile(raw_file):
                         os.remove(raw_file)
-                    if os.path.isfile(file_name1):
-                        os.remove(file_name1)
-                    if os.path.isfile(file_name2):
-                        os.remove(file_name2)
-                    if os.path.isfile(str(dest_path / 'double_spe' / double_folder / delay_folder / 'downsampled' /
+                    os.remove(file_name1)
+                    os.remove(file_name2)
+                    if os.path.isfile(str(dest_path / 'double_spe' / double_folder / delay_folder /
+                                          str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
                                           'D3--waveforms--%s.txt') % item):
-                        os.remove(str(dest_path / 'double_spe' / double_folder / delay_folder / 'downsampled' /
-                                  'D3--waveforms--%s.txt') % item)
+                        os.remove(str(dest_path / 'double_spe' / double_folder / delay_folder /
+                                      str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                                      'D3--waveforms--%s.txt') % item)
                 # All other double spe waveforms' calculations are placed into arrays
                 else:
                     charge_array = np.append(charge_array, charge)
@@ -252,12 +259,13 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
                     print('Removing file #%s' % item)
                     if os.path.isfile(raw_file):
                         os.remove(raw_file)
-                    if os.path.isfile(file_name1):
-                        os.remove(file_name1)
-                    if os.path.isfile(str(dest_path / 'double_spe' / double_folder / delay_folder / 'downsampled' /
+                    os.remove(file_name1)
+                    if os.path.isfile(str(dest_path / 'double_spe' / double_folder / delay_folder /
+                                          str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
                                           'D3--waveforms--%s.txt') % item):
-                        os.remove(str(dest_path / 'double_spe' / double_folder / delay_folder / 'downsampled' /
-                                  'D3--waveforms--%s.txt') % item)
+                        os.remove(str(dest_path / 'double_spe' / double_folder / delay_folder /
+                                      str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                                      'D3--waveforms--%s.txt') % item)
                 # All other double spe waveforms' calculations are saved in a file & placed into arrays
                 else:
                     save_calculations(file_name2, charge, amplitude, fwhm)
@@ -270,14 +278,16 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
 
 # Calculates charge, amplitude, and fwhm for each spe file
 # Returns arrays of charge, amplitude, and fwhm
-def make_arrays_s(single_file_array, dest_path, single_folder, nhdr, r):
+def make_arrays_s(single_file_array, dest_path, single_folder, nhdr, r, fsps_new):
     charge_array = np.array([])
     amplitude_array = np.array([])
     fwhm_array = np.array([])
 
     for item in single_file_array:
-        file_name1 = str(dest_path / 'single_spe' / single_folder / 'digitized' / 'D3--waveforms--%s.txt') % item
-        file_name2 = str(dest_path / 'calculations' / 'single_spe' / single_folder / 'D3--waveforms--%s.txt') % item
+        file_name1 = str(dest_path / 'single_spe' / single_folder / str('digitized_' + str(int(fsps_new / 1e6)) +
+                                                                        '_Msps') / 'D3--waveforms--%s.txt') % item
+        file_name2 = str(dest_path / 'calculations' / 'single_spe' / single_folder /
+                         str(str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
         if os.path.isfile(file_name1):
             if os.path.isfile(file_name2):      # If the calculations were done previously, they are read from a file
                 print("Reading calculations from file #%s" % item)
@@ -297,11 +307,16 @@ def make_arrays_s(single_file_array, dest_path, single_folder, nhdr, r):
                     t, v, hdr = rw(raw_file, nhdr)
                     ww(t, v, save_file, hdr)
                     print('Removing file #%s' % item)
-                    os.remove(raw_file)
+                    if os.path.isfile(raw_file):
+                        os.remove(raw_file)
                     os.remove(file_name1)
                     os.remove(file_name2)
-                    os.remove(str(dest_path / 'single_spe' / single_folder / 'downsampled' / 'D3--waveforms--%s.txt') %
-                              item)
+                    if os.path.isfile(str(dest_path / 'single_spe' / single_folder /
+                                          str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                                          'D3--waveforms--%s.txt') % item):
+                        os.remove(str(dest_path / 'single_spe' / single_folder /
+                                      str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                                      'D3--waveforms--%s.txt') % item)
                 # All other spe waveforms' calculations are placed into arrays
                 else:
                     charge_array = np.append(charge_array, charge)
@@ -320,10 +335,15 @@ def make_arrays_s(single_file_array, dest_path, single_folder, nhdr, r):
                     t, v, hdr = rw(raw_file, nhdr)
                     ww(t, v, save_file, hdr)
                     print('Removing file #%s' % item)
-                    os.remove(raw_file)
+                    if os.path.isfile(raw_file):
+                        os.remove(raw_file)
                     os.remove(file_name1)
-                    os.remove(str(dest_path / 'single_spe' / single_folder / 'downsampled' / 'D3--waveforms--%s.txt') %
-                              item)
+                    if os.path.isfile(str(dest_path / 'single_spe' / single_folder /
+                                          str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                                          'D3--waveforms--%s.txt') % item):
+                        os.remove(str(dest_path / 'single_spe' / single_folder /
+                                      str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                                      'D3--waveforms--%s.txt') % item)
                 # All other spe waveforms' calculations are saved in a file & placed into arrays
                 else:
                     save_calculations(file_name2, charge, amplitude, fwhm)
@@ -335,7 +355,7 @@ def make_arrays_s(single_file_array, dest_path, single_folder, nhdr, r):
 
 
 # Creates histogram given an array
-def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename):
+def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename, fsps_new):
 
     def func(x, a, b, c):           # Defines Gaussian function (a is amplitude, b is mean, c is standard deviation)
         return a * np.exp(-(x - b) ** 2.0 / (2 * c ** 2))
@@ -343,53 +363,40 @@ def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename):
     path = Path(dest_path / 'plots')
     n, bins, patches = plt.hist(array, nbins)       # Plots histogram
     b_est, c_est = norm.fit(array)                  # Calculates mean & standard deviation based on entire array
-    if filename == 'amp_double_spe_4_3x_rt':
+    if filename == 'amp_double_rt4_3x_rt':
         range_min1 = b_est + (c_est / 2) - c_est        # Calculates lower limit of Gaussian fit (1sigma estimation)
         range_max1 = b_est + (c_est / 2) + c_est        # Calculates lower limit of Gaussian fit (1sigma estimation)
-    elif filename == 'fwhm_double_spe_2_3x_rt' or filename == 'fwhm_double_spe_4_3x_rt' or filename == \
-            'fwhm_double_spe_8_3x_rt' or filename == 'charge_double_spe_2_3x_rt' or filename == \
-            'charge_double_spe_4_3x_rt' or filename == 'charge_double_spe_8_3x_rt':
-        b_est = float(format(b_est, '.2e'))
-        c_est = float(format(c_est, '.2e'))
     else:
         range_min1 = b_est - c_est              # Calculates lower limit of Gaussian fit (1sigma estimation)
         range_max1 = b_est + c_est              # Calculates upper limit of Gaussian fit (1sigma estimation)
 
-    if filename == 'fwhm_double_spe_2_3x_rt' or filename == 'fwhm_double_spe_4_3x_rt' or filename == \
-            'fwhm_double_spe_8_3x_rt' or filename == 'charge_double_spe_2_3x_rt' or filename == \
-            'charge_double_spe_4_3x_rt' or filename == 'charge_double_spe_8_3x_rt':
-        plt.xlabel(xaxis + ' (' + units + ')')
-        plt.title(title + ' of SPE\n mean: ' + str(b_est) + ' ' + units + ', SD: ' + str(c_est) + ' ' + units)
-        plt.savefig(path / str(filename + '.png'), dpi=360)
-        plt.close()
-    else:
-        bins = np.delete(bins, len(bins) - 1)
-        bins_diff = bins[1] - bins[0]
-        bins = np.linspace(bins[0] + bins_diff / 2, bins[len(bins) - 1] + bins_diff / 2, len(bins))
-        bins_range1 = np.linspace(range_min1, range_max1, 10000)  # Creates array of bins between upper & lower limits
-        n_range1 = np.interp(bins_range1, bins, n)  # Interpolates & creates array of y axis values
-        guess1 = [1, float(b_est), float(c_est)]  # Defines guess for values of a, b & c in Gaussian fit
-        popt1, pcov1 = curve_fit(func, bins_range1, n_range1, p0=guess1, maxfev=10000)  # Finds Gaussian fit
-        mu1 = float(format(popt1[1], '.2e'))        # Calculates mean based on 1sigma guess
-        sigma1 = np.abs(float(format(popt1[2], '.2e')))     # Calculates standard deviation based on 1sigma estimation
-        range_min2 = mu1 - 2 * sigma1       # Calculates lower limit of Gaussian fit (2sigma)
-        range_max2 = mu1 + 2 * sigma1       # Calculates upper limit of Gaussian fit (2sigma)
-        bins_range2 = np.linspace(range_min2, range_max2, 10000)    # Creates array of bins between upper & lower limits
-        n_range2 = np.interp(bins_range2, bins, n)      # Interpolates & creates array of y axis values
-        guess2 = [1, mu1, sigma1]       # Defines guess for values of a, b & c in Gaussian fit
-        popt2, pcov2 = curve_fit(func, bins_range2, n_range2, p0=guess2, maxfev=10000)  # Finds Gaussian fit
-        plt.plot(bins_range2, func(bins_range2, *popt2), color='red')       # Plots Gaussian fit (mean +/- 2sigma)
-        mu2 = float(format(popt2[1], '.2e'))                # Calculates mean
-        sigma2 = np.abs(float(format(popt2[2], '.2e')))     # Calculates standard deviation
-        plt.xlabel(xaxis + ' (' + units + ')')
-        plt.title(title + ' of SPE\n mean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2) + ' ' + units)
-        plt.savefig(path / str(filename + '.png'), dpi=360)
-        plt.close()
+    bins = np.delete(bins, len(bins) - 1)
+    bins_diff = bins[1] - bins[0]
+    bins = np.linspace(bins[0] + bins_diff / 2, bins[len(bins) - 1] + bins_diff / 2, len(bins))
+    bins_range1 = np.linspace(range_min1, range_max1, 10000)  # Creates array of bins between upper & lower limits
+    n_range1 = np.interp(bins_range1, bins, n)  # Interpolates & creates array of y axis values
+    guess1 = [1, float(b_est), float(c_est)]  # Defines guess for values of a, b & c in Gaussian fit
+    popt1, pcov1 = curve_fit(func, bins_range1, n_range1, p0=guess1, maxfev=10000)  # Finds Gaussian fit
+    mu1 = float(format(popt1[1], '.2e'))        # Calculates mean based on 1sigma guess
+    sigma1 = np.abs(float(format(popt1[2], '.2e')))     # Calculates standard deviation based on 1sigma estimation
+    range_min2 = mu1 - 2 * sigma1       # Calculates lower limit of Gaussian fit (2sigma)
+    range_max2 = mu1 + 2 * sigma1       # Calculates upper limit of Gaussian fit (2sigma)
+    bins_range2 = np.linspace(range_min2, range_max2, 10000)    # Creates array of bins between upper & lower limits
+    n_range2 = np.interp(bins_range2, bins, n)      # Interpolates & creates array of y axis values
+    guess2 = [1, mu1, sigma1]       # Defines guess for values of a, b & c in Gaussian fit
+    popt2, pcov2 = curve_fit(func, bins_range2, n_range2, p0=guess2, maxfev=10000)  # Finds Gaussian fit
+    plt.plot(bins_range2, func(bins_range2, *popt2), color='red')       # Plots Gaussian fit (mean +/- 2sigma)
+    mu2 = float(format(popt2[1], '.2e'))                # Calculates mean
+    sigma2 = np.abs(float(format(popt2[2], '.2e')))     # Calculates standard deviation
+    plt.xlabel(xaxis + ' (' + units + ')')
+    plt.title(title + ' of SPE\n mean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2) + ' ' + units)
+    plt.savefig(path / str(filename + '_' + str(int(fsps_new / 1e6)) + '_Msps' + '.png'), dpi=360)
+    plt.close()
 
     write_hist_data(array, dest_path, filename + '.txt')
 
 
-def plot_double_hist(dest_path, nbins, xaxis, title, units, filename1, filename2, filename):
+def plot_double_hist(dest_path, nbins, xaxis, title, units, filename1, filename2, filename, fsps_new):
 
     def func(x, a, b, c):           # Defines Gaussian function (a is amplitude, b is mean, c is standard deviation)
         return a * np.exp(-(x - b) ** 2.0 / (2 * c ** 2))
@@ -440,50 +447,35 @@ def plot_double_hist(dest_path, nbins, xaxis, title, units, filename1, filename2
     n2, bins2, patches2 = plt.hist(array2, nbins, alpha=0.7)        # Plots histogram 2
     b_est2, c_est2 = norm.fit(array2)                   # Calculates mean & standard deviation based on entire array 2
 
-    if filename2 == 'amp_double_spe_4_3x_rt':
+    if filename2 == 'amp_double_rt4_3x_rt':
         range_min1_2 = b_est2 + (c_est2 / 2) - c_est2   # Calculates lower limit of Gaussian fit (1sigma estimation)
         range_max1_2 = b_est2 + (c_est2 / 2) + c_est2   # Calculates lower limit of Gaussian fit (1sigma estimation)
-    elif filename2 == 'fwhm_double_spe_2_3x_rt' or filename2 == 'fwhm_double_spe_4_3x_rt' or filename2 == \
-            'fwhm_double_spe_8_3x_rt' or filename2 == 'charge_double_spe_2_3x_rt' or filename2 == \
-            'charge_double_spe_4_3x_rt' or filename2 == 'charge_double_spe_8_3x_rt':
-        b_est2 = float(format(b_est2, '.2e'))
-        c_est2 = float(format(c_est2, '.2e'))
     else:
         range_min1_2 = b_est2 - c_est2              # Calculates lower limit of Gaussian fit (1sigma estimation)
         range_max1_2 = b_est2 + c_est2              # Calculates upper limit of Gaussian fit (1sigma estimation)
 
-    if filename2 == 'fwhm_double_spe_2_3x_rt' or filename2 == 'fwhm_double_spe_4_3x_rt' or filename2 == \
-            'fwhm_double_spe_8_3x_rt' or filename2 == 'charge_double_spe_2_3x_rt' or filename2 == \
-            'charge_double_spe_4_3x_rt' or filename2 == 'charge_double_spe_8_3x_rt':
-        plt.xlabel(xaxis + ' (' + units + ')')
-        plt.title(title + ' of SPE\n mean (single): ' + str(mu2_1) + ' ' + units + ', SD (single): ' + str(sigma2_1) +
-                  ' ' + units + '\n mean (double): ' + str(b_est2) + ' ' + units + ', SD (double): ' + str(c_est2) + ' '
-                  + units, fontsize='medium')
-        plt.savefig(path / str(filename + '.png'), dpi=360)
-        plt.close()
-    else:
-        bins2 = np.delete(bins2, len(bins2) - 1)
-        bins_diff2 = bins2[1] - bins2[0]
-        bins2 = np.linspace(bins2[0] + bins_diff2 / 2, bins2[len(bins2) - 1] + bins_diff2 / 2, len(bins2))
-        bins_range1_2 = np.linspace(range_min1_2, range_max1_2, 10000)  # Creates array of bins between upper & lower limits
-        n_range1_2 = np.interp(bins_range1_2, bins2, n2)        # Interpolates & creates array of y axis values
-        guess1_2 = [1, float(b_est2), float(c_est2)]            # Defines guess for values of a, b & c in Gaussian fit
-        popt1_2, pcov1_2 = curve_fit(func, bins_range1_2, n_range1_2, p0=guess1_2, maxfev=10000)  # Finds Gaussian fit
-        mu1_2 = float(format(popt1_2[1], '.2e'))                # Calculates mean based on 1sigma guess
-        sigma1_2 = np.abs(float(format(popt1_2[2], '.2e')))     # Calculates standard deviation based on 1sigma estimation
-        range_min2_2 = mu1_2 - 2 * sigma1_2                     # Calculates lower limit of Gaussian fit (2sigma)
-        range_max2_2 = mu1_2 + 2 * sigma1_2                     # Calculates upper limit of Gaussian fit (2sigma)
-        bins_range2_2 = np.linspace(range_min2_2, range_max2_2, 10000)  # Creates array of bins between upper & lower limits
-        n_range2_2 = np.interp(bins_range2_2, bins2, n2)        # Interpolates & creates array of y axis values
-        guess2_2 = [1, mu1_2, sigma1_2]                         # Defines guess for values of a, b & c in Gaussian fit
-        popt2_2, pcov2_2 = curve_fit(func, bins_range2_2, n_range2_2, p0=guess2_2, maxfev=10000)  # Finds Gaussian fit
-        plt.plot(bins_range2_2, func(bins_range2_2, *popt2_2), color='green')   # Plots Gaussian fit (mean +/- 2sigma)
-        mu2_2 = float(format(popt2_2[1], '.2e'))                # Calculates mean
-        sigma2_2 = np.abs(float(format(popt2_2[2], '.2e')))     # Calculates standard deviation
+    bins2 = np.delete(bins2, len(bins2) - 1)
+    bins_diff2 = bins2[1] - bins2[0]
+    bins2 = np.linspace(bins2[0] + bins_diff2 / 2, bins2[len(bins2) - 1] + bins_diff2 / 2, len(bins2))
+    bins_range1_2 = np.linspace(range_min1_2, range_max1_2, 10000)  # Creates array of bins between upper & lower limits
+    n_range1_2 = np.interp(bins_range1_2, bins2, n2)        # Interpolates & creates array of y axis values
+    guess1_2 = [1, float(b_est2), float(c_est2)]            # Defines guess for values of a, b & c in Gaussian fit
+    popt1_2, pcov1_2 = curve_fit(func, bins_range1_2, n_range1_2, p0=guess1_2, maxfev=10000)  # Finds Gaussian fit
+    mu1_2 = float(format(popt1_2[1], '.2e'))                # Calculates mean based on 1sigma guess
+    sigma1_2 = np.abs(float(format(popt1_2[2], '.2e')))     # Calculates standard deviation based on 1sigma estimation
+    range_min2_2 = mu1_2 - 2 * sigma1_2                     # Calculates lower limit of Gaussian fit (2sigma)
+    range_max2_2 = mu1_2 + 2 * sigma1_2                     # Calculates upper limit of Gaussian fit (2sigma)
+    bins_range2_2 = np.linspace(range_min2_2, range_max2_2, 10000)  # Creates array of bins between upper & lower limits
+    n_range2_2 = np.interp(bins_range2_2, bins2, n2)        # Interpolates & creates array of y axis values
+    guess2_2 = [1, mu1_2, sigma1_2]                         # Defines guess for values of a, b & c in Gaussian fit
+    popt2_2, pcov2_2 = curve_fit(func, bins_range2_2, n_range2_2, p0=guess2_2, maxfev=10000)  # Finds Gaussian fit
+    plt.plot(bins_range2_2, func(bins_range2_2, *popt2_2), color='green')   # Plots Gaussian fit (mean +/- 2sigma)
+    mu2_2 = float(format(popt2_2[1], '.2e'))                # Calculates mean
+    sigma2_2 = np.abs(float(format(popt2_2[2], '.2e')))     # Calculates standard deviation
 
-        plt.xlabel(xaxis + ' (' + units + ')')
-        plt.title(title + ' of SPE\n mean (single): ' + str(mu2_1) + ' ' + units + ', SD (single): ' + str(sigma2_1) +
-                  ' ' + units + '\n mean (double): ' + str(mu2_2) + ' ' + units + ', SD (double): ' + str(sigma2_2) +
-                  ' ' + units, fontsize='medium')
-        plt.savefig(path / str(filename + '.png'), dpi=360)
-        plt.close()
+    plt.xlabel(xaxis + ' (' + units + ')')
+    plt.title(title + ' of SPE\n mean (single): ' + str(mu2_1) + ' ' + units + ', SD (single): ' + str(sigma2_1) + ' ' +
+              units + '\n mean (double): ' + str(mu2_2) + ' ' + units + ', SD (double): ' + str(sigma2_2) + ' ' + units,
+              fontsize='medium')
+    plt.savefig(path / str(filename + '_' + str(int(fsps_new / 1e6)) + '_Msps' + '.png'), dpi=360)
+    plt.close()

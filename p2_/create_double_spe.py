@@ -84,57 +84,7 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
         file_name_2 = str(single_path / 'rt_1' / 'D2--waveforms--%s.txt') % file_added
         ww(t, v, file_name_2, hdr)
 
-    # Plots average waveform for double spe
-    print('Calculating average double spe waveform...')
-    save_file = Path(dest_path / 'plots')
-    tsum = 0
-    vsum = 0
-    n = 0
-    for item in double_file_array:
-        file_name = 'D2--waveforms--%s.txt' % item
-        t, v, hdr = rw(double_path / 'rt_1' / delay_folder / file_name, nhdr)      # Reads a waveform file
-        v = v / min(v)                                              # Normalizes voltages
-        idx = int(np.argmin(np.abs(t)))               # Finds index of t = 0 point
-        t = np.roll(t, -idx)        # Rolls time array so that t = 0 point is at index 0
-        v = np.roll(v, -idx)        # Rolls voltage array so that 50% max point is at index 0
-        idx2 = np.where(t == min(t))        # Finds index of point of minimum t
-        idx2 = int(idx2[0])
-        idx3 = np.where(t == max(t))        # Finds index of point of maximum t
-        idx3 = int(idx3[0])
-        # Only averages waveform files that have enough points before t = 0 & after the spe
-        if idx2 <= 3445:
-            # Removes points between point of maximum t & chosen minimum t in time & voltage arrays
-            t = np.concatenate((t[:idx3], t[3445:]))
-            v = np.concatenate((v[:idx3], v[3445:]))
-            # Rolls time & voltage arrays so that point of chosen minimum t is at index 0
-            t = np.roll(t, -idx3)
-            v = np.roll(v, -idx3)
-            if len(t) >= 3800:
-                # Removes points after chosen point of maximum t in time & voltage arrays
-                t = t[:3800]
-                v = v[:3800]
-                # Sums time & voltage arrays
-                tsum += t
-                vsum += v
-                n += 1
-    # Finds average time & voltage arrays
-    t_avg = tsum / n
-    v_avg = vsum / n
-
-    # Plots average waveform & saves image
-    plt.plot(t_avg, v_avg)
-    plt.xlabel('Time (s)')
-    plt.ylabel('Normalized Voltage')
-    plt.title('Average Waveform')
-    plt.savefig(save_file / ('average_waveform_' + delay_folder + '.png'), dpi=360)
-    plt.close()
-
-    # Saves average waveform data
-    average_file = dest_path / 'hist_data' / ('average_waveform_' + delay_folder + '.txt')
-    hdr = 'Average Waveform\n\n\n\nTime,Ampl\n'
-    ww(t_avg, v_avg, average_file, hdr)
-
-    print('Calculating taus...')
+    '''print('Calculating taus...')
     x1_array = np.array([])
     j_array = np.array([])
 
@@ -187,7 +137,11 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
         diff_val = x1 - 2 * rt1090_2_2
         if diff_val >= 0:
             break
-    tau_2_2_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090_2_2))]
+    tau_2_2_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090_2_2))]'''
+
+    tau_2 = 1.3279999999999999e-08
+    tau_2_2 = 1.035e-08
+    tau_2_2_2 = 3.3249999999999997e-08
 
     # For each double spe waveform file, calculates and saves waveforms with 1x, 2x, 4x, and 8x the rise time
     for item in double_file_array:
@@ -256,6 +210,221 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
                 t, v, hdr = rw(file_name8, nhdr)
                 ww(t, v, save_name8, hdr)
                 print('File #%s in rt_8 folder' % item)
+
+    # Plots average waveform for double spe
+    print('Calculating average double spe waveform...')
+    save_file = Path(dest_path / 'plots')
+    tsum = 0
+    vsum = 0
+    n = 0
+    for item in double_file_array:
+        file_name = 'D2--waveforms--%s.txt' % item
+        t, v, hdr = rw(double_path / 'rt_1' / delay_folder / file_name, nhdr)  # Reads a waveform file
+        v = v / min(v)  # Normalizes voltages
+        idx = int(np.argmin(np.abs(t)))  # Finds index of t = 0 point
+        t = np.roll(t, -idx)  # Rolls time array so that t = 0 point is at index 0
+        v = np.roll(v, -idx)  # Rolls voltage array so that 50% max point is at index 0
+        idx2 = np.where(t == min(t))  # Finds index of point of minimum t
+        idx2 = int(idx2[0])
+        idx3 = np.where(t == max(t))  # Finds index of point of maximum t
+        idx3 = int(idx3[0])
+        # Only averages waveform files that have enough points before t = 0 & after the spe
+        if idx2 <= 3445:
+            # Removes points between point of maximum t & chosen minimum t in time & voltage arrays
+            t = np.concatenate((t[:idx3], t[3445:]))
+            v = np.concatenate((v[:idx3], v[3445:]))
+            # Rolls time & voltage arrays so that point of chosen minimum t is at index 0
+            t = np.roll(t, -idx3)
+            v = np.roll(v, -idx3)
+            if len(t) >= 3800:
+                # Removes points after chosen point of maximum t in time & voltage arrays
+                t = t[:3800]
+                v = v[:3800]
+                # Sums time & voltage arrays
+                tsum += t
+                vsum += v
+                n += 1
+    # Finds average time & voltage arrays
+    t_avg = tsum / n
+    v_avg = vsum / n
+
+    # Plots average waveform & saves image
+    plt.plot(t_avg, v_avg)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Normalized Voltage')
+    plt.title('Average Waveform')
+    plt.savefig(save_file / ('avg_waveform_double_rt1_' + delay_folder + '.png'), dpi=360)
+    plt.close()
+
+    # Saves average waveform data
+    average_file = dest_path / 'hist_data' / ('avg_waveform_double_rt1_' + delay_folder + '.txt')
+    hdr = 'Average Waveform\n\n\n\nTime,Ampl\n'
+    ww(t_avg, v_avg, average_file, hdr)
+
+    # Plots average waveform for double spe with 2x rise time
+    print('Calculating average 2x double spe waveform...')
+    save_file = Path(dest_path / 'plots')
+    tsum = 0
+    vsum = 0
+    n = 0
+    for item in double_file_array:
+        file_name = 'D2--waveforms--%s.txt' % item
+        if os.path.isfile(double_path / 'rt_2' / delay_folder / file_name):
+            t, v, hdr = rw(double_path / 'rt_2' / delay_folder / file_name, nhdr)  # Reads a waveform file
+            v = v / min(v)  # Normalizes voltages
+            idx = int(np.argmin(np.abs(t)))  # Finds index of t = 0 point
+            t = np.roll(t, -idx)  # Rolls time array so that t = 0 point is at index 0
+            v = np.roll(v, -idx)  # Rolls voltage array so that 50% max point is at index 0
+            idx2 = np.where(t == min(t))  # Finds index of point of minimum t
+            idx2 = int(idx2[0])
+            idx3 = np.where(t == max(t))  # Finds index of point of maximum t
+            idx3 = int(idx3[0])
+            # Only averages waveform files that have enough points before t = 0 & after the spe
+            if idx2 <= 3445:
+                # Removes points between point of maximum t & chosen minimum t in time & voltage arrays
+                t = np.concatenate((t[:idx3], t[3445:]))
+                v = np.concatenate((v[:idx3], v[3445:]))
+                # Rolls time & voltage arrays so that point of chosen minimum t is at index 0
+                t = np.roll(t, -idx3)
+                v = np.roll(v, -idx3)
+                if len(t) >= 3800:
+                    # Removes points after chosen point of maximum t in time & voltage arrays
+                    t = t[:3800]
+                    v = v[:3800]
+                    # Sums time & voltage arrays
+                    tsum += t
+                    vsum += v
+                    n += 1
+    # Finds average time & voltage arrays
+    t_avg = tsum / n
+    v_avg = vsum / n
+
+    # Plots average waveform & saves image
+    plt.plot(t_avg, v_avg)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Normalized Voltage')
+    plt.title('Average Waveform')
+    plt.savefig(save_file / ('avg_waveform_double_rt2_' + delay_folder + '.png'), dpi=360)
+    plt.close()
+
+    # Saves average waveform data
+    average_file = dest_path / 'hist_data' / ('avg_waveform_double_rt2_' + delay_folder + '.txt')
+    hdr = 'Average Waveform\n\n\n\nTime,Ampl\n'
+    ww(t_avg, v_avg, average_file, hdr)
+
+    # Plots average waveform for double spe with 4x rise time
+    print('Calculating average 4x double spe waveform...')
+    save_file = Path(dest_path / 'plots')
+    tsum = 0
+    vsum = 0
+    n = 0
+    for item in double_file_array:
+        file_name = 'D2--waveforms--%s.txt' % item
+        if os.path.isfile(double_path / 'rt_4' / delay_folder / file_name):
+            t, v, hdr = rw(double_path / 'rt_4' / delay_folder / file_name, nhdr)  # Reads a waveform file
+            v = v / min(v)  # Normalizes voltages
+            idx = int(np.argmin(np.abs(t)))  # Finds index of t = 0 point
+            t = np.roll(t, -idx)  # Rolls time array so that t = 0 point is at index 0
+            v = np.roll(v, -idx)  # Rolls voltage array so that 50% max point is at index 0
+            idx2 = np.where(t == min(t))  # Finds index of point of minimum t
+            idx2 = int(idx2[0])
+            idx3 = np.where(t == max(t))  # Finds index of point of maximum t
+            idx3 = int(idx3[0])
+            # Only averages waveform files that have enough points before t = 0 & after the spe
+            if idx2 <= 3445:
+                # Removes points between point of maximum t & chosen minimum t in time & voltage arrays
+                t = np.concatenate((t[:idx3], t[3445:]))
+                v = np.concatenate((v[:idx3], v[3445:]))
+                # Rolls time & voltage arrays so that point of chosen minimum t is at index 0
+                t = np.roll(t, -idx3)
+                v = np.roll(v, -idx3)
+                if len(t) >= 3800:
+                    # Removes points after chosen point of maximum t in time & voltage arrays
+                    t = t[:3800]
+                    v = v[:3800]
+                    # Sums time & voltage arrays
+                    tsum += t
+                    vsum += v
+                    n += 1
+    # Finds average time & voltage arrays
+    t_avg = tsum / n
+    v_avg = vsum / n
+
+    # Plots average waveform & saves image
+    plt.plot(t_avg, v_avg)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Normalized Voltage')
+    plt.title('Average Waveform')
+    plt.savefig(save_file / ('avg_waveform_double_rt4_' + delay_folder + '.png'), dpi=360)
+    plt.close()
+
+    # Saves average waveform data
+    average_file = dest_path / 'hist_data' / ('avg_waveform_double_rt4_' + delay_folder + '.txt')
+    hdr = 'Average Waveform\n\n\n\nTime,Ampl\n'
+    ww(t_avg, v_avg, average_file, hdr)
+
+    # Plots average waveform for double spe with 8x rise time
+    print('Calculating average 8x double spe waveform...')
+    save_file = Path(dest_path / 'plots')
+    tsum = 0
+    vsum = 0
+    n = 0
+    for item in double_file_array:
+        file_name = 'D2--waveforms--%s.txt' % item
+        if os.path.isfile(double_path / 'rt_8' / delay_folder / file_name):
+            t, v, hdr = rw(double_path / 'rt_8' / delay_folder / file_name, nhdr)  # Reads a waveform file
+            v = v / min(v)  # Normalizes voltages
+            idx = int(np.argmin(np.abs(t)))  # Finds index of t = 0 point
+            t = np.roll(t, -idx)  # Rolls time array so that t = 0 point is at index 0
+            v = np.roll(v, -idx)  # Rolls voltage array so that 50% max point is at index 0
+            idx2 = np.where(t == min(t))  # Finds index of point of minimum t
+            idx2 = int(idx2[0])
+            idx3 = np.where(t == max(t))  # Finds index of point of maximum t
+            idx3 = int(idx3[0])
+            # Only averages waveform files that have enough points before t = 0 & after the spe
+            if idx2 <= 3445:
+                # Removes points between point of maximum t & chosen minimum t in time & voltage arrays
+                t = np.concatenate((t[:idx3], t[3445:]))
+                v = np.concatenate((v[:idx3], v[3445:]))
+                # Rolls time & voltage arrays so that point of chosen minimum t is at index 0
+                t = np.roll(t, -idx3)
+                v = np.roll(v, -idx3)
+                if len(t) >= 3800:
+                    # Removes points after chosen point of maximum t in time & voltage arrays
+                    t = t[:3800]
+                    v = v[:3800]
+                    # Sums time & voltage arrays
+                    tsum += t
+                    vsum += v
+                    n += 1
+    # Finds average time & voltage arrays
+    t_avg = tsum / n
+    v_avg = vsum / n
+
+    # Plots average waveform & saves image
+    plt.plot(t_avg, v_avg)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Normalized Voltage')
+    plt.title('Average Waveform')
+    plt.savefig(save_file / ('avg_waveform_double_rt8_' + delay_folder + '.png'), dpi=360)
+    plt.close()
+
+    # Saves average waveform data
+    average_file = dest_path / 'hist_data' / ('avg_waveform_double_rt8_' + delay_folder + '.txt')
+    hdr = 'Average Waveform\n\n\n\nTime,Ampl\n'
+    ww(t_avg, v_avg, average_file, hdr)
+
+    # Calculates 10-90 rise times for each double spe waveform and puts them into arrays
+    print('Doing calculations...')
+    rt_1_array, rt_2_array, rt_4_array, rt_8_array = make_arrays_d(double_file_array, dest_path, delay_folder, dest_path
+                                                                   / 'calculations' / 'double_spe', nhdr)
+
+    # Creates histograms of 10-90 rise times for 1x, 2x, 4x, and 8x the initial rise time for double spe waveforms
+    print('Creating histograms...')
+    plot_histogram(rt_1_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'double_spe_rt_1_' + delay_folder)
+    plot_histogram(rt_2_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'double_spe_rt_2_' + delay_folder)
+    plot_histogram(rt_4_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'double_spe_rt_4_' + delay_folder)
+    plot_histogram(rt_8_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'double_spe_rt_8_' + delay_folder)
 
 
 if __name__ == '__main__':

@@ -150,14 +150,63 @@ def rise_time_1090(t, v):
         return rise_time1090
 
 
+# Calculates 10-90 rise time for double peaks
+def rise_time_1090_d(t, v):
+    idx_start = np.argmin(np.abs(t + 2.5e-8))
+    idx_end = np.argmin(np.abs(t + 5e-9))
+    v_sum = 0
+    for i in range(idx_start.item(), idx_end.item()):
+        v_sum += v[i]
+    avg = v_sum / (idx_end - idx_start)
+    idx = np.inf
+    idx1 = np.argmin(np.abs(t))
+    idx2 = np.argmin(np.abs(t - 5e-9))
+    t_spliced = t[idx1:idx2 + 1]
+    v_spliced = v[idx1:idx2 + 1]
+    idx_min_val = np.where(v_spliced == min(v_spliced))     # Finds index of minimum voltage value in voltage array
+    time_min_val = t_spliced[idx_min_val]           # Finds time of point of minimum voltage
+    min_time = time_min_val[0]
+
+    tvals = np.linspace(t[0], t[len(t) - 1], 5000)  # Creates array of times over entire timespan
+    tvals1 = np.linspace(t[0], min_time, 5000)      # Creates array of times from beginning to point of min voltage
+    vvals1 = np.interp(tvals1, t, v)   # Interpolates & creates array of voltages from beginning to point of min voltage
+    vvals1_flip = np.flip(vvals1)      # Flips array, creating array of voltages from point of min voltage to beginning
+    difference_value = vvals1_flip - (0.1 * (min(v_spliced) - avg))     # Finds diff between points in beginning array
+                                                                        # and 10% max
+    for i in range(0, len(difference_value) - 1):   # Starting at point of minimum voltage and going towards beginning
+        if difference_value[i] >= 0:                # of waveform, finds where voltage becomes greater than 10% max
+            idx = len(difference_value) - i
+            break
+    if idx == np.inf:     # If voltage never becomes greater than 10% max, finds where voltage is closest to 10% max
+        idx = len(difference_value) - 1 - np.argmin(np.abs(difference_value))
+
+    if idx == 5000:
+        return '--'
+    else:
+        t1 = tvals[np.argmin(np.abs(tvals - tvals1[idx]))]      # Finds time of beginning of spe
+        val10 = .1 * (min(v_spliced) - avg)                     # Calculates 10% max
+        val90 = 9 * val10                                       # Calculates 90% max
+        tvals2 = np.linspace(t1, min_time, 5000)  # Creates array of times from beginning of spe to point of min voltage
+        vvals2 = np.interp(tvals2, t, v)  # Interpolates, creates array of voltages from beginning of spe to min voltage
+
+        time10 = tvals2[np.argmin(np.abs(vvals2 - val10))]          # Finds time of point of 10% max
+        time90 = tvals2[np.argmin(np.abs(vvals2 - val90))]          # Finds time of point of 90% max
+        rise_time1090 = float(format(time90 - time10, '.2e'))       # Calculates 10-90 rise time
+
+        return rise_time1090
+
+
 # Creates text file with 10-90 rise times for an spe file
 def save_calculations(save_path, i, rt_1, rt_2, rt_4, rt_8):
-    file_name = str(save_path / 'D2--waveforms--%05d.txt') % i
+    if isinstance(i, int):
+        file_name = str(save_path / 'D2--waveforms--%05d.txt') % i
+    else:
+        file_name = str(save_path / 'D2--waveforms--%s.txt') % i
     myfile = open(file_name, 'w')
     myfile.write('rise1090 no filter,' + str(rt_1))
     myfile.write('\nrise1090 2x filter,' + str(rt_2))
-    myfile.write('\nrise1090 2x 2x filter,' + str(rt_4))
-    myfile.write('\nrise1090 2x 2x 2x filter,' + str(rt_8))
+    myfile.write('\nrise1090 4x filter,' + str(rt_4))
+    myfile.write('\nrise1090 8x filter,' + str(rt_8))
     myfile.close()
 
 
@@ -279,6 +328,121 @@ def make_arrays(dest_path, save_path, start, end, nhdr):
                     os.remove(file_name2_2)
                 if os.path.isfile(file_name2_2_2):
                     print('Removing file #%05d from rt_8' % i)
+                    os.remove(file_name2_2_2)
+
+    return filter_1_array, filter_2_array, filter_2_2_array, filter_2_2_2_array
+
+
+# Calculates 10-90 rise time for each filter for each double spe file
+# Returns arrays of 10-90 rise times
+def make_arrays_d(double_array, dest_path, delay_folder, save_path, nhdr):
+    filter_1_array = np.array([])
+    filter_2_array = np.array([])
+    filter_2_2_array = np.array([])
+    filter_2_2_2_array = np.array([])
+
+    for item in double_array:
+        file_name1 = str(dest_path / 'double_spe' / 'rt_1' / delay_folder / 'D2--waveforms--%s.txt') % item
+        file_name2 = str(dest_path / 'double_spe' / 'rt_2' / delay_folder / 'D2--waveforms--%s.txt') % item
+        file_name2_2 = str(dest_path / 'double_spe' / 'rt_4' / delay_folder / 'D2--waveforms--%s.txt') % item
+        file_name2_2_2 = str(dest_path / 'double_spe' / 'rt_8' / delay_folder / 'D2--waveforms--%s.txt') % item
+        save_name = str(save_path / delay_folder / 'D2--waveforms--%s.txt') % item
+
+        if os.path.isfile(save_name):           # If the calculations were done previously, they are read from a file
+            print("Reading calculations from file #%s" % item)
+            myfile = open(save_name, 'r')       # Opens file with calculations
+            csv_reader = csv.reader(myfile)
+            file_array = np.array([])
+            for row in csv_reader:              # Creates array with calculation data
+                try:
+                    file_array = np.append(file_array, float(row[1]))
+                except ValueError:
+                    file_array = np.append(file_array, 0)
+            myfile.close()
+            filter_1 = file_array[0]
+            filter_2 = file_array[1]
+            filter_2_2 = file_array[2]
+            filter_2_2_2 = file_array[3]
+            # Any spe waveform that returns impossible values is removed and other calculations are placed into arrays
+            if filter_1 <= 0 or filter_2 <= 0 or filter_2_2 <= 0 or filter_2_2_2 <= 0:
+                print('Removing file #%s' % item)
+                t, v, hdr = rw(file_name1, nhdr)
+                ww(t, v, str(dest_path / 'unusable_data' / 'D2--waveforms--%s.txt') % item, hdr)
+                os.remove(save_name)
+                if os.path.isfile(file_name1):
+                    os.remove(file_name1)
+                if os.path.isfile(file_name2):
+                    os.remove(file_name2)
+                if os.path.isfile(file_name2_2):
+                    os.remove(file_name2_2)
+                if os.path.isfile(file_name2_2_2):
+                    os.remove(file_name2_2_2)
+            else:
+                filter_1_array = np.append(filter_1_array, filter_1)
+                filter_2_array = np.append(filter_2_array, filter_2)
+                filter_2_2_array = np.append(filter_2_2_array, filter_2_2)
+                filter_2_2_2_array = np.append(filter_2_2_2_array, filter_2_2_2)
+
+        else:       # If the calculations were not done yet, they are calculated, any spe waveform that returns
+                    # impossible values is removed
+            if os.path.isfile(file_name1) and os.path.isfile(file_name2) and os.path.isfile(file_name2_2) and \
+                        os.path.isfile(file_name2_2_2):
+                print("Calculating file #%s" % item)
+                t1, v1, hdr1 = rw(file_name1, nhdr)                     # Unfiltered waveform file is read
+                if delay_folder == '3x_rt':                             # 10-90 rise time of spe is calculated
+                    filter_1 = rise_time_1090_d(t1, v1)
+                else:
+                    filter_1 = rise_time_1090(t1, v1)
+                try:
+                    filter_1 = float(filter_1)
+                except ValueError:
+                    filter_1 = 0
+                t2, v2, hdr2 = rw(file_name2, nhdr)                     # 2x filtered waveform file is read
+                filter_2 = rise_time_1090(t2, v2)                       # 10-90 rise time of spe is calculated
+                try:
+                    filter_2 = float(filter_2)
+                except ValueError:
+                    filter_2 = 0
+                t2_2, v2_2, hdr2_2 = rw(file_name2_2, nhdr)             # 2x 2x filtered waveform file is read
+                filter_2_2 = rise_time_1090(t2_2, v2_2)                 # 10-90 rise time of spe is calculated
+                try:
+                    filter_2_2 = float(filter_2_2)
+                except ValueError:
+                    filter_2_2 = 0
+                t2_2_2, v2_2_2, hdr2_2_2 = rw(file_name2_2_2, nhdr)     # 2x 2x 2x filtered waveform file is read
+                filter_2_2_2 = rise_time_1090(t2_2_2, v2_2_2)           # 10-90 rise time of spe is calculated
+                try:
+                    filter_2_2_2 = float(filter_2_2_2)
+                except ValueError:
+                    filter_2_2_2 = 0
+                if filter_1 <= 0 or filter_2 <= 0 or filter_2_2 <= 0 or filter_2_2_2 <= 0:
+                    print('Removing file #%s' % item)
+                    t, v, hdr = rw(file_name1, nhdr)
+                    ww(t, v, str(dest_path / 'unusable_data' / 'D2--waveforms--%s.txt') % item, hdr)
+                    os.remove(file_name1)
+                    os.remove(file_name2)
+                    os.remove(file_name2_2)
+                    os.remove(file_name2_2_2)
+                else:
+                    filter_1_array = np.append(filter_1_array, filter_1)
+                    filter_2_array = np.append(filter_2_array, filter_2)
+                    filter_2_2_array = np.append(filter_2_2_array, filter_2_2)
+                    filter_2_2_2_array = np.append(filter_2_2_2_array, filter_2_2_2)
+                    save_calculations(save_path / delay_folder, item, filter_1, filter_2, filter_2_2, filter_2_2_2)
+            else:
+                if os.path.isfile(file_name1):
+                    print('Removing file #%s from rt_1' % item)
+                    t, v, hdr = rw(file_name1, nhdr)
+                    ww(t, v, str(dest_path / 'unusable_data' / 'D2--waveforms--%s.txt') % item, hdr)
+                    os.remove(file_name1)
+                if os.path.isfile(file_name2):
+                    print('Removing file #%s from rt_2' % item)
+                    os.remove(file_name2)
+                if os.path.isfile(file_name2_2):
+                    print('Removing file #%s from rt_4' % item)
+                    os.remove(file_name2_2)
+                if os.path.isfile(file_name2_2_2):
+                    print('Removing file #%s from rt_8' % item)
                     os.remove(file_name2_2_2)
 
     return filter_1_array, filter_2_array, filter_2_2_array, filter_2_2_2_array
