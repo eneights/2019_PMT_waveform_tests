@@ -338,7 +338,8 @@ def make_arrays_s(single_file_array, dest_path, single_folder, nhdr, r, fsps_new
                     print('Removing file #%s' % item)
                     if os.path.isfile(raw_file):
                         os.remove(raw_file)
-                    os.remove(file_name1)
+                    if os.path.isfile(file_name1):
+                        os.remove(file_name1)
                     if os.path.isfile(str(dest_path / 'single_spe' / single_folder /
                                           str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
                                           'D3--waveforms--%s.txt') % item):
@@ -391,7 +392,7 @@ def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename, fsps_
     sigma2 = np.abs(float(format(popt2[2], '.2e')))     # Calculates standard deviation
     plt.xlabel(xaxis + ' (' + units + ')')
     plt.title(title + ' of SPE\n mean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2) + ' ' + units)
-    plt.savefig(path / str(filename + '_' + str(int(fsps_new / 1e6)) + '_Msps' + '.png'), dpi=360)
+    plt.savefig(path / str(filename + '.png'), dpi=360)
     plt.close()
 
     write_hist_data(array, dest_path, filename + '.txt')
@@ -406,7 +407,7 @@ def plot_double_hist(dest_path, nbins, xaxis, title, units, filename1, filename2
     array1 = np.array([])
     array2 = np.array([])
 
-    myfile1 = open(dest_path / 'hist_data' / str(filename1 + '.txt'), 'r')           # Opens histogram 1 file
+    myfile1 = open(dest_path / 'hist_data' / str(filename1 + '_' + str(int(fsps_new / 1e6)) + '_Msps' + '.txt'), 'r')
     for line in myfile1:
         line = line.strip()
         line = float(line)
@@ -438,7 +439,7 @@ def plot_double_hist(dest_path, nbins, xaxis, title, units, filename1, filename2
     mu2_1 = float(format(popt2_1[1], '.2e'))                # Calculates mean
     sigma2_1 = np.abs(float(format(popt2_1[2], '.2e')))     # Calculates standard deviation
 
-    myfile2 = open(dest_path / 'hist_data' / str(filename2 + '.txt'), 'r')          # Opens histogram 2 file
+    myfile2 = open(dest_path / 'hist_data' / str(filename2 + '_' + str(int(fsps_new / 1e6)) + '_Msps' + '.txt'), 'r')
     for line in myfile2:
         line = line.strip()
         line = float(line)
@@ -478,7 +479,7 @@ def plot_double_hist(dest_path, nbins, xaxis, title, units, filename1, filename2
     plt.title(title + ' of SPE\n mean (single): ' + str(mu2_1) + ' ' + units + ', SD (single): ' + str(sigma2_1) + ' ' +
               units + '\n mean (double): ' + str(mu2_2) + ' ' + units + ', SD (double): ' + str(sigma2_2) + ' ' + units,
               fontsize='medium')
-    plt.savefig(path / str(filename + '_' + str(int(fsps_new / 1e6)) + '_Msps' + '.png'), dpi=360)
+    plt.savefig(path / str(filename + '.png'), dpi=360)
     plt.close()
 
 
@@ -496,7 +497,7 @@ def read_hist_file(path, filename, fsps_new):
 
 
 def false_spes_vs_delay(start, end, factor, parameter, parameter_title, units, fsps_new, means, mean5, mean1,
-                        mean15, mean2, mean25, mean3, sds, sd5, sd1, sd15, sd2, sd25, sd3, dest_path):
+                        mean15, mean2, mean25, mean3, sds, sd5, sd1, sd15, sd2, sd25, sd3, dest_path, shaping):
     cutoff_array = np.array([])
     spes_as_mpes_array = np.array([])
     mpes_as_spes_array = np.array([])
@@ -552,15 +553,16 @@ def false_spes_vs_delay(start, end, factor, parameter, parameter_title, units, f
     plt.xlabel('Delay (s)')
     plt.ylabel('% MPES Misidentified as SPEs')
     plt.title('False SPEs\n' + parameter_title + ' Cutoff = ' + cutoff + ' (' + units + ') (1% False MPEs)')
-    for i in range(len(mpes_as_spes_array) - 1):
+    for i in range(len(mpes_as_spes_array)):
         pt = str(float(format(mpes_as_spes_array[i], '.1e')))
         plt.annotate(pt + '%', (delay_array[i], mpes_as_spes_array[i] + 1))
-    plt.savefig(dest_path / 'plots' / str('false_spes_delay_' + parameter + '_' + str(int(fsps_new / 1e6)) + '_Msps' +
-                                          '.png'), dpi=360)
+    plt.savefig(dest_path / 'plots' / str('false_spes_delay_' + parameter + '_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
     plt.close()
 
 
-def false_spes_mpes(start, end, factor, parameter, parameter_title, units, means, meand, sds, sdd, fsps_new, dest_path):
+def false_spes_mpes(start, end, factor, parameter, parameter_title, units, means, meand, sds, sdd, fsps_new, dest_path,
+                    shaping):
     cutoff_array = np.array([])
     spes_as_mpes_array = np.array([])
     mpes_as_spes_array = np.array([])
@@ -580,20 +582,22 @@ def false_spes_mpes(start, end, factor, parameter, parameter_title, units, means
 
     plt.plot(cutoff_array, spes_as_mpes_array)
     plt.ylim(-5, 100)
-    plt.hlines(1)
+    plt.hlines(1, start * factor, end * factor)
     plt.xlabel(parameter_title + ' Cutoff (' + units + ')')
     plt.ylabel('% SPES Misidentified as MPEs')
     plt.title('False MPEs')
-    plt.savefig(dest_path / 'plots' / str('false_mpes_' + parameter + '_' + str(int(fsps_new / 1e6)) + '_Msps' +
-                                          '.png'), dpi=360)
+    plt.annotate('1% false MPEs', (start * factor, 3))
+    plt.savefig(dest_path / 'plots' / str('false_mpes_' + parameter + '_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
     plt.close()
 
     plt.plot(cutoff_array, mpes_as_spes_array)
     plt.ylim(-5, 100)
-    plt.vlines(cutoff)
+    plt.vlines(cutoff, 0, 100)
     plt.xlabel(parameter_title + ' Cutoff (' + units + ')')
     plt.ylabel('% MPES Misidentified as SPEs')
     plt.title('False SPEs')
-    plt.savefig(dest_path / 'plots' / str('false_spes_' + parameter + '_' + str(int(fsps_new / 1e6)) + '_Msps' +
-                                          '.png'), dpi=360)
+    plt.annotate('1% false MPEs', (cutoff, -2))
+    plt.savefig(dest_path / 'plots' / str('false_spes_' + parameter + '_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
     plt.close()

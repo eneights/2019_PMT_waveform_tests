@@ -330,10 +330,14 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
                    str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
     plot_histogram(amplitude_array_8, dest_path, 75, 'Amplitude', 'Amplitude', 'bits', 'amp_double_rt8_' +
                    str(delay_folder) + '_' + str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
-    plot_histogram(fwhm_array, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_rt1_' + str(delay_folder), fsps_new)
-    plot_histogram(fwhm_array_2, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_rt2_' + str(delay_folder), fsps_new)
-    plot_histogram(fwhm_array_4, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_rt4_' + str(delay_folder), fsps_new)
-    plot_histogram(fwhm_array_8, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_rt8_' + str(delay_folder), fsps_new)
+    plot_histogram(fwhm_array, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_rt1_' + str(delay_folder) + '_' +
+                   str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
+    plot_histogram(fwhm_array_2, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_rt2_' + str(delay_folder) + '_' +
+                   str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
+    plot_histogram(fwhm_array_4, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_rt4_' + str(delay_folder) + '_' +
+                   str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
+    plot_histogram(fwhm_array_8, dest_path, 75, 'Time', 'FWHM', 's', 'fwhm_double_rt8_' + str(delay_folder) + '_' +
+                   str(int(fsps_new / 1e6)) + '_Msps', fsps_new)
 
     # Creates single spe histograms for charge, amplitude, and FWHM
     print('Creating single spe histograms...')

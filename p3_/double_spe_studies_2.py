@@ -1,5 +1,4 @@
 from functions import *
-import math
 
 
 def double_spe_studies_2(date, filter_band, fsps_new, shaping):
@@ -81,20 +80,48 @@ def double_spe_studies_2(date, filter_band, fsps_new, shaping):
 
     print('Making plots...')
 
-    false_spes_vs_delay(85, 150, 10**-10, 'fwhm', 'FWHM', 's', fsps_new, mean_single_fwhm, mean_double_fwhm_5x,
+    if shaping == 'rt1':
+        start1 = 85
+        end1 = 150
+        factor1 = 10**-10
+        start2 = 20
+        end2 = 120
+        factor2 = 10**-9
+        start3 = 100
+        end3 = 500
+        factor3 = 1
+        start4 = 20
+        end4 = 120
+        factor4 = 10**-9
+    else:
+        start1 = 28
+        end1 = 40
+        factor1 = 10**-9
+        start2 = 25
+        end2 = 110
+        factor2 = 10**-9
+        start3 = 45
+        end3 = 175
+        factor3 = 1
+        start4 = 25
+        end4 = 110
+        factor4 = 10**-9
+
+    false_spes_vs_delay(start1, end1, factor1, 'fwhm', 'FWHM', 's', fsps_new, mean_single_fwhm, mean_double_fwhm_5x,
                         mean_double_fwhm_1x, mean_double_fwhm_15x, mean_double_fwhm_2x, mean_double_fwhm_25x,
                         mean_double_fwhm_3x, std_single_fwhm, std_double_fwhm_5x, std_double_fwhm_1x,
-                        std_double_fwhm_15x, std_double_fwhm_2x, std_double_fwhm_25x, std_double_fwhm_3x, dest_path)
-    false_spes_vs_delay(20, 120, 10**-9, 'charge', 'Charge', 's*bit/ohm', fsps_new, mean_single_charge,
+                        std_double_fwhm_15x, std_double_fwhm_2x, std_double_fwhm_25x, std_double_fwhm_3x, dest_path,
+                        shaping)
+    false_spes_vs_delay(start2, end2, factor2, 'charge', 'Charge', 's*bit/ohm', fsps_new, mean_single_charge,
                         mean_double_charge_5x, mean_double_charge_1x, mean_double_charge_15x, mean_double_charge_2x,
                         mean_double_charge_25x, mean_double_charge_3x, std_single_charge, std_double_charge_5x,
                         std_double_charge_1x, std_double_charge_15x, std_double_charge_2x, std_double_charge_25x,
-                        std_double_charge_3x, dest_path)
+                        std_double_charge_3x, dest_path, shaping)
 
-    false_spes_mpes(100, 500, 1, 'amp', 'Amplitude', 'bits', mean_single_amp, mean_double_amp_nd, std_single_amp,
-                    std_double_amp_nd, fsps_new, dest_path)
-    false_spes_mpes(20, 120, 10**-9, 'charge', 'Charge', 's*bit/ohm', mean_single_charge, mean_double_charge_nd,
-                    std_single_charge, std_double_charge_nd, fsps_new, dest_path)
+    false_spes_mpes(start3, end3, factor3, 'amp', 'Amplitude', 'bits', mean_single_amp, mean_double_amp_nd,
+                    std_single_amp, std_double_amp_nd, fsps_new, dest_path, shaping)
+    false_spes_mpes(start4, end4, factor4, 'charge', 'Charge', 's*bit/ohm', mean_single_charge, mean_double_charge_nd,
+                    std_single_charge, std_double_charge_nd, fsps_new, dest_path, shaping)
 
 
 if __name__ == '__main__':
