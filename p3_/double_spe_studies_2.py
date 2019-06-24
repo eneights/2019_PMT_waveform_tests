@@ -37,7 +37,7 @@ def double_spe_studies_2(date, filter_band, fsps_new, shaping):
     filename29 = 'charge_double_' + shaping + '6x_rt'
 
     array_single_fwhm = read_hist_file(dest_path / 'hist_data', filename1, fsps_new)
-    array_double_fwhm_5x = read_hist_file(dest_path / 'hist_data', filename2, fsps_new)
+    array_double_fwhm__5x = read_hist_file(dest_path / 'hist_data', filename2, fsps_new)
     array_double_fwhm_1x = read_hist_file(dest_path / 'hist_data', filename3, fsps_new)
     array_double_fwhm_15x = read_hist_file(dest_path / 'hist_data', filename4, fsps_new)
     array_double_fwhm_2x = read_hist_file(dest_path / 'hist_data', filename5, fsps_new)
@@ -53,7 +53,7 @@ def double_spe_studies_2(date, filter_band, fsps_new, shaping):
     array_double_amp_nd = read_hist_file(dest_path / 'hist_data', filename15, fsps_new)
     array_single_charge = read_hist_file(dest_path / 'hist_data', filename16, fsps_new)
     array_double_charge_nd = read_hist_file(dest_path / 'hist_data', filename17, fsps_new)
-    array_double_charge_5x = read_hist_file(dest_path / 'hist_data', filename18, fsps_new)
+    array_double_charge__5x = read_hist_file(dest_path / 'hist_data', filename18, fsps_new)
     array_double_charge_1x = read_hist_file(dest_path / 'hist_data', filename19, fsps_new)
     array_double_charge_15x = read_hist_file(dest_path / 'hist_data', filename20, fsps_new)
     array_double_charge_2x = read_hist_file(dest_path / 'hist_data', filename21, fsps_new)
@@ -67,7 +67,7 @@ def double_spe_studies_2(date, filter_band, fsps_new, shaping):
     array_double_charge_6x = read_hist_file(dest_path / 'hist_data', filename29, fsps_new)
 
     mean_single_fwhm = np.mean(array_single_fwhm)
-    mean_double_fwhm_5x = np.mean(array_double_fwhm_5x)
+    mean_double_fwhm__5x = np.mean(array_double_fwhm_5x)
     mean_double_fwhm_1x = np.mean(array_double_fwhm_1x)
     mean_double_fwhm_15x = np.mean(array_double_fwhm_15x)
     mean_double_fwhm_2x = np.mean(array_double_fwhm_2x)
@@ -83,7 +83,7 @@ def double_spe_studies_2(date, filter_band, fsps_new, shaping):
     mean_double_amp_nd = np.mean(array_double_amp_nd)
     mean_single_charge = np.mean(array_single_charge)
     mean_double_charge_nd = np.mean(array_double_charge_nd)
-    mean_double_charge_5x = np.mean(array_double_charge_5x)
+    mean_double_charge__5x = np.mean(array_double_charge_5x)
     mean_double_charge_1x = np.mean(array_double_charge_1x)
     mean_double_charge_15x = np.mean(array_double_charge_15x)
     mean_double_charge_2x = np.mean(array_double_charge_2x)
@@ -97,7 +97,7 @@ def double_spe_studies_2(date, filter_band, fsps_new, shaping):
     mean_double_charge_6x = np.mean(array_double_charge_6x)
 
     std_single_fwhm = np.std(array_single_fwhm)
-    std_double_fwhm_5x = np.std(array_double_fwhm_5x)
+    std_double_fwhm__5x = np.std(array_double_fwhm__5x)
     std_double_fwhm_1x = np.std(array_double_fwhm_1x)
     std_double_fwhm_15x = np.std(array_double_fwhm_15x)
     std_double_fwhm_2x = np.std(array_double_fwhm_2x)
@@ -113,7 +113,7 @@ def double_spe_studies_2(date, filter_band, fsps_new, shaping):
     std_double_amp_nd = np.std(array_double_amp_nd)
     std_single_charge = np.std(array_single_charge)
     std_double_charge_nd = np.std(array_double_charge_nd)
-    std_double_charge_5x = np.std(array_double_charge_5x)
+    std_double_charge__5x = np.std(array_double_charge__5x)
     std_double_charge_1x = np.std(array_double_charge_1x)
     std_double_charge_15x = np.std(array_double_charge_15x)
     std_double_charge_2x = np.std(array_double_charge_2x)
@@ -155,16 +155,22 @@ def double_spe_studies_2(date, filter_band, fsps_new, shaping):
         end4 = 110
         factor4 = 10**-9
 
-    false_spes_vs_delay(start1, end1, factor1, 'fwhm', 'FWHM', 's', fsps_new, mean_single_fwhm, mean_double_fwhm_5x,
+    false_spes_vs_delay(start1, end1, factor1, 'fwhm', 'FWHM', 's', fsps_new, mean_single_fwhm, mean_double_fwhm__5x,
                         mean_double_fwhm_1x, mean_double_fwhm_15x, mean_double_fwhm_2x, mean_double_fwhm_25x,
-                        mean_double_fwhm_3x, std_single_fwhm, std_double_fwhm_5x, std_double_fwhm_1x,
-                        std_double_fwhm_15x, std_double_fwhm_2x, std_double_fwhm_25x, std_double_fwhm_3x, dest_path,
+                        mean_double_fwhm_3x, mean_double_fwhm_35x, mean_double_fwhm_4x, mean_double_fwhm_45x,
+                        mean_double_fwhm_5x, mean_double_fwhm_55x, mean_double_fwhm_6x, std_single_fwhm,
+                        std_double_fwhm__5x, std_double_fwhm_1x, std_double_fwhm_15x, std_double_fwhm_2x,
+                        std_double_fwhm_25x, std_double_fwhm_3x, std_double_fwhm_35x, std_double_fwhm_4x,
+                        std_double_fwhm_45x, std_double_fwhm_5x, std_double_fwhm_55x, std_double_fwhm_6x, dest_path,
                         shaping)
     false_spes_vs_delay(start2, end2, factor2, 'charge', 'Charge', 's*bit/ohm', fsps_new, mean_single_charge,
-                        mean_double_charge_5x, mean_double_charge_1x, mean_double_charge_15x, mean_double_charge_2x,
-                        mean_double_charge_25x, mean_double_charge_3x, std_single_charge, std_double_charge_5x,
-                        std_double_charge_1x, std_double_charge_15x, std_double_charge_2x, std_double_charge_25x,
-                        std_double_charge_3x, dest_path, shaping)
+                        mean_double_charge__5x, mean_double_charge_1x, mean_double_charge_15x, mean_double_charge_2x,
+                        mean_double_charge_25x, mean_double_charge_3x, mean_double_charge_35x, mean_double_charge_4x,
+                        mean_double_charge_45x, mean_double_charge_5x, mean_double_charge_55x, mean_double_charge_6x,
+                        std_single_charge, std_double_charge__5x, std_double_charge_1x, std_double_charge_15x,
+                        std_double_charge_2x, std_double_charge_25x, std_double_charge_3x, std_double_charge_35x,
+                        std_double_charge_4x, std_double_charge_45x, std_double_charge_5x, std_double_charge_55x,
+                        std_double_charge_6x, dest_path, shaping)
 
     false_spes_mpes(start3, end3, factor3, 'amp', 'Amplitude', 'bits', mean_single_amp, mean_double_amp_nd,
                     std_single_amp, std_double_amp_nd, fsps_new, dest_path, shaping)
