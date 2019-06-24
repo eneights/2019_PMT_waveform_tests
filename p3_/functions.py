@@ -365,35 +365,51 @@ def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename, fsps_
     path = Path(dest_path / 'plots')
     n, bins, patches = plt.hist(array, nbins)       # Plots histogram
     b_est, c_est = norm.fit(array)                  # Calculates mean & standard deviation based on entire array
-    if filename == 'amp_double_rt4_3x_rt':
+    if filename == 'amp_double_rt4_3x_rt_' + str(int(fsps_new / 1e6)) + '_Msps':
         range_min1 = b_est + (c_est / 2) - c_est        # Calculates lower limit of Gaussian fit (1sigma estimation)
         range_max1 = b_est + (c_est / 2) + c_est        # Calculates lower limit of Gaussian fit (1sigma estimation)
     else:
         range_min1 = b_est - c_est              # Calculates lower limit of Gaussian fit (1sigma estimation)
         range_max1 = b_est + c_est              # Calculates upper limit of Gaussian fit (1sigma estimation)
 
-    bins = np.delete(bins, len(bins) - 1)
-    bins_diff = bins[1] - bins[0]
-    bins = np.linspace(bins[0] + bins_diff / 2, bins[len(bins) - 1] + bins_diff / 2, len(bins))
-    bins_range1 = np.linspace(range_min1, range_max1, 10000)  # Creates array of bins between upper & lower limits
-    n_range1 = np.interp(bins_range1, bins, n)  # Interpolates & creates array of y axis values
-    guess1 = [1, float(b_est), float(c_est)]  # Defines guess for values of a, b & c in Gaussian fit
-    popt1, pcov1 = curve_fit(func, bins_range1, n_range1, p0=guess1, maxfev=10000)  # Finds Gaussian fit
-    mu1 = float(format(popt1[1], '.2e'))        # Calculates mean based on 1sigma guess
-    sigma1 = np.abs(float(format(popt1[2], '.2e')))     # Calculates standard deviation based on 1sigma estimation
-    range_min2 = mu1 - 2 * sigma1       # Calculates lower limit of Gaussian fit (2sigma)
-    range_max2 = mu1 + 2 * sigma1       # Calculates upper limit of Gaussian fit (2sigma)
-    bins_range2 = np.linspace(range_min2, range_max2, 10000)    # Creates array of bins between upper & lower limits
-    n_range2 = np.interp(bins_range2, bins, n)      # Interpolates & creates array of y axis values
-    guess2 = [1, mu1, sigma1]       # Defines guess for values of a, b & c in Gaussian fit
-    popt2, pcov2 = curve_fit(func, bins_range2, n_range2, p0=guess2, maxfev=10000)  # Finds Gaussian fit
-    plt.plot(bins_range2, func(bins_range2, *popt2), color='red')       # Plots Gaussian fit (mean +/- 2sigma)
-    mu2 = float(format(popt2[1], '.2e'))                # Calculates mean
-    sigma2 = np.abs(float(format(popt2[2], '.2e')))     # Calculates standard deviation
-    plt.xlabel(xaxis + ' (' + units + ')')
-    plt.title(title + ' of SPE\n mean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2) + ' ' + units)
-    plt.savefig(path / str(filename + '.png'), dpi=360)
-    plt.close()
+    if filename == 'fwhm_single_rt1_125_Msps':
+        b_est = float(format(b_est, '.2e'))
+        c_est = float(format(c_est, '.2e'))
+        plt.xlabel(xaxis + ' (' + units + ')')
+        plt.title(title + ' of SPE\n mean: ' + str(b_est) + ' ' + units + ', SD: ' + str(c_est) + ' ' + units)
+        plt.savefig(path / str(filename + '.png'), dpi=360)
+        plt.close()
+    else:
+        try:
+            bins = np.delete(bins, len(bins) - 1)
+            bins_diff = bins[1] - bins[0]
+            bins = np.linspace(bins[0] + bins_diff / 2, bins[len(bins) - 1] + bins_diff / 2, len(bins))
+            bins_range1 = np.linspace(range_min1, range_max1, 10000)  # Creates array of bins between upper & lower limits
+            n_range1 = np.interp(bins_range1, bins, n)  # Interpolates & creates array of y axis values
+            guess1 = [1, float(b_est), float(c_est)]  # Defines guess for values of a, b & c in Gaussian fit
+            popt1, pcov1 = curve_fit(func, bins_range1, n_range1, p0=guess1, maxfev=5000)  # Finds Gaussian fit
+            mu1 = float(format(popt1[1], '.2e'))        # Calculates mean based on 1sigma guess
+            sigma1 = np.abs(float(format(popt1[2], '.2e')))     # Calculates standard deviation based on 1sigma estimation
+            range_min2 = mu1 - 2 * sigma1       # Calculates lower limit of Gaussian fit (2sigma)
+            range_max2 = mu1 + 2 * sigma1       # Calculates upper limit of Gaussian fit (2sigma)
+            bins_range2 = np.linspace(range_min2, range_max2, 10000)    # Creates array of bins between upper & lower limits
+            n_range2 = np.interp(bins_range2, bins, n)      # Interpolates & creates array of y axis values
+            guess2 = [1, mu1, sigma1]       # Defines guess for values of a, b & c in Gaussian fit
+            popt2, pcov2 = curve_fit(func, bins_range2, n_range2, p0=guess2, maxfev=5000)  # Finds Gaussian fit
+            plt.plot(bins_range2, func(bins_range2, *popt2), color='red')       # Plots Gaussian fit (mean +/- 2sigma)
+            mu2 = float(format(popt2[1], '.2e'))                # Calculates mean
+            sigma2 = np.abs(float(format(popt2[2], '.2e')))     # Calculates standard deviation
+            plt.xlabel(xaxis + ' (' + units + ')')
+            plt.title(title + ' of SPE\n mean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2) + ' ' + units)
+            plt.savefig(path / str(filename + '.png'), dpi=360)
+            plt.close()
+        except Exception:
+            b_est = float(format(b_est, '.2e'))
+            c_est = float(format(c_est, '.2e'))
+            plt.xlabel(xaxis + ' (' + units + ')')
+            plt.title(title + ' of SPE\n mean: ' + str(b_est) + ' ' + units + ', SD: ' + str(c_est) + ' ' + units)
+            plt.savefig(path / str(filename + '.png'), dpi=360)
+            plt.close()
 
     write_hist_data(array, dest_path, filename + '.txt')
 
@@ -420,24 +436,32 @@ def plot_double_hist(dest_path, nbins, xaxis, title, units, filename1, filename2
     range_min1_1 = b_est1 - c_est1      # Calculates lower limit of Gaussian fit (1sigma estimation)
     range_max1_1 = b_est1 + c_est1      # Calculates upper limit of Gaussian fit (1sigma estimation)
 
-    bins1 = np.delete(bins1, len(bins1) - 1)
-    bins_diff1 = bins1[1] - bins1[0]
-    bins1 = np.linspace(bins1[0] + bins_diff1 / 2, bins1[len(bins1) - 1] + bins_diff1 / 2, len(bins1))
-    bins_range1_1 = np.linspace(range_min1_1, range_max1_1, 10000)  # Creates array of bins between upper & lower limits
-    n_range1_1 = np.interp(bins_range1_1, bins1, n1)        # Interpolates & creates array of y axis values
-    guess1_1 = [1, float(b_est1), float(c_est1)]            # Defines guess for values of a, b & c in Gaussian fit
-    popt1_1, pcov1_1 = curve_fit(func, bins_range1_1, n_range1_1, p0=guess1_1, maxfev=10000)    # Finds Gaussian fit
-    mu1_1 = float(format(popt1_1[1], '.2e'))                # Calculates mean based on 1sigma guess
-    sigma1_1 = np.abs(float(format(popt1_1[2], '.2e')))     # Calculates standard deviation based on 1sigma estimation
-    range_min2_1 = mu1_1 - 2 * sigma1_1                     # Calculates lower limit of Gaussian fit (2sigma)
-    range_max2_1 = mu1_1 + 2 * sigma1_1                     # Calculates upper limit of Gaussian fit (2sigma)
-    bins_range2_1 = np.linspace(range_min2_1, range_max2_1, 10000)  # Creates array of bins between upper & lower limits
-    n_range2_1 = np.interp(bins_range2_1, bins1, n1)        # Interpolates & creates array of y axis values
-    guess2_1 = [1, mu1_1, sigma1_1]                         # Defines guess for values of a, b & c in Gaussian fit
-    popt2_1, pcov2_1 = curve_fit(func, bins_range2_1, n_range2_1, p0=guess2_1, maxfev=10000)  # Finds Gaussian fit
-    plt.plot(bins_range2_1, func(bins_range2_1, *popt2_1), color='red')     # Plots Gaussian fit (mean +/- 2sigma)
-    mu2_1 = float(format(popt2_1[1], '.2e'))                # Calculates mean
-    sigma2_1 = np.abs(float(format(popt2_1[2], '.2e')))     # Calculates standard deviation
+    if filename1 + '_' + str(int(fsps_new / 1e6)) + '_Msps' == 'fwhm_single_rt1_125_Msps':
+        mu2_1 = float(format(b_est1, '.2e'))
+        sigma2_1 = float(format(c_est1, '.2e'))
+    else:
+        try:
+            bins1 = np.delete(bins1, len(bins1) - 1)
+            bins_diff1 = bins1[1] - bins1[0]
+            bins1 = np.linspace(bins1[0] + bins_diff1 / 2, bins1[len(bins1) - 1] + bins_diff1 / 2, len(bins1))
+            bins_range1_1 = np.linspace(range_min1_1, range_max1_1, 10000)  # Creates array of bins
+            n_range1_1 = np.interp(bins_range1_1, bins1, n1)        # Interpolates & creates array of y axis values
+            guess1_1 = [1, float(b_est1), float(c_est1)]            # Defines guess for values of a, b & c in Gaussian fit
+            popt1_1, pcov1_1 = curve_fit(func, bins_range1_1, n_range1_1, p0=guess1_1, maxfev=5000)    # Finds Gaussian fit
+            mu1_1 = float(format(popt1_1[1], '.2e'))                # Calculates mean based on 1sigma guess
+            sigma1_1 = np.abs(float(format(popt1_1[2], '.2e')))     # Calculates sd based on 1sigma estimation
+            range_min2_1 = mu1_1 - 2 * sigma1_1                     # Calculates lower limit of Gaussian fit (2sigma)
+            range_max2_1 = mu1_1 + 2 * sigma1_1                     # Calculates upper limit of Gaussian fit (2sigma)
+            bins_range2_1 = np.linspace(range_min2_1, range_max2_1, 10000)  # Creates array of bins
+            n_range2_1 = np.interp(bins_range2_1, bins1, n1)        # Interpolates & creates array of y axis values
+            guess2_1 = [1, mu1_1, sigma1_1]                         # Defines guess for values of a, b & c in Gaussian fit
+            popt2_1, pcov2_1 = curve_fit(func, bins_range2_1, n_range2_1, p0=guess2_1, maxfev=5000)  # Finds Gaussian fit
+            plt.plot(bins_range2_1, func(bins_range2_1, *popt2_1), color='red')     # Plots Gaussian fit (mean +/- 2sigma)
+            mu2_1 = float(format(popt2_1[1], '.2e'))                # Calculates mean
+            sigma2_1 = np.abs(float(format(popt2_1[2], '.2e')))     # Calculates standard deviation
+        except Exception:
+            mu2_1 = float(format(b_est1, '.2e'))
+            sigma2_1 = float(format(c_est1, '.2e'))
 
     myfile2 = open(dest_path / 'hist_data' / str(filename2 + '_' + str(int(fsps_new / 1e6)) + '_Msps' + '.txt'), 'r')
     for line in myfile2:
@@ -456,31 +480,41 @@ def plot_double_hist(dest_path, nbins, xaxis, title, units, filename1, filename2
         range_min1_2 = b_est2 - c_est2              # Calculates lower limit of Gaussian fit (1sigma estimation)
         range_max1_2 = b_est2 + c_est2              # Calculates upper limit of Gaussian fit (1sigma estimation)
 
-    bins2 = np.delete(bins2, len(bins2) - 1)
-    bins_diff2 = bins2[1] - bins2[0]
-    bins2 = np.linspace(bins2[0] + bins_diff2 / 2, bins2[len(bins2) - 1] + bins_diff2 / 2, len(bins2))
-    bins_range1_2 = np.linspace(range_min1_2, range_max1_2, 10000)  # Creates array of bins between upper & lower limits
-    n_range1_2 = np.interp(bins_range1_2, bins2, n2)        # Interpolates & creates array of y axis values
-    guess1_2 = [1, float(b_est2), float(c_est2)]            # Defines guess for values of a, b & c in Gaussian fit
-    popt1_2, pcov1_2 = curve_fit(func, bins_range1_2, n_range1_2, p0=guess1_2, maxfev=10000)  # Finds Gaussian fit
-    mu1_2 = float(format(popt1_2[1], '.2e'))                # Calculates mean based on 1sigma guess
-    sigma1_2 = np.abs(float(format(popt1_2[2], '.2e')))     # Calculates standard deviation based on 1sigma estimation
-    range_min2_2 = mu1_2 - 2 * sigma1_2                     # Calculates lower limit of Gaussian fit (2sigma)
-    range_max2_2 = mu1_2 + 2 * sigma1_2                     # Calculates upper limit of Gaussian fit (2sigma)
-    bins_range2_2 = np.linspace(range_min2_2, range_max2_2, 10000)  # Creates array of bins between upper & lower limits
-    n_range2_2 = np.interp(bins_range2_2, bins2, n2)        # Interpolates & creates array of y axis values
-    guess2_2 = [1, mu1_2, sigma1_2]                         # Defines guess for values of a, b & c in Gaussian fit
-    popt2_2, pcov2_2 = curve_fit(func, bins_range2_2, n_range2_2, p0=guess2_2, maxfev=10000)  # Finds Gaussian fit
-    plt.plot(bins_range2_2, func(bins_range2_2, *popt2_2), color='green')   # Plots Gaussian fit (mean +/- 2sigma)
-    mu2_2 = float(format(popt2_2[1], '.2e'))                # Calculates mean
-    sigma2_2 = np.abs(float(format(popt2_2[2], '.2e')))     # Calculates standard deviation
+    try:
+        bins2 = np.delete(bins2, len(bins2) - 1)
+        bins_diff2 = bins2[1] - bins2[0]
+        bins2 = np.linspace(bins2[0] + bins_diff2 / 2, bins2[len(bins2) - 1] + bins_diff2 / 2, len(bins2))
+        bins_range1_2 = np.linspace(range_min1_2, range_max1_2, 10000)  # Creates array of bins
+        n_range1_2 = np.interp(bins_range1_2, bins2, n2)        # Interpolates & creates array of y axis values
+        guess1_2 = [1, float(b_est2), float(c_est2)]            # Defines guess for values of a, b & c in Gaussian fit
+        popt1_2, pcov1_2 = curve_fit(func, bins_range1_2, n_range1_2, p0=guess1_2, maxfev=5000)  # Finds Gaussian fit
+        mu1_2 = float(format(popt1_2[1], '.2e'))                # Calculates mean based on 1sigma guess
+        sigma1_2 = np.abs(float(format(popt1_2[2], '.2e')))     # Calculates sd based on 1sigma estimation
+        range_min2_2 = mu1_2 - 2 * sigma1_2                     # Calculates lower limit of Gaussian fit (2sigma)
+        range_max2_2 = mu1_2 + 2 * sigma1_2                     # Calculates upper limit of Gaussian fit (2sigma)
+        bins_range2_2 = np.linspace(range_min2_2, range_max2_2, 10000)  # Creates array of bins
+        n_range2_2 = np.interp(bins_range2_2, bins2, n2)        # Interpolates & creates array of y axis values
+        guess2_2 = [1, mu1_2, sigma1_2]                         # Defines guess for values of a, b & c in Gaussian fit
+        popt2_2, pcov2_2 = curve_fit(func, bins_range2_2, n_range2_2, p0=guess2_2, maxfev=5000)  # Finds Gaussian fit
+        plt.plot(bins_range2_2, func(bins_range2_2, *popt2_2), color='green')   # Plots Gaussian fit (mean +/- 2sigma)
+        mu2_2 = float(format(popt2_2[1], '.2e'))                # Calculates mean
+        sigma2_2 = np.abs(float(format(popt2_2[2], '.2e')))     # Calculates standard deviation
 
-    plt.xlabel(xaxis + ' (' + units + ')')
-    plt.title(title + ' of SPE\n mean (single): ' + str(mu2_1) + ' ' + units + ', SD (single): ' + str(sigma2_1) + ' ' +
-              units + '\n mean (double): ' + str(mu2_2) + ' ' + units + ', SD (double): ' + str(sigma2_2) + ' ' + units,
-              fontsize='medium')
-    plt.savefig(path / str(filename + '.png'), dpi=360)
-    plt.close()
+        plt.xlabel(xaxis + ' (' + units + ')')
+        plt.title(title + ' of SPE\n mean (single): ' + str(mu2_1) + ' ' + units + ', SD (single): ' + str(sigma2_1) +
+                  ' ' + units + '\n mean (double): ' + str(mu2_2) + ' ' + units + ', SD (double): ' + str(sigma2_2) +
+                  ' ' + units, fontsize='medium')
+        plt.savefig(path / str(filename + '.png'), dpi=360)
+        plt.close()
+    except Exception:
+        mu2_2 = float(format(b_est2, '.2e'))
+        sigma2_2 = float(format(c_est2, '.2e'))
+        plt.xlabel(xaxis + ' (' + units + ')')
+        plt.title(title + ' of SPE\n mean (single): ' + str(mu2_1) + ' ' + units + ', SD (single): ' + str(sigma2_1) +
+                  ' ' + units + '\n mean (double): ' + str(mu2_2) + ' ' + units + ', SD (double): ' + str(sigma2_2) +
+                  ' ' + units, fontsize='medium')
+        plt.savefig(path / str(filename + '.png'), dpi=360)
+        plt.close()
 
 
 def read_hist_file(path, filename, fsps_new):
@@ -633,3 +667,456 @@ def false_spes_mpes(start, end, factor, parameter, parameter_title, units, means
     plt.savefig(dest_path / 'plots' / str('false_spes_' + parameter + '_' + str(int(fsps_new / 1e6)) + '_Msps_' +
                                           shaping + '.png'), dpi=360)
     plt.close()
+
+
+def roc_graphs(start, end, factor, fsps_new, shaping, parameter, parameter_title, units, means, mean_nd, mean_5, mean1,
+               mean15, mean2, mean25, mean3, mean35, mean4, mean45, mean5, mean55, mean6, sds, sd_nd, sd_5, sd1, sd15,
+               sd2, sd25, sd3, sd35, sd4, sd45, sd5, sd55, sd6, dest_path):
+    cutoff_array = np.array([])
+    false_mpes_array = np.array([])
+    true_spes_array = np.array([])
+    false_spes_nd_array = np.array([])
+    false_spes__5x_array = np.array([])
+    false_spes_1x_array = np.array([])
+    false_spes_15x_array = np.array([])
+    false_spes_2x_array = np.array([])
+    false_spes_25x_array = np.array([])
+    false_spes_3x_array = np.array([])
+    false_spes_35x_array = np.array([])
+    false_spes_4x_array = np.array([])
+    false_spes_45x_array = np.array([])
+    false_spes_5x_array = np.array([])
+    false_spes_55x_array = np.array([])
+    false_spes_6x_array = np.array([])
+    true_mpes_nd_array = np.array([])
+    true_mpes__5x_array = np.array([])
+    true_mpes_1x_array = np.array([])
+    true_mpes_15x_array = np.array([])
+    true_mpes_2x_array = np.array([])
+    true_mpes_25x_array = np.array([])
+    true_mpes_3x_array = np.array([])
+    true_mpes_35x_array = np.array([])
+    true_mpes_4x_array = np.array([])
+    true_mpes_45x_array = np.array([])
+    true_mpes_5x_array = np.array([])
+    true_mpes_55x_array = np.array([])
+    true_mpes_6x_array = np.array([])
+
+    for i in range(start, end):
+        x = i * factor
+        cutoff_array = np.append(cutoff_array, x)
+        false_mpes = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - means) / (sds * math.sqrt(2))))))
+        true_spes = 100 * ((1 / 2) * (2 - math.erfc((x - means) / (sds * math.sqrt(2)))))
+        false_spes_nd = 100 * ((1 / 2) * (2 - math.erfc((x - mean_nd) / (sd_nd * math.sqrt(2)))))
+        true_mpes_nd = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - mean_nd) / (sd_nd * math.sqrt(2))))))
+        false_spes__5x = 100 * ((1 / 2) * (2 - math.erfc((x - mean_5) / (sd_5 * math.sqrt(2)))))
+        true_mpes__5x = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - mean_5) / (sd_5 * math.sqrt(2))))))
+        false_spes_1x = 100 * ((1 / 2) * (2 - math.erfc((x - mean1) / (sd1 * math.sqrt(2)))))
+        true_mpes_1x = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - mean1) / (sd1 * math.sqrt(2))))))
+        false_spes_15x = 100 * ((1 / 2) * (2 - math.erfc((x - mean15) / (sd15 * math.sqrt(2)))))
+        true_mpes_15x = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - mean15) / (sd15 * math.sqrt(2))))))
+        false_spes_2x = 100 * ((1 / 2) * (2 - math.erfc((x - mean2) / (sd2 * math.sqrt(2)))))
+        true_mpes_2x = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - mean2) / (sd2 * math.sqrt(2))))))
+        false_spes_25x = 100 * ((1 / 2) * (2 - math.erfc((x - mean25) / (sd25 * math.sqrt(2)))))
+        true_mpes_25x = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - mean25) / (sd25 * math.sqrt(2))))))
+        false_spes_3x = 100 * ((1 / 2) * (2 - math.erfc((x - mean3) / (sd3 * math.sqrt(2)))))
+        true_mpes_3x = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - mean3) / (sd3 * math.sqrt(2))))))
+        false_spes_35x = 100 * ((1 / 2) * (2 - math.erfc((x - mean35) / (sd35 * math.sqrt(2)))))
+        true_mpes_35x = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - mean35) / (sd35 * math.sqrt(2))))))
+        false_spes_4x = 100 * ((1 / 2) * (2 - math.erfc((x - mean4) / (sd4 * math.sqrt(2)))))
+        true_mpes_4x = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - mean4) / (sd4 * math.sqrt(2))))))
+        false_spes_45x = 100 * ((1 / 2) * (2 - math.erfc((x - mean45) / (sd45 * math.sqrt(2)))))
+        true_mpes_45x = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - mean45) / (sd45 * math.sqrt(2))))))
+        false_spes_5x = 100 * ((1 / 2) * (2 - math.erfc((x - mean5) / (sd5 * math.sqrt(2)))))
+        true_mpes_5x = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - mean5) / (sd5 * math.sqrt(2))))))
+        false_spes_55x = 100 * ((1 / 2) * (2 - math.erfc((x - mean55) / (sd55 * math.sqrt(2)))))
+        true_mpes_55x = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - mean55) / (sd55 * math.sqrt(2))))))
+        false_spes_6x = 100 * ((1 / 2) * (2 - math.erfc((x - mean6) / (sd6 * math.sqrt(2)))))
+        true_mpes_6x = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - mean6) / (sd6 * math.sqrt(2))))))
+        false_mpes_array = np.append(false_mpes_array, false_mpes)
+        true_spes_array = np.append(true_spes_array, true_spes)
+        false_spes_nd_array = np.append(false_spes_nd_array, false_spes_nd)
+        true_mpes_nd_array = np.append(true_mpes_nd_array, true_mpes_nd)
+        false_spes__5x_array = np.append(false_spes__5x_array, false_spes__5x)
+        true_mpes__5x_array = np.append(true_mpes__5x_array, true_mpes__5x)
+        false_spes_1x_array = np.append(false_spes_1x_array, false_spes_1x)
+        true_mpes_1x_array = np.append(true_mpes_1x_array, true_mpes_1x)
+        false_spes_15x_array = np.append(false_spes_15x_array, false_spes_15x)
+        true_mpes_15x_array = np.append(true_mpes_15x_array, true_mpes_15x)
+        false_spes_2x_array = np.append(false_spes_2x_array, false_spes_2x)
+        true_mpes_2x_array = np.append(true_mpes_2x_array, true_mpes_2x)
+        false_spes_25x_array = np.append(false_spes_25x_array, false_spes_25x)
+        true_mpes_25x_array = np.append(true_mpes_25x_array, true_mpes_25x)
+        false_spes_3x_array = np.append(false_spes_3x_array, false_spes_3x)
+        true_mpes_3x_array = np.append(true_mpes_3x_array, true_mpes_3x)
+        false_spes_35x_array = np.append(false_spes_35x_array, false_spes_35x)
+        true_mpes_35x_array = np.append(true_mpes_35x_array, true_mpes_35x)
+        false_spes_4x_array = np.append(false_spes_4x_array, false_spes_4x)
+        true_mpes_4x_array = np.append(true_mpes_4x_array, true_mpes_4x)
+        false_spes_45x_array = np.append(false_spes_45x_array, false_spes_45x)
+        true_mpes_45x_array = np.append(true_mpes_45x_array, true_mpes_45x)
+        false_spes_5x_array = np.append(false_spes_5x_array, false_spes_5x)
+        true_mpes_5x_array = np.append(true_mpes_5x_array, true_mpes_5x)
+        false_spes_55x_array = np.append(false_spes_55x_array, false_spes_55x)
+        true_mpes_55x_array = np.append(true_mpes_55x_array, true_mpes_55x)
+        false_spes_6x_array = np.append(false_spes_6x_array, false_spes_6x)
+        true_mpes_6x_array = np.append(true_mpes_6x_array, true_mpes_6x)
+
+    cutoff_array_2 = np.linspace(start * factor, end * factor, 1000)
+    false_mpes_array_2 = np.interp(cutoff_array_2, cutoff_array, false_mpes_array)
+    true_spes_array_2 = np.interp(cutoff_array_2, cutoff_array, true_spes_array)
+    false_spes_nd_array_2 = np.interp(cutoff_array_2, cutoff_array, false_spes_nd_array)
+    true_mpes_nd_array_2 = np.interp(cutoff_array_2, cutoff_array, true_mpes_nd_array)
+    false_spes__5x_array_2 = np.interp(cutoff_array_2, cutoff_array, false_spes__5x_array)
+    true_mpes__5x_array_2 = np.interp(cutoff_array_2, cutoff_array, true_mpes__5x_array)
+    false_spes_1x_array_2 = np.interp(cutoff_array_2, cutoff_array, false_spes_1x_array)
+    true_mpes_1x_array_2 = np.interp(cutoff_array_2, cutoff_array, true_mpes_1x_array)
+    false_spes_15x_array_2 = np.interp(cutoff_array_2, cutoff_array, false_spes_15x_array)
+    true_mpes_15x_array_2 = np.interp(cutoff_array_2, cutoff_array, true_mpes_15x_array)
+    false_spes_2x_array_2 = np.interp(cutoff_array_2, cutoff_array, false_spes_2x_array)
+    true_mpes_2x_array_2 = np.interp(cutoff_array_2, cutoff_array, true_mpes_2x_array)
+    false_spes_25x_array_2 = np.interp(cutoff_array_2, cutoff_array, false_spes_25x_array)
+    true_mpes_25x_array_2 = np.interp(cutoff_array_2, cutoff_array, true_mpes_25x_array)
+    false_spes_3x_array_2 = np.interp(cutoff_array_2, cutoff_array, false_spes_3x_array)
+    true_mpes_3x_array_2 = np.interp(cutoff_array_2, cutoff_array, true_mpes_3x_array)
+    false_spes_35x_array_2 = np.interp(cutoff_array_2, cutoff_array, false_spes_35x_array)
+    true_mpes_35x_array_2 = np.interp(cutoff_array_2, cutoff_array, true_mpes_35x_array)
+    false_spes_4x_array_2 = np.interp(cutoff_array_2, cutoff_array, false_spes_4x_array)
+    true_mpes_4x_array_2 = np.interp(cutoff_array_2, cutoff_array, true_mpes_4x_array)
+    false_spes_45x_array_2 = np.interp(cutoff_array_2, cutoff_array, false_spes_45x_array)
+    true_mpes_45x_array_2 = np.interp(cutoff_array_2, cutoff_array, true_mpes_45x_array)
+    false_spes_5x_array_2 = np.interp(cutoff_array_2, cutoff_array, false_spes_5x_array)
+    true_mpes_5x_array_2 = np.interp(cutoff_array_2, cutoff_array, true_mpes_5x_array)
+    false_spes_55x_array_2 = np.interp(cutoff_array_2, cutoff_array, false_spes_55x_array)
+    true_mpes_55x_array_2 = np.interp(cutoff_array_2, cutoff_array, true_mpes_55x_array)
+    false_spes_6x_array_2 = np.interp(cutoff_array_2, cutoff_array, false_spes_6x_array)
+    true_mpes_6x_array_2 = np.interp(cutoff_array_2, cutoff_array, true_mpes_6x_array)
+
+    idx = np.argmin(np.abs(false_mpes_array_2 - 1))
+
+    # Plots ROC graphs for double waveforms with no delay
+    plt.plot(false_spes_nd_array_2, true_spes_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.plot(false_spes_nd_array_2[idx], true_spes_array_2[idx], marker='x')
+    plt.xlabel('% False SPEs')
+    plt.ylabel('% True SPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (false_spes_nd_array_2[idx] + 2, true_spes_array_2[idx] - 4))
+    plt.savefig(dest_path / 'plots' / str('roc_spes_' + parameter + '_nd_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    plt.plot(false_mpes_array_2, true_mpes_nd_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.vlines(1, 0, 100)
+    plt.xlabel('% False MPEs')
+    plt.ylabel('% True MPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (3, 0))
+    plt.savefig(dest_path / 'plots' / str('roc_mpes_' + parameter + '_nd_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    # Plots ROC graphs for double waveforms with 0.5x rt delay
+    plt.plot(false_spes__5x_array_2, true_spes_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.plot(false_spes__5x_array_2[idx], true_spes_array_2[idx], marker='x')
+    plt.xlabel('% False SPEs')
+    plt.ylabel('% True SPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (false_spes__5x_array_2[idx] + 2, true_spes_array_2[idx] - 4))
+    plt.savefig(dest_path / 'plots' / str('roc_spes_' + parameter + '_0.5x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    plt.plot(false_mpes_array_2, true_mpes__5x_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.vlines(1, 0, 100)
+    plt.xlabel('% False MPEs')
+    plt.ylabel('% True MPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (3, 0))
+    plt.savefig(dest_path / 'plots' / str('roc_mpes_' + parameter + '_0.5x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    # Plots ROC graphs for double waveforms with 1x rt delay
+    plt.plot(false_spes_1x_array_2, true_spes_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.plot(false_spes_1x_array_2[idx], true_spes_array_2[idx], marker='x')
+    plt.xlabel('% False SPEs')
+    plt.ylabel('% True SPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (false_spes_1x_array_2[idx] + 2, true_spes_array_2[idx] - 4))
+    plt.savefig(dest_path / 'plots' / str('roc_spes_' + parameter + '_1x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    plt.plot(false_mpes_array_2, true_mpes_1x_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.vlines(1, 0, 100)
+    plt.xlabel('% False MPEs')
+    plt.ylabel('% True MPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (3, 0))
+    plt.savefig(dest_path / 'plots' / str('roc_mpes_' + parameter + '_1x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    # Plots ROC graphs for double waveforms with 1.5x rt delay
+    plt.plot(false_spes_15x_array_2, true_spes_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.plot(false_spes_15x_array_2[idx], true_spes_array_2[idx], marker='x')
+    plt.xlabel('% False SPEs')
+    plt.ylabel('% True SPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (false_spes_15x_array_2[idx] + 2, true_spes_array_2[idx] - 4))
+    plt.savefig(dest_path / 'plots' / str('roc_spes_' + parameter + '_1.5x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    plt.plot(false_mpes_array_2, true_mpes_15x_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.vlines(1, 0, 100)
+    plt.xlabel('% False MPEs')
+    plt.ylabel('% True MPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (3, 0))
+    plt.savefig(dest_path / 'plots' / str('roc_mpes_' + parameter + '_1.5x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    # Plots ROC graphs for double waveforms with 2x rt delay
+    plt.plot(false_spes_2x_array_2, true_spes_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.plot(false_spes_2x_array_2[idx], true_spes_array_2[idx], marker='x')
+    plt.xlabel('% False SPEs')
+    plt.ylabel('% True SPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (false_spes_2x_array_2[idx] + 2, true_spes_array_2[idx] - 4))
+    plt.savefig(dest_path / 'plots' / str('roc_spes_' + parameter + '_2x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    plt.plot(false_mpes_array_2, true_mpes_2x_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.vlines(1, 0, 100)
+    plt.xlabel('% False MPEs')
+    plt.ylabel('% True MPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (3, 0))
+    plt.savefig(dest_path / 'plots' / str('roc_mpes_' + parameter + '_2x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    # Plots ROC graphs for double waveforms with 2.5x rt delay
+    plt.plot(false_spes_25x_array_2, true_spes_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.plot(false_spes_25x_array_2[idx], true_spes_array_2[idx], marker='x')
+    plt.xlabel('% False SPEs')
+    plt.ylabel('% True SPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (false_spes_25x_array_2[idx] + 2, true_spes_array_2[idx] - 4))
+    plt.savefig(dest_path / 'plots' / str('roc_spes_' + parameter + '_2.5x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    plt.plot(false_mpes_array_2, true_mpes_25x_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.vlines(1, 0, 100)
+    plt.xlabel('% False MPEs')
+    plt.ylabel('% True MPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (3, 0))
+    plt.savefig(dest_path / 'plots' / str('roc_mpes_' + parameter + '_2.5x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    # Plots ROC graphs for double waveforms with 3x rt delay
+    plt.plot(false_spes_3x_array_2, true_spes_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.plot(false_spes_3x_array_2[idx], true_spes_array_2[idx], marker='x')
+    plt.xlabel('% False SPEs')
+    plt.ylabel('% True SPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (false_spes_3x_array_2[idx] + 2, true_spes_array_2[idx] - 4))
+    plt.savefig(dest_path / 'plots' / str('roc_spes_' + parameter + '_3x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    plt.plot(false_mpes_array_2, true_mpes_3x_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.vlines(1, 0, 100)
+    plt.xlabel('% False MPEs')
+    plt.ylabel('% True MPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (3, 0))
+    plt.savefig(dest_path / 'plots' / str('roc_mpes_' + parameter + '_3x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    # Plots ROC graphs for double waveforms with 3.5x rt delay
+    plt.plot(false_spes_35x_array_2, true_spes_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.plot(false_spes_35x_array_2[idx], true_spes_array_2[idx], marker='x')
+    plt.xlabel('% False SPEs')
+    plt.ylabel('% True SPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (false_spes_35x_array_2[idx] + 2, true_spes_array_2[idx] - 4))
+    plt.savefig(dest_path / 'plots' / str('roc_spes_' + parameter + '_3.5x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    plt.plot(false_mpes_array_2, true_mpes_35x_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.vlines(1, 0, 100)
+    plt.xlabel('% False MPEs')
+    plt.ylabel('% True MPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (3, 0))
+    plt.savefig(dest_path / 'plots' / str('roc_mpes_' + parameter + '_3.5x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    # Plots ROC graphs for double waveforms with 4x rt delay
+    plt.plot(false_spes_4x_array_2, true_spes_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.plot(false_spes_4x_array_2[idx], true_spes_array_2[idx], marker='x')
+    plt.xlabel('% False SPEs')
+    plt.ylabel('% True SPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (false_spes_4x_array_2[idx] + 2, true_spes_array_2[idx] - 4))
+    plt.savefig(dest_path / 'plots' / str('roc_spes_' + parameter + '_4x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    plt.plot(false_mpes_array_2, true_mpes_4x_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.vlines(1, 0, 100)
+    plt.xlabel('% False MPEs')
+    plt.ylabel('% True MPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (3, 0))
+    plt.savefig(dest_path / 'plots' / str('roc_mpes_' + parameter + '_4x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    # Plots ROC graphs for double waveforms with 4.5x rt delay
+    plt.plot(false_spes_45x_array_2, true_spes_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.plot(false_spes_45x_array_2[idx], true_spes_array_2[idx], marker='x')
+    plt.xlabel('% False SPEs')
+    plt.ylabel('% True SPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (false_spes_45x_array_2[idx] + 2, true_spes_array_2[idx] - 4))
+    plt.savefig(dest_path / 'plots' / str('roc_spes_' + parameter + '_4.5x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    plt.plot(false_mpes_array_2, true_mpes_45x_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.vlines(1, 0, 100)
+    plt.xlabel('% False MPEs')
+    plt.ylabel('% True MPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (3, 0))
+    plt.savefig(dest_path / 'plots' / str('roc_mpes_' + parameter + '_4.5x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    # Plots ROC graphs for double waveforms with 5x rt delay
+    plt.plot(false_spes_5x_array_2, true_spes_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.plot(false_spes_5x_array_2[idx], true_spes_array_2[idx], marker='x')
+    plt.xlabel('% False SPEs')
+    plt.ylabel('% True SPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (false_spes_5x_array_2[idx] + 2, true_spes_array_2[idx] - 4))
+    plt.savefig(dest_path / 'plots' / str('roc_spes_' + parameter + '_5x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    plt.plot(false_mpes_array_2, true_mpes_5x_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.vlines(1, 0, 100)
+    plt.xlabel('% False MPEs')
+    plt.ylabel('% True MPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (3, 0))
+    plt.savefig(dest_path / 'plots' / str('roc_mpes_' + parameter + '_5x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    # Plots ROC graphs for double waveforms with 5.5x rt delay
+    plt.plot(false_spes_55x_array_2, true_spes_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.plot(false_spes_55x_array_2[idx], true_spes_array_2[idx], marker='x')
+    plt.xlabel('% False SPEs')
+    plt.ylabel('% True SPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (false_spes_55x_array_2[idx] + 2, true_spes_array_2[idx] - 4))
+    plt.savefig(dest_path / 'plots' / str('roc_spes_' + parameter + '_5.5x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    plt.plot(false_mpes_array_2, true_mpes_55x_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.vlines(1, 0, 100)
+    plt.xlabel('% False MPEs')
+    plt.ylabel('% True MPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (3, 0))
+    plt.savefig(dest_path / 'plots' / str('roc_mpes_' + parameter + '_5.5x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    # Plots ROC graphs for double waveforms with 6x rt delay
+    plt.plot(false_spes_6x_array_2, true_spes_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.plot(false_spes_6x_array_2[idx], true_spes_array_2[idx], marker='x')
+    plt.xlabel('% False SPEs')
+    plt.ylabel('% True SPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (false_spes_6x_array_2[idx] + 2, true_spes_array_2[idx] - 4))
+    plt.savefig(dest_path / 'plots' / str('roc_spes_' + parameter + '_6x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    plt.plot(false_mpes_array_2, true_mpes_6x_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.vlines(1, 0, 100)
+    plt.xlabel('% False MPEs')
+    plt.ylabel('% True MPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (3, 0))
+    plt.savefig(dest_path / 'plots' / str('roc_mpes_' + parameter + '_6x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+

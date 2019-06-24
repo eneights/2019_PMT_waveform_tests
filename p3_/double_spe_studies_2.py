@@ -7,67 +7,70 @@ def double_spe_studies_2(date, filter_band, fsps_new, shaping):
     dest_path = Path(save_path / 'd3')
 
     filename1 = 'fwhm_single_' + shaping
-    filename2 = 'fwhm_double_' + shaping + '_0.5x_rt'
-    filename3 = 'fwhm_double_' + shaping + '_1x_rt'
-    filename4 = 'fwhm_double_' + shaping + '_1.5x_rt'
-    filename5 = 'fwhm_double_' + shaping + '_2x_rt'
-    filename6 = 'fwhm_double_' + shaping + '_2.5x_rt'
-    filename7 = 'fwhm_double_' + shaping + '_3x_rt'
-    filename8 = 'fwhm_double_' + shaping + '_3.5x_rt'
-    filename9 = 'fwhm_double_' + shaping + '_4x_rt'
-    filename10 = 'fwhm_double_' + shaping + '_4.5x_rt'
-    filename11 = 'fwhm_double_' + shaping + '_5x_rt'
-    filename12 = 'fwhm_double_' + shaping + '_5.5x_rt'
-    filename13 = 'fwhm_double_' + shaping + '_6x_rt'
-    filename14 = 'amp_single_' + shaping
-    filename15 = 'amp_double_' + shaping + '_no_delay'
-    filename16 = 'charge_single_' + shaping
-    filename17 = 'charge_double_' + shaping + '_no_delay'
-    filename18 = 'charge_double_' + shaping + '_0.5x_rt'
-    filename19 = 'charge_double_' + shaping + '_1x_rt'
-    filename20 = 'charge_double_' + shaping + '_1.5x_rt'
-    filename21 = 'charge_double_' + shaping + '_2x_rt'
-    filename22 = 'charge_double_' + shaping + '_2.5x_rt'
-    filename23 = 'charge_double_' + shaping + '_3x_rt'
-    filename24 = 'charge_double_' + shaping + '_3.5x_rt'
-    filename25 = 'charge_double_' + shaping + '_4x_rt'
-    filename26 = 'charge_double_' + shaping + '_4.5x_rt'
-    filename27 = 'charge_double_' + shaping + '_5x_rt'
-    filename28 = 'charge_double_' + shaping + '_5.5x_rt'
-    filename29 = 'charge_double_' + shaping + '6x_rt'
+    filename2 = 'fwhm_double_' + shaping + '_no_delay'
+    filename3 = 'fwhm_double_' + shaping + '_0.5x_rt'
+    filename4 = 'fwhm_double_' + shaping + '_1x_rt'
+    filename5 = 'fwhm_double_' + shaping + '_1.5x_rt'
+    filename6 = 'fwhm_double_' + shaping + '_2x_rt'
+    filename7 = 'fwhm_double_' + shaping + '_2.5x_rt'
+    filename8 = 'fwhm_double_' + shaping + '_3x_rt'
+    filename9 = 'fwhm_double_' + shaping + '_3.5x_rt'
+    filename10 = 'fwhm_double_' + shaping + '_4x_rt'
+    filename11 = 'fwhm_double_' + shaping + '_4.5x_rt'
+    filename12 = 'fwhm_double_' + shaping + '_5x_rt'
+    filename13 = 'fwhm_double_' + shaping + '_5.5x_rt'
+    filename14 = 'fwhm_double_' + shaping + '_6x_rt'
+    filename15 = 'amp_single_' + shaping
+    filename16 = 'amp_double_' + shaping + '_no_delay'
+    filename17 = 'charge_single_' + shaping
+    filename18 = 'charge_double_' + shaping + '_no_delay'
+    filename19 = 'charge_double_' + shaping + '_0.5x_rt'
+    filename20 = 'charge_double_' + shaping + '_1x_rt'
+    filename21 = 'charge_double_' + shaping + '_1.5x_rt'
+    filename22 = 'charge_double_' + shaping + '_2x_rt'
+    filename23 = 'charge_double_' + shaping + '_2.5x_rt'
+    filename24 = 'charge_double_' + shaping + '_3x_rt'
+    filename25 = 'charge_double_' + shaping + '_3.5x_rt'
+    filename26 = 'charge_double_' + shaping + '_4x_rt'
+    filename27 = 'charge_double_' + shaping + '_4.5x_rt'
+    filename28 = 'charge_double_' + shaping + '_5x_rt'
+    filename29 = 'charge_double_' + shaping + '_5.5x_rt'
+    filename30 = 'charge_double_' + shaping + '_6x_rt'
 
     array_single_fwhm = read_hist_file(dest_path / 'hist_data', filename1, fsps_new)
-    array_double_fwhm__5x = read_hist_file(dest_path / 'hist_data', filename2, fsps_new)
-    array_double_fwhm_1x = read_hist_file(dest_path / 'hist_data', filename3, fsps_new)
-    array_double_fwhm_15x = read_hist_file(dest_path / 'hist_data', filename4, fsps_new)
-    array_double_fwhm_2x = read_hist_file(dest_path / 'hist_data', filename5, fsps_new)
-    array_double_fwhm_25x = read_hist_file(dest_path / 'hist_data', filename6, fsps_new)
-    array_double_fwhm_3x = read_hist_file(dest_path / 'hist_data', filename7, fsps_new)
-    array_double_fwhm_35x = read_hist_file(dest_path / 'hist_data', filename8, fsps_new)
-    array_double_fwhm_4x = read_hist_file(dest_path / 'hist_data', filename9, fsps_new)
-    array_double_fwhm_45x = read_hist_file(dest_path / 'hist_data', filename10, fsps_new)
-    array_double_fwhm_5x = read_hist_file(dest_path / 'hist_data', filename11, fsps_new)
-    array_double_fwhm_55x = read_hist_file(dest_path / 'hist_data', filename12, fsps_new)
-    array_double_fwhm_6x = read_hist_file(dest_path / 'hist_data', filename13, fsps_new)
-    array_single_amp = read_hist_file(dest_path / 'hist_data', filename14, fsps_new)
-    array_double_amp_nd = read_hist_file(dest_path / 'hist_data', filename15, fsps_new)
-    array_single_charge = read_hist_file(dest_path / 'hist_data', filename16, fsps_new)
-    array_double_charge_nd = read_hist_file(dest_path / 'hist_data', filename17, fsps_new)
-    array_double_charge__5x = read_hist_file(dest_path / 'hist_data', filename18, fsps_new)
-    array_double_charge_1x = read_hist_file(dest_path / 'hist_data', filename19, fsps_new)
-    array_double_charge_15x = read_hist_file(dest_path / 'hist_data', filename20, fsps_new)
-    array_double_charge_2x = read_hist_file(dest_path / 'hist_data', filename21, fsps_new)
-    array_double_charge_25x = read_hist_file(dest_path / 'hist_data', filename22, fsps_new)
-    array_double_charge_3x = read_hist_file(dest_path / 'hist_data', filename23, fsps_new)
-    array_double_charge_35x = read_hist_file(dest_path / 'hist_data', filename24, fsps_new)
-    array_double_charge_4x = read_hist_file(dest_path / 'hist_data', filename25, fsps_new)
-    array_double_charge_45x = read_hist_file(dest_path / 'hist_data', filename26, fsps_new)
-    array_double_charge_5x = read_hist_file(dest_path / 'hist_data', filename27, fsps_new)
-    array_double_charge_55x = read_hist_file(dest_path / 'hist_data', filename28, fsps_new)
-    array_double_charge_6x = read_hist_file(dest_path / 'hist_data', filename29, fsps_new)
+    array_double_fwhm_nd = read_hist_file(dest_path / 'hist_data', filename2, fsps_new)
+    array_double_fwhm__5x = read_hist_file(dest_path / 'hist_data', filename3, fsps_new)
+    array_double_fwhm_1x = read_hist_file(dest_path / 'hist_data', filename4, fsps_new)
+    array_double_fwhm_15x = read_hist_file(dest_path / 'hist_data', filename5, fsps_new)
+    array_double_fwhm_2x = read_hist_file(dest_path / 'hist_data', filename6, fsps_new)
+    array_double_fwhm_25x = read_hist_file(dest_path / 'hist_data', filename7, fsps_new)
+    array_double_fwhm_3x = read_hist_file(dest_path / 'hist_data', filename8, fsps_new)
+    array_double_fwhm_35x = read_hist_file(dest_path / 'hist_data', filename9, fsps_new)
+    array_double_fwhm_4x = read_hist_file(dest_path / 'hist_data', filename10, fsps_new)
+    array_double_fwhm_45x = read_hist_file(dest_path / 'hist_data', filename11, fsps_new)
+    array_double_fwhm_5x = read_hist_file(dest_path / 'hist_data', filename12, fsps_new)
+    array_double_fwhm_55x = read_hist_file(dest_path / 'hist_data', filename13, fsps_new)
+    array_double_fwhm_6x = read_hist_file(dest_path / 'hist_data', filename14, fsps_new)
+    array_single_amp = read_hist_file(dest_path / 'hist_data', filename15, fsps_new)
+    array_double_amp_nd = read_hist_file(dest_path / 'hist_data', filename16, fsps_new)
+    array_single_charge = read_hist_file(dest_path / 'hist_data', filename17, fsps_new)
+    array_double_charge_nd = read_hist_file(dest_path / 'hist_data', filename18, fsps_new)
+    array_double_charge__5x = read_hist_file(dest_path / 'hist_data', filename19, fsps_new)
+    array_double_charge_1x = read_hist_file(dest_path / 'hist_data', filename20, fsps_new)
+    array_double_charge_15x = read_hist_file(dest_path / 'hist_data', filename21, fsps_new)
+    array_double_charge_2x = read_hist_file(dest_path / 'hist_data', filename22, fsps_new)
+    array_double_charge_25x = read_hist_file(dest_path / 'hist_data', filename23, fsps_new)
+    array_double_charge_3x = read_hist_file(dest_path / 'hist_data', filename24, fsps_new)
+    array_double_charge_35x = read_hist_file(dest_path / 'hist_data', filename25, fsps_new)
+    array_double_charge_4x = read_hist_file(dest_path / 'hist_data', filename26, fsps_new)
+    array_double_charge_45x = read_hist_file(dest_path / 'hist_data', filename27, fsps_new)
+    array_double_charge_5x = read_hist_file(dest_path / 'hist_data', filename28, fsps_new)
+    array_double_charge_55x = read_hist_file(dest_path / 'hist_data', filename29, fsps_new)
+    array_double_charge_6x = read_hist_file(dest_path / 'hist_data', filename30, fsps_new)
 
     mean_single_fwhm = np.mean(array_single_fwhm)
-    mean_double_fwhm__5x = np.mean(array_double_fwhm_5x)
+    mean_double_fwhm_nd = np.mean(array_double_fwhm_nd)
+    mean_double_fwhm__5x = np.mean(array_double_fwhm__5x)
     mean_double_fwhm_1x = np.mean(array_double_fwhm_1x)
     mean_double_fwhm_15x = np.mean(array_double_fwhm_15x)
     mean_double_fwhm_2x = np.mean(array_double_fwhm_2x)
@@ -97,6 +100,7 @@ def double_spe_studies_2(date, filter_band, fsps_new, shaping):
     mean_double_charge_6x = np.mean(array_double_charge_6x)
 
     std_single_fwhm = np.std(array_single_fwhm)
+    std_double_fwhm_nd = np.std(array_double_fwhm_nd)
     std_double_fwhm__5x = np.std(array_double_fwhm__5x)
     std_double_fwhm_1x = np.std(array_double_fwhm_1x)
     std_double_fwhm_15x = np.std(array_double_fwhm_15x)
@@ -176,6 +180,22 @@ def double_spe_studies_2(date, filter_band, fsps_new, shaping):
                     std_single_amp, std_double_amp_nd, fsps_new, dest_path, shaping)
     false_spes_mpes(start4, end4, factor4, 'charge', 'Charge', 's*bit/ohm', mean_single_charge, mean_double_charge_nd,
                     std_single_charge, std_double_charge_nd, fsps_new, dest_path, shaping)
+
+    roc_graphs(start1, end1, factor1, fsps_new, shaping, 'fwhm', 'FWHM', 's', mean_single_fwhm, mean_double_fwhm_nd,
+               mean_double_fwhm__5x, mean_double_fwhm_1x, mean_double_fwhm_15x, mean_double_fwhm_2x,
+               mean_double_fwhm_25x, mean_double_fwhm_3x, mean_double_fwhm_35x, mean_double_fwhm_4x,
+               mean_double_fwhm_45x, mean_double_fwhm_5x, mean_double_fwhm_55x, mean_double_fwhm_6x, std_single_fwhm,
+               std_double_fwhm_nd, std_double_fwhm__5x, std_double_fwhm_1x, std_double_fwhm_15x, std_double_fwhm_2x,
+               std_double_fwhm_25x, std_double_fwhm_3x, std_double_fwhm_35x, std_double_fwhm_4x, std_double_fwhm_45x,
+               std_double_fwhm_5x, std_double_fwhm_55x, std_double_fwhm_6x, dest_path)
+    roc_graphs(start2, end2, factor2, fsps_new, shaping, 'charge', 'Charge', 's*bit/ohm', mean_single_charge,
+               mean_double_charge_nd, mean_double_charge__5x, mean_double_charge_1x, mean_double_charge_15x,
+               mean_double_charge_2x, mean_double_charge_25x, mean_double_charge_3x, mean_double_charge_35x,
+               mean_double_charge_4x, mean_double_charge_45x, mean_double_charge_5x, mean_double_charge_55x,
+               mean_double_charge_6x, std_single_charge, std_double_charge_nd, std_double_charge__5x,
+               std_double_charge_1x, std_double_charge_15x, std_double_charge_2x, std_double_charge_25x,
+               std_double_charge_3x, std_double_charge_35x, std_double_charge_4x, std_double_charge_45x,
+               std_double_charge_5x, std_double_charge_55x, std_double_charge_6x, dest_path)
 
 
 if __name__ == '__main__':
