@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b233d9bb-fb16-433a-88e9-9ace4d76cecf" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../p3_/double_spe_studies.py" beforeDir="false" afterPath="$PROJECT_DIR$/../p3_/double_spe_studies.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/create_double_spe.py" beforeDir="false" afterPath="$PROJECT_DIR$/create_double_spe.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/functions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../p3_/double_spe_studies_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/../p3_/double_spe_studies_2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../p3_/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/../p3_/functions.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -29,24 +30,24 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="86" />
+          <entry key="py" value="90" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="86" />
+          <entry key="Python" value="90" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="14" />
-          <entry key="py" value="33246" />
+          <entry key="py" value="33701" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="14" />
-          <entry key="Python" value="33246" />
+          <entry key="Python" value="33701" />
         </counts>
       </usages-collector>
     </session>
@@ -68,10 +69,10 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../p3_/double_spe_studies_2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="122">
-              <caret line="96" column="19" lean-forward="true" selection-start-line="96" selection-start-column="19" selection-end-line="96" selection-end-column="19" />
+            <state relative-caret-position="-71">
+              <caret line="128" column="28" lean-forward="true" selection-start-line="128" selection-start-column="28" selection-end-line="128" selection-end-column="28" />
               <folding>
-                <marker date="1561131453791" expanded="true" signature="89:90" ph="..." />
+                <marker date="1561390373881" expanded="true" signature="89:90" ph="..." />
               </folding>
             </state>
           </provider>
@@ -85,7 +86,6 @@
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
                 <marker date="1561133088872" expanded="true" signature="33930:33931" ph="..." />
-                <marker date="1561133088872" expanded="true" signature="33930:35633" ph="..." />
               </folding>
             </state>
           </provider>
@@ -152,12 +152,12 @@
         <option value="$PROJECT_DIR$/../p3_/scipytest.py" />
         <option value="$PROJECT_DIR$/../p3_/plot_waveform.py" />
         <option value="$PROJECT_DIR$/p2.py" />
-        <option value="$PROJECT_DIR$/functions.py" />
         <option value="$PROJECT_DIR$/../p3_/p3.py" />
-        <option value="$PROJECT_DIR$/create_double_spe.py" />
         <option value="$PROJECT_DIR$/../p3_/double_spe_studies.py" />
-        <option value="$PROJECT_DIR$/../p3_/double_spe_studies_2.py" />
         <option value="$PROJECT_DIR$/../p3_/functions.py" />
+        <option value="$PROJECT_DIR$/functions.py" />
+        <option value="$PROJECT_DIR$/create_double_spe.py" />
+        <option value="$PROJECT_DIR$/../p3_/double_spe_studies_2.py" />
       </list>
     </option>
   </component>
@@ -430,13 +430,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../p3_/info_file.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="4" lean-forward="true" selection-start-line="4" selection-start-column="4" selection-end-line="4" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/test.py" />
     <entry file="file://$PROJECT_DIR$/plot_waveform.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -500,20 +493,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/functions.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="134">
-          <caret line="448" lean-forward="true" selection-start-line="448" selection-end-line="448" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/create_double_spe.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6150">
-          <caret line="410" lean-forward="true" selection-start-line="410" selection-end-line="410" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../p3_/p3.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="795">
@@ -536,12 +515,33 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/functions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2054">
+          <caret line="463" column="37" lean-forward="true" selection-start-line="463" selection-start-column="37" selection-end-line="463" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/create_double_spe.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="275">
+          <caret line="243" column="39" lean-forward="true" selection-start-line="243" selection-start-column="39" selection-end-line="243" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../p3_/info_file.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="4" lean-forward="true" selection-start-line="4" selection-start-column="4" selection-end-line="4" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/../p3_/double_spe_studies_2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="122">
-          <caret line="96" column="19" lean-forward="true" selection-start-line="96" selection-start-column="19" selection-end-line="96" selection-end-column="19" />
+        <state relative-caret-position="-71">
+          <caret line="128" column="28" lean-forward="true" selection-start-line="128" selection-start-column="28" selection-end-line="128" selection-end-column="28" />
           <folding>
-            <marker date="1561131453791" expanded="true" signature="89:90" ph="..." />
+            <marker date="1561390373881" expanded="true" signature="89:90" ph="..." />
           </folding>
         </state>
       </provider>
@@ -553,7 +553,6 @@
           <folding>
             <element signature="e#0#9#0" expanded="true" />
             <marker date="1561133088872" expanded="true" signature="33930:33931" ph="..." />
-            <marker date="1561133088872" expanded="true" signature="33930:35633" ph="..." />
           </folding>
         </state>
       </provider>

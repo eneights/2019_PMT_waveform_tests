@@ -456,30 +456,36 @@ def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename):
 
     path = Path(dest_path / 'plots')
     n, bins, patches = plt.hist(array, nbins)       # Plots histogram
-    b_est, c_est = norm.fit(array)          # Calculates mean & standard deviation based on entire array
-    range_min1 = b_est - c_est              # Calculates lower limit of Gaussian fit (1sigma estimation)
-    range_max1 = b_est + c_est              # Calculates upper limit of Gaussian fit (1sigma estimation)
-    bins = np.delete(bins, len(bins) - 1)
-    bins_diff = bins[1] - bins[0]
-    bins = np.linspace(bins[0] + bins_diff / 2, bins[len(bins) - 1] + bins_diff / 2, len(bins))
-    bins_range1 = np.linspace(range_min1, range_max1, 10000)    # Creates array of bins between upper & lower limits
-    n_range1 = np.interp(bins_range1, bins, n)      # Interpolates & creates array of y axis values
-    guess1 = [1, float(b_est), float(c_est)]        # Defines guess for values of a, b & c in Gaussian fit
-    popt1, pcov1 = curve_fit(func, bins_range1, n_range1, p0=guess1, maxfev=10000)  # Finds Gaussian fit
-    mu1 = float(format(popt1[1], '.2e'))        # Calculates mean based on 1sigma guess
-    sigma1 = np.abs(float(format(popt1[2], '.2e')))     # Calculates standard deviation based on 1sigma estimation
-    range_min2 = mu1 - 2 * sigma1       # Calculates lower limit of Gaussian fit (2sigma)
-    range_max2 = mu1 + 2 * sigma1       # Calculates upper limit of Gaussian fit (2sigma)
-    bins_range2 = np.linspace(range_min2, range_max2, 10000)    # Creates array of bins between upper & lower limits
-    n_range2 = np.interp(bins_range2, bins, n)      # Interpolates & creates array of y axis values
-    guess2 = [1, mu1, sigma1]       # Defines guess for values of a, b & c in Gaussian fit
-    popt2, pcov2 = curve_fit(func, bins_range2, n_range2, p0=guess2, maxfev=10000)  # Finds Gaussian fit
-    plt.plot(bins_range2, func(bins_range2, *popt2), color='red')       # Plots Gaussian fit (mean +/- 2sigma)
-    mu2 = float(format(popt2[1], '.2e'))    # Calculates mean
-    sigma2 = np.abs(float(format(popt2[2], '.2e')))     # Calculates standard deviation
-    plt.xlabel(xaxis + ' (' + units + ')')
-    plt.title(title + ' of SPE\n mean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2) + ' ' + units)
-    plt.savefig(path / str(filename + '.png'), dpi=360)
-    plt.close()
+    b_est, c_est = norm.fit(array)              # Calculates mean & standard deviation based on entire array
+    try:
+        range_min1 = b_est - c_est              # Calculates lower limit of Gaussian fit (1sigma estimation)
+        range_max1 = b_est + c_est              # Calculates upper limit of Gaussian fit (1sigma estimation)
+        bins = np.delete(bins, len(bins) - 1)
+        bins_diff = bins[1] - bins[0]
+        bins = np.linspace(bins[0] + bins_diff / 2, bins[len(bins) - 1] + bins_diff / 2, len(bins))
+        bins_range1 = np.linspace(range_min1, range_max1, 10000)    # Creates array of bins between upper & lower limits
+        n_range1 = np.interp(bins_range1, bins, n)      # Interpolates & creates array of y axis values
+        guess1 = [1, float(b_est), float(c_est)]        # Defines guess for values of a, b & c in Gaussian fit
+        popt1, pcov1 = curve_fit(func, bins_range1, n_range1, p0=guess1, maxfev=10000)  # Finds Gaussian fit
+        mu1 = float(format(popt1[1], '.2e'))        # Calculates mean based on 1sigma guess
+        sigma1 = np.abs(float(format(popt1[2], '.2e')))     # Calculates standard deviation based on 1sigma estimation
+        range_min2 = mu1 - 2 * sigma1       # Calculates lower limit of Gaussian fit (2sigma)
+        range_max2 = mu1 + 2 * sigma1       # Calculates upper limit of Gaussian fit (2sigma)
+        bins_range2 = np.linspace(range_min2, range_max2, 10000)    # Creates array of bins between upper & lower limits
+        n_range2 = np.interp(bins_range2, bins, n)      # Interpolates & creates array of y axis values
+        guess2 = [1, mu1, sigma1]       # Defines guess for values of a, b & c in Gaussian fit
+        popt2, pcov2 = curve_fit(func, bins_range2, n_range2, p0=guess2, maxfev=10000)  # Finds Gaussian fit
+        plt.plot(bins_range2, func(bins_range2, *popt2), color='red')       # Plots Gaussian fit (mean +/- 2sigma)
+        mu2 = float(format(popt2[1], '.2e'))    # Calculates mean
+        sigma2 = np.abs(float(format(popt2[2], '.2e')))     # Calculates standard deviation
+        plt.xlabel(xaxis + ' (' + units + ')')
+        plt.title(title + ' of SPE\n mean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2) + ' ' + units)
+        plt.savefig(path / str(filename + '.png'), dpi=360)
+        plt.close()
+    except Exception:
+        plt.xlabel(xaxis + ' (' + units + ')')
+        plt.title(title + ' of SPE\n mean: ' + str(b_est) + ' ' + units + ', SD: ' + str(c_est) + ' ' + units)
+        plt.savefig(path / str(filename + '.png'), dpi=360)
+        plt.close()
 
     write_hist_data(array, dest_path, filename + '.txt')

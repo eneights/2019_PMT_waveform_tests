@@ -236,10 +236,14 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
             # Rolls time & voltage arrays so that point of chosen minimum t is at index 0
             t = np.roll(t, -idx3)
             v = np.roll(v, -idx3)
-            if len(t) >= 3800:
+            if delay_folder == '3.5x_rt' or '4x_rt' or '4.5x_rt' or '5x_rt' or '5.5x_rt' or '6x_rt':
+                length = 3500
+            else:
+                length = 3800
+            if len(t) >= length:
                 # Removes points after chosen point of maximum t in time & voltage arrays
-                t = t[:3800]
-                v = v[:3800]
+                t = t[:length]
+                v = v[:length]
                 # Sums time & voltage arrays
                 tsum += t
                 vsum += v
@@ -287,10 +291,14 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
                 # Rolls time & voltage arrays so that point of chosen minimum t is at index 0
                 t = np.roll(t, -idx3)
                 v = np.roll(v, -idx3)
-                if len(t) >= 3800:
+                if delay_folder == '3.5x_rt' or '4x_rt' or '4.5x_rt' or '5x_rt' or '5.5x_rt' or '6x_rt':
+                    length = 3500
+                else:
+                    length = 3800
+                if len(t) >= length:
                     # Removes points after chosen point of maximum t in time & voltage arrays
-                    t = t[:3800]
-                    v = v[:3800]
+                    t = t[:length]
+                    v = v[:length]
                     # Sums time & voltage arrays
                     tsum += t
                     vsum += v
@@ -338,10 +346,14 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
                 # Rolls time & voltage arrays so that point of chosen minimum t is at index 0
                 t = np.roll(t, -idx3)
                 v = np.roll(v, -idx3)
-                if len(t) >= 3800:
+                if delay_folder == '3.5x_rt' or '4x_rt' or '4.5x_rt' or '5x_rt' or '5.5x_rt' or '6x_rt':
+                    length = 3500
+                else:
+                    length = 3800
+                if len(t) >= length:
                     # Removes points after chosen point of maximum t in time & voltage arrays
-                    t = t[:3800]
-                    v = v[:3800]
+                    t = t[:length]
+                    v = v[:length]
                     # Sums time & voltage arrays
                     tsum += t
                     vsum += v
@@ -389,10 +401,14 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
                 # Rolls time & voltage arrays so that point of chosen minimum t is at index 0
                 t = np.roll(t, -idx3)
                 v = np.roll(v, -idx3)
-                if len(t) >= 3800:
+                if delay_folder == '3.5x_rt' or '4x_rt' or '4.5x_rt' or '5x_rt' or '5.5x_rt' or '6x_rt':
+                    length = 3500
+                else:
+                    length = 3800
+                if len(t) >= length:
                     # Removes points after chosen point of maximum t in time & voltage arrays
-                    t = t[:3800]
-                    v = v[:3800]
+                    t = t[:length]
+                    v = v[:length]
                     # Sums time & voltage arrays
                     tsum += t
                     vsum += v
