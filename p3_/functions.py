@@ -147,33 +147,34 @@ def calculate_amp(t, v):
 
 
 # Returns the full width half max (FWHM) of spe
-def calculate_fwhm(t, v):
-    idx_max = -1
-    half_max = min(v) / 2                       # Calculates 50% max value
-    val_10 = min(v) / 10                        # Calculates 10% max value
-    half_max = half_max.item()
-    tvals = np.linspace(t[0], t[len(t) - 1], 5000)      # Creates array of times over entire timespan
-    vvals = np.interp(tvals, t, v)                      # Interpolates & creates array of voltages over entire timespan
-    difference_value = np.abs(vvals - half_max)         # Finds difference between points in voltage array and 50% max
-    diff_val = np.abs(vvals - min(v))           # Finds difference between points in voltage array and minimum voltage
-    index_min = np.argmin(diff_val)             # Finds index of minimum voltage in voltage array
-    differential = np.diff(vvals)               # Finds derivative at every point in voltage array
-    for i in range(len(differential) - 1):    # Sets every value in difference_value array with a
-        if differential[i] < 0:                                 # negative value equal to infinity
-            difference_value[i] = np.inf
-    for i in range(index_min.item(), len(vvals - 1)):
-        if vvals[i] >= val_10:
-            idx_max = i
-            break
-    try:
-        for i in range(idx_max, index_min.item(), -1):
-            if vvals[i] <= half_max:
-                idx = i
-                break
-        half_max_time = tvals[idx]          # Finds time of 50% max
-        return half_max_time
-    except Exception:
-        return -1
+def calculate_fwhm_2(t, v):
+    true_max = min(v)
+    idx_true_max = np.where(v == true_max)
+    v[idx_true_max] = 0
+    sec_max = min(v)
+    idx_sec_max = np.where(v == sec_max)
+    v[idx_true_max] = true_max
+    if sec_max >= 0.1 * true_max:
+        v_rising = v[:idx_true_max]
+        v_falling = v[idx_true_max:]
+        idx1 = np.argmin(np.abs(v_rising - (true_max / 2)))
+        idx2 = np.argmin(np.abs(v_falling - (true_max / 2)))
+    else:
+        if idx_true_max < idx_sec_max:
+            v_rising = v[:idx_true_max]
+            v_falling = v[idx_sec_max:]
+            idx1 = np.argmin(np.abs(v_rising - (true_max / 2)))
+            idx2 = np.argmin(np.abs(v_falling - (sec_max / 2)))
+        else:
+            v_rising = v[:idx_sec_max]
+            v_falling = v[idx_true_max:]
+            idx1 = np.argmin(np.abs(v_rising - (sec_max / 2)))
+            idx2 = np.argmin(np.abs(v_falling - (true_max / 2)))
+    t1 = t[idx1]
+    t2 = t[idx2]
+    fwhm = t2 - t1
+    return fwhm
+
 
 
 # Creates text file with time of beginning of spe, time of end of spe, charge, amplitude, fwhm, 10-90 & 20-80 rise
