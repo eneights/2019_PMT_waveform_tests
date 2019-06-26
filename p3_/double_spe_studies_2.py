@@ -142,9 +142,6 @@ def double_spe_studies_2(date, filter_band, fsps_new, shaping):
         start3 = 100
         end3 = 500
         factor3 = 1
-        start4 = 20
-        end4 = 120
-        factor4 = 10**-9
     else:
         start1 = 28
         end1 = 40
@@ -155,9 +152,6 @@ def double_spe_studies_2(date, filter_band, fsps_new, shaping):
         start3 = 45
         end3 = 175
         factor3 = 1
-        start4 = 25
-        end4 = 110
-        factor4 = 10**-9
 
     false_spes_vs_delay(start1, end1, factor1, 'fwhm', 'FWHM', 's', fsps_new, mean_single_fwhm, mean_double_fwhm__5x,
                         mean_double_fwhm_1x, mean_double_fwhm_15x, mean_double_fwhm_2x, mean_double_fwhm_25x,
@@ -167,19 +161,11 @@ def double_spe_studies_2(date, filter_band, fsps_new, shaping):
                         std_double_fwhm_25x, std_double_fwhm_3x, std_double_fwhm_35x, std_double_fwhm_4x,
                         std_double_fwhm_45x, std_double_fwhm_5x, std_double_fwhm_55x, std_double_fwhm_6x, dest_path,
                         shaping)
-    false_spes_vs_delay(start2, end2, factor2, 'charge', 'Charge', 's*bit/ohm', fsps_new, mean_single_charge,
-                        mean_double_charge__5x, mean_double_charge_1x, mean_double_charge_15x, mean_double_charge_2x,
-                        mean_double_charge_25x, mean_double_charge_3x, mean_double_charge_35x, mean_double_charge_4x,
-                        mean_double_charge_45x, mean_double_charge_5x, mean_double_charge_55x, mean_double_charge_6x,
-                        std_single_charge, std_double_charge__5x, std_double_charge_1x, std_double_charge_15x,
-                        std_double_charge_2x, std_double_charge_25x, std_double_charge_3x, std_double_charge_35x,
-                        std_double_charge_4x, std_double_charge_45x, std_double_charge_5x, std_double_charge_55x,
-                        std_double_charge_6x, dest_path, shaping)
 
+    false_spes_mpes(start2, end2, factor2, 'charge', 'Charge', 's*bit/ohm', mean_single_charge, mean_double_charge_nd,
+                    std_single_charge, std_double_charge_nd, fsps_new, dest_path, shaping)
     false_spes_mpes(start3, end3, factor3, 'amp', 'Amplitude', 'bits', mean_single_amp, mean_double_amp_nd,
                     std_single_amp, std_double_amp_nd, fsps_new, dest_path, shaping)
-    false_spes_mpes(start4, end4, factor4, 'charge', 'Charge', 's*bit/ohm', mean_single_charge, mean_double_charge_nd,
-                    std_single_charge, std_double_charge_nd, fsps_new, dest_path, shaping)
 
     roc_graphs(start1, end1, factor1, fsps_new, shaping, 'fwhm', 'FWHM', 's', mean_single_fwhm, mean_double_fwhm_nd,
                mean_double_fwhm__5x, mean_double_fwhm_1x, mean_double_fwhm_15x, mean_double_fwhm_2x,

@@ -147,19 +147,32 @@ def calculate_amp(t, v):
 
 
 # Returns the full width half max (FWHM) of spe
-def calculate_fwhm_2(t, v):
+def calculate_fwhm(t, v):
+    v_2 = np.array([])
+    for item in v:
+        v_2 = np.append(v_2, item)
     true_max = min(v)
-    idx_true_max = np.where(v == true_max)
-    v[idx_true_max] = 0
-    sec_max = min(v)
-    idx_sec_max = np.where(v == sec_max)
-    v[idx_true_max] = true_max
-    if sec_max >= 0.1 * true_max:
+    idx_true_max = np.where(v == true_max)[0][0]
+    for i in range(idx_true_max, 0, -1):
+        if v_2[i] <= 0.1 * true_max:
+            v_2[i] = 0
+        else:
+            break
+    for i in range(idx_true_max + 1, len(v)):
+        if v_2[i] <= 0.1 * true_max:
+            v_2[i] = 0
+        else:
+            break
+    sec_max = min(v_2)
+    idx_sec_max = np.where(v == sec_max)[0][0]
+    if sec_max >= 0.15 * true_max:
+        x = 0
         v_rising = v[:idx_true_max]
         v_falling = v[idx_true_max:]
         idx1 = np.argmin(np.abs(v_rising - (true_max / 2)))
         idx2 = np.argmin(np.abs(v_falling - (true_max / 2)))
     else:
+        x = 1
         if idx_true_max < idx_sec_max:
             v_rising = v[:idx_true_max]
             v_falling = v[idx_sec_max:]
@@ -171,10 +184,9 @@ def calculate_fwhm_2(t, v):
             idx1 = np.argmin(np.abs(v_rising - (sec_max / 2)))
             idx2 = np.argmin(np.abs(v_falling - (true_max / 2)))
     t1 = t[idx1]
-    t2 = t[idx2]
+    t2 = t[idx2 + idx_true_max]
     fwhm = t2 - t1
-    return fwhm
-
+    return fwhm, x
 
 
 # Creates text file with time of beginning of spe, time of end of spe, charge, amplitude, fwhm, 10-90 & 20-80 rise
@@ -212,7 +224,7 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
                          str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
         file_name2 = str(dest_path / 'calculations' / 'double_spe' / double_folder / delay_folder /
                          str(str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
-        if os.path.isfile(file_name1):
+        '''if os.path.isfile(file_name1):
             if os.path.isfile(file_name2):      # If the calculations were done previously, they are read from a file
                 print("Reading calculations from file #%s" % item)
                 myfile = open(file_name2, 'r')      # Opens file with calculations
@@ -273,7 +285,35 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
                     save_calculations(file_name2, charge, amplitude, fwhm)
                     charge_array = np.append(charge_array, charge)
                     amplitude_array = np.append(amplitude_array, amplitude)
-                    fwhm_array = np.append(fwhm_array, fwhm)
+                    fwhm_array = np.append(fwhm_array, fwhm)'''
+        if os.path.isfile(file_name1):
+            print("Calculating file #%s" % item)
+            t, v, hdr = rw(file_name1, nhdr)  # Waveform file is read
+            t1, t2, charge = calculate_charge(t, v, r)  # Start & end times and charge are calculated
+            amplitude = calculate_amp(t, v)  # Amplitude of spe is calculated
+            fwhm = calculate_fwhm(t, v)  # FWHM of spe is calculated
+            # Any spe waveform that returns impossible values is put into the unusable_data folder
+            if charge <= 0 or amplitude <= 0 or fwhm <= 0:
+                raw_file = str(dest_path / double_folder / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
+                save_file = str(dest_path / 'unusable_data' / 'D3--waveforms--%s.txt') % item
+                t, v, hdr = rw(raw_file, nhdr)
+                ww(t, v, save_file, hdr)
+                print('Removing file #%s' % item)
+                if os.path.isfile(raw_file):
+                    os.remove(raw_file)
+                os.remove(file_name1)
+                if os.path.isfile(str(dest_path / 'double_spe' / double_folder / delay_folder /
+                                      str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                                      'D3--waveforms--%s.txt') % item):
+                    os.remove(str(dest_path / 'double_spe' / double_folder / delay_folder /
+                                  str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                                  'D3--waveforms--%s.txt') % item)
+            # All other double spe waveforms' calculations are saved in a file & placed into arrays
+            else:
+                save_calculations(file_name2, charge, amplitude, fwhm)
+                charge_array = np.append(charge_array, charge)
+                amplitude_array = np.append(amplitude_array, amplitude)
+                fwhm_array = np.append(fwhm_array, fwhm)
 
     return charge_array, amplitude_array, fwhm_array
 
