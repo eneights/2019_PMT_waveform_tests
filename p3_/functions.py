@@ -6,6 +6,7 @@ import math
 from pathlib import Path
 from scipy.optimize import curve_fit
 from scipy.stats import norm
+from scipy import signal
 import random
 
 
@@ -148,45 +149,78 @@ def calculate_amp(t, v):
 
 # Returns the full width half max (FWHM) of spe
 def calculate_fwhm(t, v):
+    peak_amts = np.array([])
     v_2 = np.array([])
-    for item in v:
-        v_2 = np.append(v_2, item)
-    true_max = min(v)
-    idx_true_max = np.where(v == true_max)[0][0]
-    for i in range(idx_true_max, 0, -1):
-        if v_2[i] <= 0.1 * true_max:
-            v_2[i] = 0
-        else:
-            break
-    for i in range(idx_true_max + 1, len(v)):
-        if v_2[i] <= 0.1 * true_max:
-            v_2[i] = 0
-        else:
-            break
-    sec_max = min(v_2)
-    idx_sec_max = np.where(v == sec_max)[0][0]
-    if sec_max >= 0.15 * true_max:
-        x = 0
-        v_rising = v[:idx_true_max]
-        v_falling = v[idx_true_max:]
-        idx1 = np.argmin(np.abs(v_rising - (true_max / 2)))
-        idx2 = np.argmin(np.abs(v_falling - (true_max / 2)))
+
+    v_flip = -1 * v
+    peaks, _ = signal.find_peaks(v_flip, max(v_flip) / 20)
+    for item in peaks:
+        peak_amts = np.append(peak_amts, v_flip[item])
+    true_max = v[peaks[np.where(peak_amts == max(peak_amts))]][0]
+    if len(np.where(peak_amts == max(peak_amts))[0]) == 1:
+        peak_amts[np.where(peak_amts == max(peak_amts))] = 0
     else:
-        x = 1
-        if idx_true_max < idx_sec_max:
-            v_rising = v[:idx_true_max]
-            v_falling = v[idx_sec_max:]
+        peak_amts[np.where(peak_amts == max(peak_amts))[0][0]] = 0
+    sec_max = v[peaks[np.where(peak_amts == max(peak_amts))]][0]
+
+    tvals = np.linspace(t[0], t[len(t) - 1], 1000)
+    vvals = np.interp(tvals, t, v)
+    for item in vvals:
+        v_2 = np.append(v_2, item)
+
+    try:
+        if sec_max >= 0.1 * true_max or len(peaks) == 1:
+            print('single')
+            tvals = np.linspace(t[0], t[len(t) - 1], 1000)
+            vvals = np.interp(tvals, t, v)
+            idx_max_peak = np.argmin(np.abs(vvals - true_max)).item()
+            v_rising = vvals[:idx_max_peak]
+            v_falling = vvals[idx_max_peak:]
             idx1 = np.argmin(np.abs(v_rising - (true_max / 2)))
-            idx2 = np.argmin(np.abs(v_falling - (sec_max / 2)))
-        else:
-            v_rising = v[:idx_sec_max]
-            v_falling = v[idx_true_max:]
-            idx1 = np.argmin(np.abs(v_rising - (sec_max / 2)))
             idx2 = np.argmin(np.abs(v_falling - (true_max / 2)))
-    t1 = t[idx1]
-    t2 = t[idx2 + idx_true_max]
-    fwhm = t2 - t1
-    return fwhm, x
+            t1 = tvals[idx1]
+            t2 = tvals[idx2 + idx_max_peak]
+            plt.plot(t, v)
+            plt.xlabel('Time (s)')
+            plt.ylabel('Voltage (V)')
+            plt.plot(t1, vvals[idx1], 'x')
+            plt.plot(t2, vvals[idx2 + idx_max_peak], 'x')
+            plt.show()
+        else:
+            if np.where(v == true_max) < np.where(v == sec_max):
+                print('double big peak first')
+                tvals1 = np.linspace(t[0], t[np.where(v == true_max)], 500)
+                tvals2 = np.linspace(t[np.where(v == sec_max)], t[len(t) - 1], 500)
+                vvals1 = np.interp(tvals1, t, v)
+                vvals2 = np.interp(tvals2, t, v)
+                idx1 = np.argmin(np.abs(vvals1 - (true_max / 2)))
+                idx2 = np.argmin(np.abs(vvals2 - (sec_max / 2)))
+                t1 = tvals1[idx1]
+                t2 = tvals2[idx2]
+            elif np.where(v == sec_max) < np.where(v == true_max):
+                print('double small peak first')
+                tvals1 = np.linspace(t[0], t[np.where(v == sec_max)], 500)
+                tvals2 = np.linspace(t[np.where(v == true_max)], t[len(t) - 1], 500)
+                vvals1 = np.interp(tvals1, t, v)
+                vvals2 = np.interp(tvals2, t, v)
+                idx1 = np.argmin(np.abs(vvals1 - (sec_max / 2)))
+                idx2 = np.argmin(np.abs(vvals2 - (true_max / 2)))
+                t1 = tvals1[idx1]
+                t2 = tvals2[idx2]
+            else:
+                print(max(v_flip / 20))
+                print(peaks)
+                print(peak_amts)
+                plt.plot(t, v)
+                plt.xlabel('Time (s)')
+                plt.ylabel('Voltage (V)')
+                plt.show()
+                t1 = 0
+                t2 = -1
+        fwhm = t2 - t1
+        return fwhm
+    except Exception:
+        return -1
 
 
 # Creates text file with time of beginning of spe, time of end of spe, charge, amplitude, fwhm, 10-90 & 20-80 rise
@@ -224,7 +258,7 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
                          str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
         file_name2 = str(dest_path / 'calculations' / 'double_spe' / double_folder / delay_folder /
                          str(str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
-        '''if os.path.isfile(file_name1):
+        if os.path.isfile(file_name1):
             if os.path.isfile(file_name2):      # If the calculations were done previously, they are read from a file
                 print("Reading calculations from file #%s" % item)
                 myfile = open(file_name2, 'r')      # Opens file with calculations
@@ -285,35 +319,7 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
                     save_calculations(file_name2, charge, amplitude, fwhm)
                     charge_array = np.append(charge_array, charge)
                     amplitude_array = np.append(amplitude_array, amplitude)
-                    fwhm_array = np.append(fwhm_array, fwhm)'''
-        if os.path.isfile(file_name1):
-            print("Calculating file #%s" % item)
-            t, v, hdr = rw(file_name1, nhdr)  # Waveform file is read
-            t1, t2, charge = calculate_charge(t, v, r)  # Start & end times and charge are calculated
-            amplitude = calculate_amp(t, v)  # Amplitude of spe is calculated
-            fwhm = calculate_fwhm(t, v)  # FWHM of spe is calculated
-            # Any spe waveform that returns impossible values is put into the unusable_data folder
-            if charge <= 0 or amplitude <= 0 or fwhm <= 0:
-                raw_file = str(dest_path / double_folder / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
-                save_file = str(dest_path / 'unusable_data' / 'D3--waveforms--%s.txt') % item
-                t, v, hdr = rw(raw_file, nhdr)
-                ww(t, v, save_file, hdr)
-                print('Removing file #%s' % item)
-                if os.path.isfile(raw_file):
-                    os.remove(raw_file)
-                os.remove(file_name1)
-                if os.path.isfile(str(dest_path / 'double_spe' / double_folder / delay_folder /
-                                      str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
-                                      'D3--waveforms--%s.txt') % item):
-                    os.remove(str(dest_path / 'double_spe' / double_folder / delay_folder /
-                                  str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
-                                  'D3--waveforms--%s.txt') % item)
-            # All other double spe waveforms' calculations are saved in a file & placed into arrays
-            else:
-                save_calculations(file_name2, charge, amplitude, fwhm)
-                charge_array = np.append(charge_array, charge)
-                amplitude_array = np.append(amplitude_array, amplitude)
-                fwhm_array = np.append(fwhm_array, fwhm)
+                    fwhm_array = np.append(fwhm_array, fwhm)
 
     return charge_array, amplitude_array, fwhm_array
 
