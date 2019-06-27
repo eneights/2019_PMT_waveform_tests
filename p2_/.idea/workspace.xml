@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b233d9bb-fb16-433a-88e9-9ace4d76cecf" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../p3_/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/../p3_/functions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../p3_/plot_waveform.py" beforeDir="false" afterPath="$PROJECT_DIR$/../p3_/plot_waveform.py" afterDir="false" />
     </list>
@@ -28,24 +29,26 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="93" />
+          <entry key="ipynb" value="2" />
+          <entry key="py" value="95" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="93" />
+          <entry key="IPNB" value="2" />
+          <entry key="Python" value="95" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="14" />
-          <entry key="py" value="38873" />
+          <entry key="py" value="40161" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="14" />
-          <entry key="Python" value="38873" />
+          <entry key="Python" value="40161" />
         </counts>
       </usages-collector>
     </session>
@@ -67,8 +70,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../p3_/double_spe_studies_2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="451">
-              <caret line="154" lean-forward="true" selection-start-line="154" selection-end-line="154" />
+            <state relative-caret-position="9">
+              <caret line="133" lean-forward="true" selection-start-line="133" selection-end-line="133" />
               <folding>
                 <marker date="1561483928932" expanded="true" signature="89:90" ph="..." />
               </folding>
@@ -79,13 +82,13 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/../p3_/functions.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-224">
-              <caret line="172" column="27" selection-start-line="172" selection-start-column="27" selection-end-line="172" selection-end-column="27" />
+            <state relative-caret-position="293">
+              <caret line="514" column="99" selection-start-line="514" selection-start-column="99" selection-end-line="514" selection-end-column="99" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
-                <marker date="1561567547383" expanded="true" signature="7811:8063" ph="..." />
-                <marker date="1561567547383" expanded="true" signature="39999:40000" ph="..." />
-                <marker date="1561567547383" expanded="true" signature="42050:65727" ph="..." />
+                <marker date="1561662675067" expanded="true" signature="7737:7964" ph="..." />
+                <marker date="1561662675067" expanded="true" signature="45048:45049" ph="..." />
+                <marker date="1561662675067" expanded="true" signature="47099:70776" ph="..." />
               </folding>
             </state>
           </provider>
@@ -94,8 +97,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../p3_/plot_waveform.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="220">
-              <caret line="20" column="4" selection-start-line="20" selection-start-column="4" selection-end-line="20" selection-end-column="4" />
+            <state relative-caret-position="15">
+              <caret line="4" column="29" selection-start-line="4" selection-start-column="29" selection-end-line="4" selection-end-column="29" />
             </state>
           </provider>
         </entry>
@@ -191,6 +194,8 @@
         <option value="$PROJECT_DIR$/functions.py" />
         <option value="$PROJECT_DIR$/create_double_spe.py" />
         <option value="$PROJECT_DIR$/../p3_/double_spe_studies_2.py" />
+        <option value="$PROJECT_DIR$/../p3_/drawit.py" />
+        <option value="$USER_HOME$/Desktop/drawit.py" />
         <option value="$PROJECT_DIR$/../p3_/plot_waveform.py" />
         <option value="$PROJECT_DIR$/../p3_/functions.py" />
       </list>
@@ -252,6 +257,27 @@
     </option>
   </component>
   <component name="RunManager" selected="Python.plot_waveform">
+    <configuration name="drawit" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="p1_" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$USER_HOME$/Desktop" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$USER_HOME$/Desktop/drawit.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="plot_waveform" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="p2_" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -315,27 +341,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="p2_" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/plot_waveform.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="test_scipy" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="p3_" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -358,19 +363,19 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.test" />
       <item itemvalue="Python.plot_waveform" />
       <item itemvalue="Python.test (2)" />
       <item itemvalue="Python.test_scipy" />
       <item itemvalue="Python.scipytest" />
+      <item itemvalue="Python.drawit" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.plot_waveform" />
+        <item itemvalue="Python.drawit" />
         <item itemvalue="Python.scipytest" />
         <item itemvalue="Python.test_scipy" />
         <item itemvalue="Python.test (2)" />
-        <item itemvalue="Python.test" />
       </list>
     </recent_temporary>
   </component>
@@ -391,8 +396,8 @@
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1663143" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49833333" visible="true" weight="0.1663143" />
+      <window_info id="Structure" order="1" sideWeight="0.50166667" side_tool="true" weight="0.1663143" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
@@ -511,18 +516,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../p3_/p3.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="795">
-          <caret line="115" column="25" selection-start-line="115" selection-start-column="25" selection-end-line="115" selection-end-column="25" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-            <marker date="1560961773215" expanded="true" signature="242:243" ph="..." />
-            <marker date="1560961773215" expanded="true" signature="242:7576" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/functions.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2054">
@@ -554,26 +547,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../p3_/double_spe_studies.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3875">
-          <caret line="26" column="99" selection-start-line="26" selection-start-column="99" selection-end-line="26" selection-end-column="99" />
-          <folding>
-            <marker date="1561093562264" expanded="true" signature="208:209" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../p3_/double_spe_studies_2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="451">
-          <caret line="154" lean-forward="true" selection-start-line="154" selection-end-line="154" />
-          <folding>
-            <marker date="1561483928932" expanded="true" signature="89:90" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../p1_/p1_sort.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="36">
@@ -584,22 +557,71 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/../p3_/drawit.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$USER_HOME$/Desktop/drawit.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="375">
+          <caret line="25" column="28" selection-start-line="25" selection-start-column="28" selection-end-line="25" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../p3_/double_spe_studies_2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="9">
+          <caret line="133" lean-forward="true" selection-start-line="133" selection-end-line="133" />
+          <folding>
+            <marker date="1561483928932" expanded="true" signature="89:90" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../p3_/double_spe_studies.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3875">
+          <caret line="26" column="99" selection-start-line="26" selection-start-column="99" selection-end-line="26" selection-end-column="99" />
+          <folding>
+            <marker date="1561093562264" expanded="true" signature="208:209" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/../p3_/plot_waveform.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="20" column="4" selection-start-line="20" selection-start-column="4" selection-end-line="20" selection-end-column="4" />
+        <state relative-caret-position="15">
+          <caret line="4" column="29" selection-start-line="4" selection-start-column="29" selection-end-line="4" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../waveform_analysis/example.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../p3_/p3.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="795">
+          <caret line="115" column="25" selection-start-line="115" selection-start-column="25" selection-end-line="115" selection-end-column="25" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+            <marker date="1560961773215" expanded="true" signature="242:243" ph="..." />
+            <marker date="1560961773215" expanded="true" signature="242:7576" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../p3_/functions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-224">
-          <caret line="172" column="27" selection-start-line="172" selection-start-column="27" selection-end-line="172" selection-end-column="27" />
+        <state relative-caret-position="293">
+          <caret line="514" column="99" selection-start-line="514" selection-start-column="99" selection-end-line="514" selection-end-column="99" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <marker date="1561567547383" expanded="true" signature="7811:8063" ph="..." />
-            <marker date="1561567547383" expanded="true" signature="39999:40000" ph="..." />
-            <marker date="1561567547383" expanded="true" signature="42050:65727" ph="..." />
+            <marker date="1561662675067" expanded="true" signature="7737:7964" ph="..." />
+            <marker date="1561662675067" expanded="true" signature="45048:45049" ph="..." />
+            <marker date="1561662675067" expanded="true" signature="47099:70776" ph="..." />
           </folding>
         </state>
       </provider>
