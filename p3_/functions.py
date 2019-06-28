@@ -266,11 +266,11 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
     if double_folder == 'rt_1':
         min_val = -50
     elif double_folder == 'rt_2':
-        min_val = -20
+        min_val = -40
     elif double_folder == 'rt_4':
         min_val = -20
     elif double_folder == 'rt_8':
-        min_val = -10
+        min_val = -20
     else:
         min_val = np.inf
 
@@ -384,11 +384,11 @@ def make_arrays_s(single_file_array, dest_path, single_folder, nhdr, r, fsps_new
     if single_folder == 'rt_1':
         min_val = -50
     elif single_folder == 'rt_2':
-        min_val = -20
+        min_val = -40
     elif single_folder == 'rt_4':
         min_val = -20
     elif single_folder == 'rt_8':
-        min_val = -10
+        min_val = -20
     else:
         min_val = np.inf
 
@@ -516,6 +516,19 @@ def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename, fsps_
     elif filename == 'fwhm_double_rt1_1x_rt_125_Msps':
         range_min1 = b_est - c_est                  # Calculates lower limit of Gaussian fit (1/2sigma estimation)
         range_max1 = b_est                          # Calculates lower limit of Gaussian fit (1/2sigma estimation)
+    elif filename == 'fwhm_double_rt1_1.5x_rt_125_Msps':
+        range_min1 = b_est - (2 * c_est)            # Calculates lower limit of Gaussian fit (1sigma estimation)
+        range_max1 = b_est                          # Calculates lower limit of Gaussian fit (1sigma estimation)
+    elif (filename.startswith('fwhm_double_rt4') and fsps_new / 1e6 == 250) or filename == \
+            'fwhm_double_rt2_4x_rt_250_Msps':
+        range_min1 = b_est - (2 * c_est)            # Calculates lower limit of Gaussian fit (1sigma estimation)
+        range_max1 = b_est                          # Calculates lower limit of Gaussian fit (1sigma estimation)
+    elif filename == 'fwhm_double_rt2_no_delay_250_Msps':
+        range_min1 = b_est - (1.5 * c_est)          # Calculates lower limit of Gaussian fit (1sigma estimation)
+        range_max1 = b_est - c_est                  # Calculates lower limit of Gaussian fit (1sigma estimation)
+    elif filename == 'fwhm_double_rt1_no_delay_250_Msps':
+        range_min1 = b_est - (c_est / 2)            # Calculates lower limit of Gaussian fit (1/2sigma estimation)
+        range_max1 = b_est + (c_est / 2)            # Calculates lower limit of Gaussian fit (1/2sigma estimation)
     else:
         range_min1 = b_est - c_est              # Calculates lower limit of Gaussian fit (1sigma estimation)
         range_max1 = b_est + c_est              # Calculates upper limit of Gaussian fit (1sigma estimation)
