@@ -133,24 +133,34 @@ def double_spe_studies_2(date, filter_band, fsps_new, shaping):
     print('Making plots...')
 
     if shaping == 'rt1':
-        start1 = 85
-        end1 = 150
-        factor1 = 10**-10
-        start2 = 20
-        end2 = 120
+        start1 = 5
+        end1 = 35
+        factor1 = 10**-9
+        start2 = 10
+        end2 = 125
         factor2 = 10**-9
-        start3 = 100
-        end3 = 500
+        start3 = 50
+        end3 = 550
+        factor3 = 1
+    elif shaping == 'rt2':
+        start1 = 10
+        end1 = 60
+        factor1 = 10**-9
+        start2 = 10
+        end2 = 125
+        factor2 = 10**-9
+        start3 = 25
+        end3 = 200
         factor3 = 1
     else:
-        start1 = 28
-        end1 = 40
+        start1 = 20
+        end1 = 80
         factor1 = 10**-9
-        start2 = 25
-        end2 = 110
+        start2 = 10
+        end2 = 125
         factor2 = 10**-9
-        start3 = 45
-        end3 = 175
+        start3 = 20
+        end3 = 150
         factor3 = 1
 
     false_spes_vs_delay(start1, end1, factor1, 'fwhm', 'FWHM', 's', fsps_new, mean_single_fwhm, mean_double_fwhm__5x,
@@ -167,21 +177,21 @@ def double_spe_studies_2(date, filter_band, fsps_new, shaping):
     false_spes_mpes(start3, end3, factor3, 'amp', 'Amplitude', 'bits', mean_single_amp, mean_double_amp_nd,
                     std_single_amp, std_double_amp_nd, fsps_new, dest_path, shaping)
 
-    roc_graphs(start1, end1, factor1, fsps_new, shaping, 'fwhm', 'FWHM', 's', mean_single_fwhm, mean_double_fwhm_nd,
+    roc_graphs(start1, end1, factor1, fsps_new, shaping, 'fwhm', 'FWHM', mean_single_fwhm, mean_double_fwhm_nd,
                mean_double_fwhm__5x, mean_double_fwhm_1x, mean_double_fwhm_15x, mean_double_fwhm_2x,
                mean_double_fwhm_25x, mean_double_fwhm_3x, mean_double_fwhm_35x, mean_double_fwhm_4x,
                mean_double_fwhm_45x, mean_double_fwhm_5x, mean_double_fwhm_55x, mean_double_fwhm_6x, std_single_fwhm,
                std_double_fwhm_nd, std_double_fwhm__5x, std_double_fwhm_1x, std_double_fwhm_15x, std_double_fwhm_2x,
                std_double_fwhm_25x, std_double_fwhm_3x, std_double_fwhm_35x, std_double_fwhm_4x, std_double_fwhm_45x,
                std_double_fwhm_5x, std_double_fwhm_55x, std_double_fwhm_6x, dest_path)
-    roc_graphs(start2, end2, factor2, fsps_new, shaping, 'charge', 'Charge', 's*bit/ohm', mean_single_charge,
-               mean_double_charge_nd, mean_double_charge__5x, mean_double_charge_1x, mean_double_charge_15x,
-               mean_double_charge_2x, mean_double_charge_25x, mean_double_charge_3x, mean_double_charge_35x,
-               mean_double_charge_4x, mean_double_charge_45x, mean_double_charge_5x, mean_double_charge_55x,
-               mean_double_charge_6x, std_single_charge, std_double_charge_nd, std_double_charge__5x,
-               std_double_charge_1x, std_double_charge_15x, std_double_charge_2x, std_double_charge_25x,
-               std_double_charge_3x, std_double_charge_35x, std_double_charge_4x, std_double_charge_45x,
-               std_double_charge_5x, std_double_charge_55x, std_double_charge_6x, dest_path)
+    roc_graphs(start2, end2, factor2, fsps_new, shaping, 'charge', 'Charge', mean_single_charge, mean_double_charge_nd,
+               mean_double_charge__5x, mean_double_charge_1x, mean_double_charge_15x, mean_double_charge_2x,
+               mean_double_charge_25x, mean_double_charge_3x, mean_double_charge_35x, mean_double_charge_4x,
+               mean_double_charge_45x, mean_double_charge_5x, mean_double_charge_55x, mean_double_charge_6x,
+               std_single_charge, std_double_charge_nd, std_double_charge__5x, std_double_charge_1x,
+               std_double_charge_15x, std_double_charge_2x, std_double_charge_25x, std_double_charge_3x,
+               std_double_charge_35x, std_double_charge_4x, std_double_charge_45x, std_double_charge_5x,
+               std_double_charge_55x, std_double_charge_6x, dest_path)
 
 
 if __name__ == '__main__':
