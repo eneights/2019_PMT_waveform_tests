@@ -1,32 +1,33 @@
 from functions import *
 
 
-def amp_cutoff_roc(date, filter_band, fsps_new, nhdr, shaping):
+def amp_cutoff(date, filter_band, fsps_new, nhdr, shaping):
     gen_path = Path(r'/Volumes/TOSHIBA EXT/data/watchman')
     save_path = Path(str(gen_path / '%08d_watchman_spe/waveforms/%s') % (date, filter_band))
     dest_path = Path(save_path / 'd3')
 
-    double_file_array_no_delay = np.array([])
+    single_file_array = np.array([])
     double_file_array_6x_rt = np.array([])
     cutoff_array = np.array([])
     true_single = np.array([])
     false_single = np.array([])
-    true_multiple = np.array([])
-    false_multiple = np.array([])
+    true_double = np.array([])
+    false_double = np.array([])
 
     print('Checking existing files...')
-    for filename in os.listdir(dest_path / 'double_spe' / shaping / 'no_delay' /
-                               str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps')):
+    for filename in os.listdir(dest_path / 'single_spe' / shaping / str('digitized_' + str(int(fsps_new / 1e6)) +
+                                                                        '_Msps')):
         print(filename, 'is a file')
-        files_added = filename[15:27]
-        double_file_array_no_delay = np.append(double_file_array_no_delay, files_added)
+        files_added = filename[15:20]
+        single_file_array = np.append(single_file_array, files_added)
     for filename in os.listdir(dest_path / 'double_spe' / shaping / '6x_rt' /
                                str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps')):
         print(filename, 'is a file')
         files_added = filename[15:27]
         double_file_array_6x_rt = np.append(double_file_array_6x_rt, files_added)
 
-    for i in range(-100, -10):
+    print('Doing calculations...')
+    for i in range(-100, 0):
         cutoff_array = np.append(cutoff_array, i)
 
         x1 = 0
@@ -36,9 +37,9 @@ def amp_cutoff_roc(date, filter_band, fsps_new, nhdr, shaping):
         y2 = 0
         z2 = 0
 
-        for item in double_file_array_no_delay:
-            file_name = str(dest_path / 'double_spe' / shaping / 'no_delay' /
-                            str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
+        for item in single_file_array:
+            file_name = str(dest_path / 'single_spe' / shaping / str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps')
+                            / 'D3--waveforms--%s.txt') % item
             t, v, hdr = rw(file_name, nhdr)                 # Waveform file is read
 
             peak_amts = np.array([])
@@ -89,34 +90,73 @@ def amp_cutoff_roc(date, filter_band, fsps_new, nhdr, shaping):
                 pass
 
         percent_true_single = x1 / z1 * 100
-        percent_false_multiple = y1 / z1 * 100
+        percent_false_double = y1 / z1 * 100
         percent_false_single = x2 / z2 * 100
-        percent_true_multiple = y2 / z2 * 100
+        percent_true_double = y2 / z2 * 100
 
         true_single = np.append(true_single, percent_true_single)
         false_single = np.append(false_single, percent_false_single)
-        true_multiple = np.append(true_multiple, percent_true_multiple)
-        false_multiple = np.append(false_multiple, percent_false_multiple)
+        true_double = np.append(true_double, percent_true_double)
+        false_double = np.append(false_double, percent_false_double)
 
-    # Plots ROC graphs for double waveforms with no delay
+    idx_true_s = np.argmin(np.abs(true_single - 80))
+    idx_false_s = np.argmin(np.abs(false_single - 20))
+    idx_true_d = np.argmin(np.abs(true_double - 80))
+    idx_false_d = np.argmin(np.abs(false_double - 20))
+    amp_true_s = float(format(cutoff_array[idx_true_s], '.2e'))
+    amp_false_s = float(format(cutoff_array[idx_false_s], '.2e'))
+    amp_true_d = float(format(cutoff_array[idx_true_d], '.2e'))
+    amp_false_d = float(format(cutoff_array[idx_false_d], '.2e'))
+
+    print('Making plots...')
+    # Plots ROC graphs
     plt.plot(false_single, true_single)
     plt.xlim(-5, 100)
     plt.ylim(-5, 100)
+    plt.plot(false_single[idx_false_s], true_single[idx_false_s], marker='x')
+    plt.plot(false_single[idx_true_s], true_single[idx_true_s], marker='x')
     plt.xlabel('% False Single Peaks')
     plt.ylabel('% True Single Peaks')
-    plt.title('ROC Graph (Minimum Amplitude Cutoff)')
+    plt.title('ROC Graph (Amplitude Cutoff)')
+    plt.annotate(str(amp_false_s) + ' bit cutoff', (false_single[idx_false_s] + 3, true_single[idx_false_s]))
+    plt.annotate(str(amp_true_s) + ' bit cutoff', (false_single[idx_true_s] + 3, true_single[idx_true_s]))
     plt.savefig(dest_path / 'plots' / str('roc_single_' + str(int(fsps_new / 1e6)) + '_Msps_' + shaping + '.png'),
                 dpi=360)
     plt.close()
 
-    plt.plot(false_multiple, true_multiple)
+    plt.plot(false_double, true_double)
     plt.xlim(-5, 100)
     plt.ylim(-5, 100)
-    plt.xlabel('% False Multiple Peaks')
-    plt.ylabel('% True Multiple Peaks')
-    plt.title('ROC Graph (Minimum Amplitude Cutoff)')
-    plt.savefig(dest_path / 'plots' / str('roc_multiple_' + str(int(fsps_new / 1e6)) + '_Msps_' + shaping + '.png'),
+    plt.plot(false_double[idx_false_s], true_double[idx_false_s], marker='x')
+    plt.plot(false_double[idx_true_s], true_double[idx_true_s], marker='x')
+    plt.xlabel('% False Double Peaks')
+    plt.ylabel('% True Double Peaks')
+    plt.title('ROC Graph (Amplitude Cutoff)')
+    plt.annotate(str(amp_false_d) + ' bit cutoff', (false_single[idx_false_d] + 3, true_single[idx_false_d]))
+    plt.annotate(str(amp_true_d) + ' bit cutoff', (false_single[idx_true_d] + 3, true_single[idx_true_d]))
+    plt.savefig(dest_path / 'plots' / str('roc_double_' + str(int(fsps_new / 1e6)) + '_Msps_' + shaping + '.png'),
                 dpi=360)
+    plt.close()
+
+    # Plots percent error vs amplitude cutoff graphs
+    plt.plot(cutoff_array, false_single)
+    plt.ylim(-5, 100)
+    plt.hlines(20, -100, 0)
+    plt.xlabel('Amplitude Cutoff (bits)')
+    plt.ylabel('% False Single Peaks')
+    plt.title('False Single Peaks\nAmplitude Cutoff Min = ' + str(amp_false_s) + ' bits (20% False Single Peaks)')
+    plt.savefig(dest_path / 'plots' / str('false_single_cutoff_' + str(int(fsps_new / 1e6)) + '_Msps_' + shaping +
+                                          '.png'), dpi=360)
+    plt.close()
+
+    plt.plot(cutoff_array, false_double)
+    plt.ylim(-5, 100)
+    plt.hlines(20, -100, 0)
+    plt.xlabel('Amplitude Cutoff (bits)')
+    plt.ylabel('% False Double Peaks')
+    plt.title('False Double Peaks\nAmplitude Cutoff Max = ' + str(amp_false_d) + ' bits (20% False Double Peaks)')
+    plt.savefig(dest_path / 'plots' / str('false_double_cutoff_' + str(int(fsps_new / 1e6)) + '_Msps_' + shaping +
+                                          '.png'), dpi=360)
     plt.close()
 
 
@@ -132,6 +172,6 @@ if __name__ == '__main__':
     parser.add_argument("--shaping", type=str, help='shaping amount (default=rt_1)', default='rt_1')
     args = parser.parse_args()
 
-    amp_cutoff_roc(args.date, args.fil_band, args.fsps_new, args.nhdr, args.shaping)
+    amp_cutoff(args.date, args.fil_band, args.fsps_new, args.nhdr, args.shaping)
 
 
