@@ -196,6 +196,37 @@ def rise_time_1090_d(t, v):
         return rise_time1090
 
 
+# Returns the average baseline (baseline noise level)
+def calculate_average(t, v):
+    v_sum = 0
+
+    idx = np.where(v == min(v))     # Finds index of point of minimum voltage value
+    idx = idx[0]
+    if type(idx) is np.ndarray:
+        idx = idx[0]
+
+    if idx > len(t) / 2:            # If minimum voltage is in second half of voltage array, calculates baseline using
+        idx1 = int(.1 * len(t))     # first half of voltage array
+        idx2 = int(.35 * len(t))
+    else:
+        idx1 = int(.65 * len(t))    # If minimum voltage is in first half of voltage array, calculates baseline using
+        idx2 = int(.9 * len(t))     # second half of voltage array
+    for i in range(idx1, idx2):
+        v_sum += v[i]
+    average = v_sum / (idx2 - idx1)
+
+    return average
+
+
+# Returns the amplitude of spe as a positive value (minimum voltage)
+def calculate_amp(t, v):
+    avg = calculate_average(t, v)       # Calculates value of baseline voltage
+    min_val = np.amin(v)                # Calculates minimum voltage
+    amp = float(avg - min_val)          # Calculates max amplitude
+
+    return amp
+
+
 # Creates text file with 10-90 rise times for an spe file
 def save_calculations(save_path, i, rt_1, rt_2, rt_4, rt_8):
     if isinstance(i, int):
