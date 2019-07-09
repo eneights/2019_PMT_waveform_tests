@@ -133,7 +133,7 @@ def calculate_charge(t, v, r):
     t2 = tvals[index2]      # Finds time of end of spe
     for i in range(len(tvals)):         # Calculates sum of all voltages in full timespan
         vsum += vvals[i]
-    charge = -1 * (tvals[len(tvals) - 1]) * vsum / (len(tvals) * r)     # Calculates charge
+    charge = float(-1 * (tvals[len(tvals) - 1]) * vsum / (len(tvals) * r))      # Calculates charge
 
     return t1, t2, charge
 
@@ -142,7 +142,7 @@ def calculate_charge(t, v, r):
 def calculate_amp(t, v):
     avg = calculate_average(t, v)       # Calculates value of baseline voltage
     min_val = np.amin(v)                # Calculates minimum voltage
-    amp = avg - min_val                 # Calculates max amplitude
+    amp = float(avg - min_val)          # Calculates max amplitude
 
     return amp
 
@@ -227,7 +227,7 @@ def calculate_fwhm(t, v, min_amp):
             else:
                 t1 = 0
                 t2 = -1
-        fwhm = (t2 - t1).item()
+        fwhm = float((t2 - t1).item())
         return fwhm
     except Exception:
         return -1
@@ -263,14 +263,14 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
     amplitude_array = np.array([])
     fwhm_array = np.array([])
 
-    if double_folder == 'rt_1':
-        min_val = -50
-    elif double_folder == 'rt_2':
-        min_val = -40
-    elif double_folder == 'rt_4':
-        min_val = -20
-    elif double_folder == 'rt_8':
-        min_val = -20
+    if int(fsps_new / 1e6) == 500 and double_folder == 'rt_1':
+        min_val = -80
+    elif int(fsps_new / 1e6) == 250 and double_folder == 'rt_2':
+        min_val = 48
+    elif int(fsps_new / 1e6) == 125 and double_folder == 'rt_2':
+        min_val = -15
+    elif int(fsps_new / 1e6) == 125 and double_folder == 'rt_4':
+        min_val = -10
     else:
         min_val = np.inf
 
@@ -352,14 +352,14 @@ def make_arrays_s(single_file_array, dest_path, single_folder, nhdr, r, fsps_new
     amplitude_array = np.array([])
     fwhm_array = np.array([])
 
-    if single_folder == 'rt_1':
-        min_val = -50
-    elif single_folder == 'rt_2':
-        min_val = -40
-    elif single_folder == 'rt_4':
-        min_val = -20
-    elif single_folder == 'rt_8':
-        min_val = -20
+    if int(fsps_new / 1e6) == 500 and single_folder == 'rt_1':
+        min_val = -80
+    elif int(fsps_new / 1e6) == 250 and single_folder == 'rt_2':
+        min_val = 48
+    elif int(fsps_new / 1e6) == 125 and single_folder == 'rt_2':
+        min_val = -15
+    elif int(fsps_new / 1e6) == 125 and single_folder == 'rt_4':
+        min_val = -10
     else:
         min_val = np.inf
 
@@ -1248,5 +1248,3 @@ def roc_graphs(start, end, factor, fsps_new, shaping, parameter, parameter_title
     plt.savefig(dest_path / 'plots' / str('roc_mpes_' + parameter + '_6x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
                                           shaping + '.png'), dpi=360)
     plt.close()
-
-
