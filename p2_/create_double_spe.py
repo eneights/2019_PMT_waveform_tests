@@ -84,61 +84,6 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
         file_name_2 = str(single_path / 'rt_1' / 'D2--waveforms--%s.txt') % file_added
         ww(t, v, file_name_2, hdr)
 
-    '''print('Calculating taus...')
-    x1_array = np.array([])
-    j_array = np.array([])
-
-    # Uses average spe waveform to calculate tau to use in lowpass filter for 2x rise time
-    t, v, hdr = rw(average_file, nhdr)
-    v = -1 * v
-    rt1090 = rise_time_1090(t, v)
-    for i in range(500, 50000):
-        j = i * 1e-11
-        v_new = lowpass_filter(v, j, fsps)
-        x1 = rise_time_1090(t, v_new)
-        x1_array = np.append(x1_array, x1)
-        j_array = np.append(j_array, j)
-        diff_val = x1 - 8 * rt1090
-        if diff_val >= 0:
-            break
-    tau_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090))]
-    v = -1 * v
-    v2 = lowpass_filter(v, tau_2, fsps)  # Creates new average waveform with 2x the rise time
-
-    # Uses average waveform with 2x the rise time to calculate tau to use in lowpass filter for 4x rise time
-    v2 = -1 * v2
-    x1_array = np.array([])
-    j_array = np.array([])
-    rt1090_2 = rise_time_1090(t, v2)
-    for i in range(500, 50000):
-        j = i * 1e-11
-        v_new = lowpass_filter(v2, j, fsps)
-        x1 = rise_time_1090(t, v_new)
-        x1_array = np.append(x1_array, x1)
-        j_array = np.append(j_array, j)
-        diff_val = x1 - 2 * rt1090_2
-        if diff_val >= 0:
-            break
-    tau_2_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090_2))]
-    v2 = -1 * v2
-    v2_2 = lowpass_filter(v2, tau_2_2, fsps)  # Creates new average waveform with 4x the rise time
-
-    # Uses average waveform with 4x the rise time to calculate tau to use in lowpass filter for 8x rise time
-    v2_2 = -1 * v2_2
-    x1_array = np.array([])
-    j_array = np.array([])
-    rt1090_2_2 = rise_time_1090(t, v2_2)
-    for i in range(500, 50000):
-        j = i * 1e-11
-        v_new = lowpass_filter(v2_2, j, fsps)
-        x1 = rise_time_1090(t, v_new)
-        x1_array = np.append(x1_array, x1)
-        j_array = np.append(j_array, j)
-        diff_val = x1 - 2 * rt1090_2_2
-        if diff_val >= 0:
-            break
-    tau_2_2_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090_2_2))]'''
-
     tau_2 = 1.3279999999999999e-08
     tau_2_2 = 1.035e-08
     tau_2_2_2 = 3.3249999999999997e-08
@@ -158,6 +103,10 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
                 v2 = lowpass_filter(v, tau_2, fsps)
                 ww(t, v2, save_name2, hdr)
                 print('File #%s in double_spe_2 folder' % item)
+            t, v, hdr = rw(file_name, nhdr)
+            v2 = lowpass_filter(v, tau_2, fsps)
+            ww(t, v2, save_name2, hdr)
+            print('File #%s in double_spe_2 folder' % item)
 
         if os.path.isfile(save_name2):
             if os.path.isfile(save_name4):
@@ -167,6 +116,10 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
                 v4 = lowpass_filter(v, tau_2_2, fsps)
                 ww(t, v4, save_name4, hdr)
                 print('File #%s in double_spe_4 folder' % item)
+            t, v, hdr = rw(save_name2, nhdr)
+            v4 = lowpass_filter(v, tau_2_2, fsps)
+            ww(t, v4, save_name4, hdr)
+            print('File #%s in double_spe_4 folder' % item)
 
         if os.path.isfile(save_name4):
             if os.path.isfile(save_name8):
@@ -176,6 +129,10 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
                 v8 = lowpass_filter(v, tau_2_2_2, fsps)
                 ww(t, v8, save_name8, hdr)
                 print('File #%s in double_spe_8 folder' % item)
+            t, v, hdr = rw(save_name4, nhdr)
+            v8 = lowpass_filter(v, tau_2_2_2, fsps)
+            ww(t, v8, save_name8, hdr)
+            print('File #%s in double_spe_8 folder' % item)
 
     # For each single spe waveform file, saves waveforms with 1x, 2x, 4x, and 8x the rise time
     for item in single_file_array:
@@ -194,6 +151,9 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
                 t, v, hdr = rw(file_name2, nhdr)
                 ww(t, v, save_name2, hdr)
                 print('File #%s in rt_2 folder' % item)
+            t, v, hdr = rw(file_name2, nhdr)
+            ww(t, v, save_name2, hdr)
+            print('File #%s in rt_2 folder' % item)
 
         if os.path.isfile(save_name2):
             if os.path.isfile(save_name4):
@@ -202,6 +162,9 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
                 t, v, hdr = rw(file_name4, nhdr)
                 ww(t, v, save_name4, hdr)
                 print('File #%s in rt_4 folder' % item)
+            t, v, hdr = rw(file_name4, nhdr)
+            ww(t, v, save_name4, hdr)
+            print('File #%s in rt_4 folder' % item)
 
         if os.path.isfile(save_name4):
             if os.path.isfile(save_name8):
@@ -210,6 +173,9 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
                 t, v, hdr = rw(file_name8, nhdr)
                 ww(t, v, save_name8, hdr)
                 print('File #%s in rt_8 folder' % item)
+            t, v, hdr = rw(file_name8, nhdr)
+            ww(t, v, save_name8, hdr)
+            print('File #%s in rt_8 folder' % item)
 
     # Plots average waveform for double spe
     print('Calculating average double spe waveform...')
