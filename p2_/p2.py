@@ -35,6 +35,12 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     v = -1 * v
     v2 = lowpass_filter(v, tau_2, fsps)     # Creates new average waveform with 2x the rise time
 
+    amp1 = calculate_amp(t, v)
+    amp2 = calculate_amp(t, v2)
+    factor2 = amp1 / amp2
+
+    v2 = v2 * factor2
+
     # Uses average waveform with 2x the rise time to calculate tau to use in lowpass filter for 4x rise time
     v2 = -1 * v2
     x1_array = np.array([])
@@ -52,6 +58,11 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     tau_2_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090_2))]
     v2 = -1 * v2
     v2_2 = lowpass_filter(v2, tau_2_2, fsps)    # Creates new average waveform with 4x the rise time
+
+    amp4 = calculate_amp(t, v2_2)
+    factor4 = amp1 / amp4
+
+    v2_2 = v2_2 * factor4
 
     # Uses average waveform with 4x the rise time to calculate tau to use in lowpass filter for 8x rise time
     v2_2 = -1 * v2_2
@@ -71,6 +82,11 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     v2_2 = -1 * v2_2
     v2_2_2 = lowpass_filter(v2_2, tau_2_2_2, fsps)      # Creates new average waveform with 8x the rise time
 
+    amp8 = calculate_amp(t, v2_2_2)
+    factor8 = amp1 / amp8
+
+    v2_2_2 = v2_2_2 * factor8
+
     # Plots average spe waveforms with 1x, 2x, 4x, and 8x the rise time
     plt.plot(t, v)
     plt.plot(t, v2)
@@ -87,14 +103,9 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     tau_2_2 = 1.035e-08
     tau_2_2_2 = 3.3249999999999997e-08
 
-    amp1 = calculate_amp(t, v)
-    amp2 = calculate_amp(t, v2)
-    amp4 = calculate_amp(t, v2_2)
-    amp8 = calculate_amp(t, v2_2_2)
-
-    factor2 = amp1 / amp2
-    factor4 = amp1 / amp4
-    factor8 = amp1 / amp8
+    factor2 = 1.1861817973550082
+    factor4 = 1.2256039407918038
+    factor8 = 4.057502778574371
 
     # For each spe waveform file, calculates and saves waveforms with 1x, 2x, 4x, and 8x the rise time
     for i in range(start, end + 1):

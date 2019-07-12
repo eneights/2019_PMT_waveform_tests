@@ -88,6 +88,10 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
     tau_2_2 = 1.035e-08
     tau_2_2_2 = 3.3249999999999997e-08
 
+    factor2 = 1.1861817973550082
+    factor4 = 1.2256039407918038
+    factor8 = 4.057502778574371
+
     # For each double spe waveform file, calculates and saves waveforms with 1x, 2x, 4x, and 8x the rise time
     for item in double_file_array:
         file_name = str(double_path / 'rt_1' / delay_folder / 'D2--waveforms--%s.txt') % item
@@ -101,12 +105,9 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
             else:
                 t, v, hdr = rw(file_name, nhdr)
                 v2 = lowpass_filter(v, tau_2, fsps)
+                v2 = v2 * factor2
                 ww(t, v2, save_name2, hdr)
                 print('File #%s in double_spe_2 folder' % item)
-            t, v, hdr = rw(file_name, nhdr)
-            v2 = lowpass_filter(v, tau_2, fsps)
-            ww(t, v2, save_name2, hdr)
-            print('File #%s in double_spe_2 folder' % item)
 
         if os.path.isfile(save_name2):
             if os.path.isfile(save_name4):
@@ -114,12 +115,9 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
             else:
                 t, v, hdr = rw(save_name2, nhdr)
                 v4 = lowpass_filter(v, tau_2_2, fsps)
+                v4 = v4 * factor4
                 ww(t, v4, save_name4, hdr)
                 print('File #%s in double_spe_4 folder' % item)
-            t, v, hdr = rw(save_name2, nhdr)
-            v4 = lowpass_filter(v, tau_2_2, fsps)
-            ww(t, v4, save_name4, hdr)
-            print('File #%s in double_spe_4 folder' % item)
 
         if os.path.isfile(save_name4):
             if os.path.isfile(save_name8):
@@ -127,19 +125,16 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
             else:
                 t, v, hdr = rw(save_name4, nhdr)
                 v8 = lowpass_filter(v, tau_2_2_2, fsps)
+                v8 = v8 * factor8
                 ww(t, v8, save_name8, hdr)
                 print('File #%s in double_spe_8 folder' % item)
-            t, v, hdr = rw(save_name4, nhdr)
-            v8 = lowpass_filter(v, tau_2_2_2, fsps)
-            ww(t, v8, save_name8, hdr)
-            print('File #%s in double_spe_8 folder' % item)
 
     # For each single spe waveform file, saves waveforms with 1x, 2x, 4x, and 8x the rise time
     for item in single_file_array:
         file_name = str(single_path / 'rt_1' / 'D2--waveforms--%s.txt') % item
-        file_name2 = str(dest_path / 'rt_2')
-        file_name4 = str(dest_path / 'rt_4')
-        file_name8 = str(dest_path / 'rt_8')
+        file_name2 = str(dest_path / 'rt_2' / 'D2--waveforms--%s.txt') % item
+        file_name4 = str(dest_path / 'rt_4' / 'D2--waveforms--%s.txt') % item
+        file_name8 = str(dest_path / 'rt_8' / 'D2--waveforms--%s.txt') % item
         save_name2 = str(single_path / 'rt_2' / 'D2--waveforms--%s.txt') % item
         save_name4 = str(single_path / 'rt_4' / 'D2--waveforms--%s.txt') % item
         save_name8 = str(single_path / 'rt_8' / 'D2--waveforms--%s.txt') % item
@@ -151,9 +146,6 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
                 t, v, hdr = rw(file_name2, nhdr)
                 ww(t, v, save_name2, hdr)
                 print('File #%s in rt_2 folder' % item)
-            t, v, hdr = rw(file_name2, nhdr)
-            ww(t, v, save_name2, hdr)
-            print('File #%s in rt_2 folder' % item)
 
         if os.path.isfile(save_name2):
             if os.path.isfile(save_name4):
@@ -162,9 +154,6 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
                 t, v, hdr = rw(file_name4, nhdr)
                 ww(t, v, save_name4, hdr)
                 print('File #%s in rt_4 folder' % item)
-            t, v, hdr = rw(file_name4, nhdr)
-            ww(t, v, save_name4, hdr)
-            print('File #%s in rt_4 folder' % item)
 
         if os.path.isfile(save_name4):
             if os.path.isfile(save_name8):
@@ -173,9 +162,6 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
                 t, v, hdr = rw(file_name8, nhdr)
                 ww(t, v, save_name8, hdr)
                 print('File #%s in rt_8 folder' % item)
-            t, v, hdr = rw(file_name8, nhdr)
-            ww(t, v, save_name8, hdr)
-            print('File #%s in rt_8 folder' % item)
 
     # Plots average waveform for double spe
     print('Calculating average double spe waveform...')
