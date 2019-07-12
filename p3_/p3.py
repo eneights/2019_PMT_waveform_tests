@@ -27,6 +27,8 @@ def p3(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
 
         if os.path.isfile(file_name1):
             if os.path.isfile(save_name1):
+                t, v, hdr = rw(file_name1, nhdr)
+                ww(t, v, save_name1, hdr)
                 print('File #%05d in rt_1 folder' % i)
             else:
                 t, v, hdr = rw(file_name1, nhdr)
@@ -35,6 +37,8 @@ def p3(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
 
         if os.path.isfile(file_name2):
             if os.path.isfile(save_name2):
+                t, v, hdr = rw(file_name2, nhdr)
+                ww(t, v, save_name2, hdr)
                 print('File #%05d in rt_2 folder' % i)
             else:
                 t, v, hdr = rw(file_name2, nhdr)
@@ -43,6 +47,8 @@ def p3(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
 
         if os.path.isfile(file_name4):
             if os.path.isfile(save_name4):
+                t, v, hdr = rw(file_name4, nhdr)
+                ww(t, v, save_name4, hdr)
                 print('File #%05d in rt_4 folder' % i)
             else:
                 t, v, hdr = rw(file_name4, nhdr)
@@ -51,6 +57,8 @@ def p3(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
 
         if os.path.isfile(file_name8):
             if os.path.isfile(save_name8):
+                t, v, hdr = rw(file_name8, nhdr)
+                ww(t, v, save_name8, hdr)
                 print('File #%05d in rt_8 folder' % i)
             else:
                 t, v, hdr = rw(file_name8, nhdr)

@@ -2,6 +2,7 @@ from p1_sort import p1_sort
 from functions import *
 from info_file import info_file
 
+
 def p1(start, end, date, date_time, filter_band, nhdr, fsps, fc, numtaps, baseline, r, pmt_hv, gain, offset, trig_delay,
        amp, band, nfilter):
     gen_path = Path(r'/Volumes/TOSHIBA EXT/data/watchman')
