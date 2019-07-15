@@ -35,8 +35,6 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
         if os.path.isfile(file_name1):
             if os.path.isfile(save_name1):
-                t, v, hdr = rw(file_name1, nhdr)
-                ww(t, v, save_name1, hdr)
                 print('File #%s in double_spe folder' % item)
             else:
                 t, v, hdr = rw(file_name1, nhdr)
@@ -45,8 +43,6 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
         if os.path.isfile(file_name2):
             if os.path.isfile(save_name2):
-                t, v, hdr = rw(file_name2, nhdr)
-                ww(t, v, save_name2, hdr)
                 print('File #%s in double_spe_2 folder' % item)
             else:
                 t, v, hdr = rw(file_name2, nhdr)
@@ -55,8 +51,6 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
         if os.path.isfile(file_name4):
             if os.path.isfile(save_name4):
-                t, v, hdr = rw(file_name4, nhdr)
-                ww(t, v, save_name4, hdr)
                 print('File #%s in double_spe_4 folder' % item)
             else:
                 t, v, hdr = rw(file_name4, nhdr)
@@ -65,8 +59,6 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
         if os.path.isfile(file_name8):
             if os.path.isfile(save_name8):
-                t, v, hdr = rw(file_name8, nhdr)
-                ww(t, v, save_name8, hdr)
                 print('File #%s in double_spe_8 folder' % item)
             else:
                 t, v, hdr = rw(file_name8, nhdr)
@@ -86,8 +78,6 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
         if os.path.isfile(file_name1):
             if os.path.isfile(save_name1):
-                t, v, hdr = rw(file_name1, nhdr)
-                ww(t, v, save_name1, hdr)
                 print('File #%s in rt_1 folder' % item)
             else:
                 t, v, hdr = rw(file_name1, nhdr)
@@ -96,8 +86,6 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
         if os.path.isfile(file_name2):
             if os.path.isfile(save_name2):
-                t, v, hdr = rw(file_name2, nhdr)
-                ww(t, v, save_name2, hdr)
                 print('File #%s in rt_2 folder' % item)
             else:
                 t, v, hdr = rw(file_name2, nhdr)
@@ -106,8 +94,6 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
         if os.path.isfile(file_name4):
             if os.path.isfile(save_name4):
-                t, v, hdr = rw(file_name4, nhdr)
-                ww(t, v, save_name4, hdr)
                 print('File #%s in rt_4 folder' % item)
             else:
                 t, v, hdr = rw(file_name4, nhdr)
@@ -116,8 +102,6 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
         if os.path.isfile(file_name8):
             if os.path.isfile(save_name8):
-                t, v, hdr = rw(file_name8, nhdr)
-                ww(t, v, save_name8, hdr)
                 print('File #%s in rt_8 folder' % item)
             else:
                 t, v, hdr = rw(file_name8, nhdr)
@@ -139,7 +123,7 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
         save_name8 = str(dest_path / 'double_spe' / 'rt_8' / delay_folder /
                          str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
 
-        '''if os.path.isfile(save_name1) and os.path.isfile(save_name2) and os.path.isfile(save_name4) and \
+        if os.path.isfile(save_name1) and os.path.isfile(save_name2) and os.path.isfile(save_name4) and \
                 os.path.isfile(save_name8):
             print('File #%s downsampled' % item)
         else:
@@ -161,26 +145,7 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
                 if not os.path.isfile(save_name8):
                     t, v, hdr = rw(file_name8, nhdr)
                     t_ds, v_ds = downsample(t, v, fsps, fsps_new)
-                    ww(t_ds, v_ds, save_name8, hdr)'''
-        if os.path.isfile(file_name1) and os.path.isfile(file_name2) and os.path.isfile(file_name4) and \
-                os.path.isfile(file_name8):
-            print('Downsampling file #%s' % item)
-            if not os.path.isfile(save_name1):
-                t, v, hdr = rw(file_name1, nhdr)
-                t_ds, v_ds = downsample(t, v, fsps, fsps_new)
-                ww(t_ds, v_ds, save_name1, hdr)
-            if not os.path.isfile(save_name2):
-                t, v, hdr = rw(file_name2, nhdr)
-                t_ds, v_ds = downsample(t, v, fsps, fsps_new)
-                ww(t_ds, v_ds, save_name2, hdr)
-            if not os.path.isfile(save_name4):
-                t, v, hdr = rw(file_name4, nhdr)
-                t_ds, v_ds = downsample(t, v, fsps, fsps_new)
-                ww(t_ds, v_ds, save_name4, hdr)
-            if not os.path.isfile(save_name8):
-                t, v, hdr = rw(file_name8, nhdr)
-                t_ds, v_ds = downsample(t, v, fsps, fsps_new)
-                ww(t_ds, v_ds, save_name8, hdr)
+                    ww(t_ds, v_ds, save_name8, hdr)
 
     # Copies downsampled single spe waveforms
     for item in single_file_array:
@@ -203,8 +168,6 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
         if os.path.isfile(file_name1):
             if os.path.isfile(save_name1):
-                t, v, hdr = rw(file_name1, nhdr)
-                ww(t, v, save_name1, hdr)
                 print('File #%s in rt_1 folder' % item)
             else:
                 t, v, hdr = rw(file_name1, nhdr)
@@ -213,8 +176,6 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
         if os.path.isfile(file_name2):
             if os.path.isfile(save_name2):
-                t, v, hdr = rw(file_name2, nhdr)
-                ww(t, v, save_name2, hdr)
                 print('File #%s in rt_2 folder' % item)
             else:
                 t, v, hdr = rw(file_name2, nhdr)
@@ -223,8 +184,6 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
         if os.path.isfile(file_name4):
             if os.path.isfile(save_name4):
-                t, v, hdr = rw(file_name4, nhdr)
-                ww(t, v, save_name4, hdr)
                 print('File #%s in rt_4 folder' % item)
             else:
                 t, v, hdr = rw(file_name4, nhdr)
@@ -233,8 +192,6 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
         if os.path.isfile(file_name8):
             if os.path.isfile(save_name8):
-                t, v, hdr = rw(file_name8, nhdr)
-                ww(t, v, save_name8, hdr)
                 print('File #%s in rt_8 folder' % item)
             else:
                 t, v, hdr = rw(file_name8, nhdr)
@@ -260,7 +217,7 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
         save_name8 = str(dest_path / 'double_spe' / 'rt_8' / delay_folder /
                          str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
 
-        '''if os.path.isfile(save_name1) and os.path.isfile(save_name2) and os.path.isfile(save_name4) and \
+        if os.path.isfile(save_name1) and os.path.isfile(save_name2) and os.path.isfile(save_name4) and \
                 os.path.isfile(save_name8):
             print('File #%s digitized' % item)
         else:
@@ -282,26 +239,7 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
                 if not os.path.isfile(save_name8):
                     t, v, hdr = rw(file_name8, nhdr)
                     v_dig = digitize(v, noise)
-                    ww(t, v_dig, save_name8, hdr)'''
-        if os.path.isfile(file_name1) and os.path.isfile(file_name2) and os.path.isfile(file_name4) and \
-                os.path.isfile(file_name8):
-            print('Digitizing file #%s' % item)
-            if not os.path.isfile(save_name1):
-                t, v, hdr = rw(file_name1, nhdr)
-                v_dig = digitize(v, noise)
-                ww(t, v_dig, save_name1, hdr)
-            if not os.path.isfile(save_name2):
-                t, v, hdr = rw(file_name2, nhdr)
-                v_dig = digitize(v, noise)
-                ww(t, v_dig, save_name2, hdr)
-            if not os.path.isfile(save_name4):
-                t, v, hdr = rw(file_name4, nhdr)
-                v_dig = digitize(v, noise)
-                ww(t, v_dig, save_name4, hdr)
-            if not os.path.isfile(save_name8):
-                t, v, hdr = rw(file_name8, nhdr)
-                v_dig = digitize(v, noise)
-                ww(t, v_dig, save_name8, hdr)
+                    ww(t, v_dig, save_name8, hdr)
 
     # Copies digitized single spe waveforms
     for item in single_file_array:
@@ -324,8 +262,6 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
         if os.path.isfile(file_name1):
             if os.path.isfile(save_name1):
-                t, v, hdr = rw(file_name1, nhdr)
-                ww(t, v, save_name1, hdr)
                 print('File #%s in rt_1 folder' % item)
             else:
                 t, v, hdr = rw(file_name1, nhdr)
@@ -334,8 +270,6 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
         if os.path.isfile(file_name2):
             if os.path.isfile(save_name2):
-                t, v, hdr = rw(file_name2, nhdr)
-                ww(t, v, save_name2, hdr)
                 print('File #%s in rt_2 folder' % item)
             else:
                 t, v, hdr = rw(file_name2, nhdr)
@@ -344,8 +278,6 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
         if os.path.isfile(file_name4):
             if os.path.isfile(save_name4):
-                t, v, hdr = rw(file_name4, nhdr)
-                ww(t, v, save_name4, hdr)
                 print('File #%s in rt_4 folder' % item)
             else:
                 t, v, hdr = rw(file_name4, nhdr)
@@ -354,8 +286,6 @@ def double_spe_studies(date, filter_band, nhdr, delay_folder, fsps, fsps_new, no
 
         if os.path.isfile(file_name8):
             if os.path.isfile(save_name8):
-                t, v, hdr = rw(file_name8, nhdr)
-                ww(t, v, save_name8, hdr)
                 print('File #%s in rt_8 folder' % item)
             else:
                 t, v, hdr = rw(file_name8, nhdr)

@@ -279,7 +279,7 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
                          str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
         file_name2 = str(dest_path / 'calculations' / 'double_spe' / double_folder / delay_folder /
                          str(str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
-        if os.path.isfile(file_name1):
+        '''if os.path.isfile(file_name1):
             if os.path.isfile(file_name2):      # If the calculations were done previously, they are read from a file
                 print("Reading calculations from file #%s" % item)
                 myfile = open(file_name2, 'r')      # Opens file with calculations
@@ -340,7 +340,34 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
                     save_calculations(file_name2, charge, amplitude, fwhm)
                     charge_array = np.append(charge_array, charge)
                     amplitude_array = np.append(amplitude_array, amplitude)
-                    fwhm_array = np.append(fwhm_array, fwhm)
+                    fwhm_array = np.append(fwhm_array, fwhm)'''
+        print("Calculating file #%s" % item)
+        t, v, hdr = rw(file_name1, nhdr)  # Waveform file is read
+        t1, t2, charge = calculate_charge(t, v, r)  # Start & end times and charge are calculated
+        amplitude = calculate_amp(t, v)  # Amplitude of spe is calculated
+        fwhm = calculate_fwhm(t, v, min_val)  # FWHM of spe is calculated
+        # Any spe waveform that returns impossible values is put into the unusable_data folder
+        if charge <= 0 or amplitude <= 0 or fwhm <= 0:
+            raw_file = str(dest_path / double_folder / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
+            save_file = str(dest_path / 'unusable_data' / 'D3--waveforms--%s.txt') % item
+            t, v, hdr = rw(raw_file, nhdr)
+            ww(t, v, save_file, hdr)
+            print('Removing file #%s' % item)
+            if os.path.isfile(raw_file):
+                os.remove(raw_file)
+            os.remove(file_name1)
+            if os.path.isfile(str(dest_path / 'double_spe' / double_folder / delay_folder /
+                                  str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                                  'D3--waveforms--%s.txt') % item):
+                os.remove(str(dest_path / 'double_spe' / double_folder / delay_folder /
+                              str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                              'D3--waveforms--%s.txt') % item)
+        # All other double spe waveforms' calculations are saved in a file & placed into arrays
+        else:
+            save_calculations(file_name2, charge, amplitude, fwhm)
+            charge_array = np.append(charge_array, charge)
+            amplitude_array = np.append(amplitude_array, amplitude)
+            fwhm_array = np.append(fwhm_array, fwhm)
 
     return charge_array, amplitude_array, fwhm_array
 
@@ -368,7 +395,7 @@ def make_arrays_s(single_file_array, dest_path, single_folder, nhdr, r, fsps_new
                                                                         '_Msps') / 'D3--waveforms--%s.txt') % item
         file_name2 = str(dest_path / 'calculations' / 'single_spe' / single_folder /
                          str(str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
-        if os.path.isfile(file_name1):
+        '''if os.path.isfile(file_name1):
             if os.path.isfile(file_name2):      # If the calculations were done previously, they are read from a file
                 print("Reading calculations from file #%s" % item)
                 myfile = open(file_name2, 'r')      # Opens file with calculations
@@ -430,7 +457,35 @@ def make_arrays_s(single_file_array, dest_path, single_folder, nhdr, r, fsps_new
                     save_calculations(file_name2, charge, amplitude, fwhm)
                     charge_array = np.append(charge_array, charge)
                     amplitude_array = np.append(amplitude_array, amplitude)
-                    fwhm_array = np.append(fwhm_array, fwhm)
+                    fwhm_array = np.append(fwhm_array, fwhm)'''
+        print("Calculating file #%s" % item)
+        t, v, hdr = rw(file_name1, nhdr)  # Shifted waveform file is read
+        t1, t2, charge = calculate_charge(t, v, r)  # Start & end times and charge of spe are calculated
+        amplitude = calculate_amp(t, v)  # Amplitude of spe is calculated
+        fwhm = calculate_fwhm(t, v, min_val)  # FWHM of spe is calculated
+        # Any spe waveform that returns impossible values is put into the not_spe folder
+        if charge <= 0 or amplitude <= 0 or fwhm <= 0:
+            raw_file = str(dest_path / 'single_spe' / single_folder / 'raw' / 'D3--waveforms--%s.txt') % item
+            save_file = str(dest_path / 'unusable_data' / 'D3--waveforms--%s.txt') % item
+            t, v, hdr = rw(raw_file, nhdr)
+            ww(t, v, save_file, hdr)
+            print('Removing file #%s' % item)
+            if os.path.isfile(raw_file):
+                os.remove(raw_file)
+            if os.path.isfile(file_name1):
+                os.remove(file_name1)
+            if os.path.isfile(str(dest_path / 'single_spe' / single_folder /
+                                  str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                                  'D3--waveforms--%s.txt') % item):
+                os.remove(str(dest_path / 'single_spe' / single_folder /
+                              str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
+                              'D3--waveforms--%s.txt') % item)
+        # All other spe waveforms' calculations are saved in a file & placed into arrays
+        else:
+            save_calculations(file_name2, charge, amplitude, fwhm)
+            charge_array = np.append(charge_array, charge)
+            amplitude_array = np.append(amplitude_array, amplitude)
+            fwhm_array = np.append(fwhm_array, fwhm)
 
     return charge_array, amplitude_array, fwhm_array
 

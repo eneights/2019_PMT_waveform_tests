@@ -100,48 +100,14 @@ def amp_cutoff(date, filter_band, fsps_new, nhdr, shaping):
         true_double = np.append(true_double, percent_true_double)
         false_double = np.append(false_double, percent_false_double)
 
+    idx = np.argmin(np.abs(false_double - 1))
+    amp = cutoff_array[idx]
+    true_s_per = float(format(true_single[idx], '.2e'))
+    false_s_per = float(format(false_single[idx], '.2e'))
+    true_d_per = float(format(true_double[idx], '.2e'))
+    false_d_per = float(format(false_double[idx], '.2e'))
+
     '''if int(fsps_new / 1e6) == 500 and shaping == 'rt_1':
-        idx_s = np.argmin(np.abs(true_single - 95))
-        idx_d = np.argmin(np.abs(false_double - 10))
-    elif int(fsps_new / 1e6) == 250 and shaping == 'rt_2':
-        idx_s = np.argmin(np.abs(true_single - 85))
-        idx_d = np.argmin(np.abs(true_double - 80))
-    elif int(fsps_new / 1e6) == 125 and shaping == 'rt_2':
-        idx_s = np.argmin(np.abs(true_single - 70))
-        idx_d = np.argmin(np.abs(true_double - 50))
-    elif int(fsps_new / 1e6) == 125 and shaping == 'rt_4':
-        idx_s = np.argmin(np.abs(false_single - 50))
-        idx_d = np.argmin(np.abs(false_double - 50))
-    else:
-        idx_s = np.inf
-        idx_d = np.inf
-
-    amp_s = int(cutoff_array[idx_s])
-    amp_d = int(cutoff_array[idx_d])
-
-    if amp_s < amp_d:
-        false_s_2 = false_single[idx_s:idx_d + 1]
-        false_d_2 = false_double[idx_s:idx_d + 1]
-        true_s_2 = true_single[idx_s:idx_d + 1]
-        true_d_2 = true_double[idx_s:idx_d + 1]
-        for i in range(amp_s, amp_d + 1):
-            cutoff_array_2 = np.append(cutoff_array_2, i)
-    elif amp_d < amp_s:
-        false_s_2 = false_single[idx_d:idx_s + 1]
-        false_d_2 = false_double[idx_d:idx_s + 1]
-        true_s_2 = true_single[idx_d:idx_s + 1]
-        true_d_2 = true_double[idx_d:idx_s + 1]
-        for i in range(amp_d, amp_s + 1):
-            cutoff_array_2 = np.append(cutoff_array_2, i)
-    else:
-        amp = amp_s
-        idx = np.where(cutoff_array == amp)
-        false_s_per = false_single[idx]
-        false_d_per = false_double[idx]
-        true_s_per = true_single[idx]
-        true_d_per = true_double[idx]'''
-
-    if int(fsps_new / 1e6) == 500 and shaping == 'rt_1':
         amp = -80
     elif int(fsps_new / 1e6) == 250 and shaping == 'rt_2':
         amp = -48
@@ -150,17 +116,7 @@ def amp_cutoff(date, filter_band, fsps_new, nhdr, shaping):
     elif int(fsps_new / 1e6) == 125 and shaping == 'rt_4':
         amp = -10
     else:
-        amp = np.inf
-
-    idx = np.where(cutoff_array == amp)
-    false_s_per = float(false_single[idx])
-    false_d_per = float(false_double[idx])
-    true_s_per = float(true_single[idx])
-    true_d_per = float(true_double[idx])
-    false_s_per = float(format(false_s_per, '.2e'))
-    false_d_per = float(format(false_d_per, '.2e'))
-    true_s_per = float(format(true_s_per, '.2e'))
-    true_d_per = float(format(true_d_per, '.2e'))
+        amp = np.inf'''
 
     print('Making plots...')
     # Plots ROC graphs
