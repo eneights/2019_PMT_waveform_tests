@@ -13,7 +13,6 @@ def amp_cutoff(date, filter_band, fsps_new, nhdr, shaping):
     false_single = np.array([])
     true_double = np.array([])
     false_double = np.array([])
-    cutoff_array_2 = np.array([])
 
     print('Checking existing files...')
     for filename in os.listdir(dest_path / 'single_spe' / shaping / str('digitized_' + str(int(fsps_new / 1e6)) +
@@ -28,7 +27,7 @@ def amp_cutoff(date, filter_band, fsps_new, nhdr, shaping):
         double_file_array_6x_rt = np.append(double_file_array_6x_rt, files_added)
 
     print('Doing calculations...')
-    for i in range(-100, 0):
+    for i in range(-150, 0):
         cutoff_array = np.append(cutoff_array, i)
 
         x1 = 0
@@ -106,17 +105,6 @@ def amp_cutoff(date, filter_band, fsps_new, nhdr, shaping):
     false_s_per = float(format(false_single[idx], '.2e'))
     true_d_per = float(format(true_double[idx], '.2e'))
     false_d_per = float(format(false_double[idx], '.2e'))
-
-    '''if int(fsps_new / 1e6) == 500 and shaping == 'rt_1':
-        amp = -80
-    elif int(fsps_new / 1e6) == 250 and shaping == 'rt_2':
-        amp = -48
-    elif int(fsps_new / 1e6) == 125 and shaping == 'rt_2':
-        amp = -15
-    elif int(fsps_new / 1e6) == 125 and shaping == 'rt_4':
-        amp = -10
-    else:
-        amp = np.inf'''
 
     print('Making plots...')
     # Plots ROC graphs

@@ -264,13 +264,13 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
     fwhm_array = np.array([])
 
     if int(fsps_new / 1e6) == 500 and double_folder == 'rt_1':
-        min_val = -80
+        min_val = -106
     elif int(fsps_new / 1e6) == 250 and double_folder == 'rt_2':
-        min_val = 48
+        min_val = 79
     elif int(fsps_new / 1e6) == 125 and double_folder == 'rt_2':
-        min_val = -15
+        min_val = -29
     elif int(fsps_new / 1e6) == 125 and double_folder == 'rt_4':
-        min_val = -10
+        min_val = -35
     else:
         min_val = np.inf
 
@@ -279,7 +279,7 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
                          str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
         file_name2 = str(dest_path / 'calculations' / 'double_spe' / double_folder / delay_folder /
                          str(str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
-        '''if os.path.isfile(file_name1):
+        if os.path.isfile(file_name1):
             if os.path.isfile(file_name2):      # If the calculations were done previously, they are read from a file
                 print("Reading calculations from file #%s" % item)
                 myfile = open(file_name2, 'r')      # Opens file with calculations
@@ -340,34 +340,7 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
                     save_calculations(file_name2, charge, amplitude, fwhm)
                     charge_array = np.append(charge_array, charge)
                     amplitude_array = np.append(amplitude_array, amplitude)
-                    fwhm_array = np.append(fwhm_array, fwhm)'''
-        print("Calculating file #%s" % item)
-        t, v, hdr = rw(file_name1, nhdr)  # Waveform file is read
-        t1, t2, charge = calculate_charge(t, v, r)  # Start & end times and charge are calculated
-        amplitude = calculate_amp(t, v)  # Amplitude of spe is calculated
-        fwhm = calculate_fwhm(t, v, min_val)  # FWHM of spe is calculated
-        # Any spe waveform that returns impossible values is put into the unusable_data folder
-        if charge <= 0 or amplitude <= 0 or fwhm <= 0:
-            raw_file = str(dest_path / double_folder / delay_folder / 'raw' / 'D3--waveforms--%s.txt') % item
-            save_file = str(dest_path / 'unusable_data' / 'D3--waveforms--%s.txt') % item
-            t, v, hdr = rw(raw_file, nhdr)
-            ww(t, v, save_file, hdr)
-            print('Removing file #%s' % item)
-            if os.path.isfile(raw_file):
-                os.remove(raw_file)
-            os.remove(file_name1)
-            if os.path.isfile(str(dest_path / 'double_spe' / double_folder / delay_folder /
-                                  str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
-                                  'D3--waveforms--%s.txt') % item):
-                os.remove(str(dest_path / 'double_spe' / double_folder / delay_folder /
-                              str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
-                              'D3--waveforms--%s.txt') % item)
-        # All other double spe waveforms' calculations are saved in a file & placed into arrays
-        else:
-            save_calculations(file_name2, charge, amplitude, fwhm)
-            charge_array = np.append(charge_array, charge)
-            amplitude_array = np.append(amplitude_array, amplitude)
-            fwhm_array = np.append(fwhm_array, fwhm)
+                    fwhm_array = np.append(fwhm_array, fwhm)
 
     return charge_array, amplitude_array, fwhm_array
 
@@ -380,13 +353,13 @@ def make_arrays_s(single_file_array, dest_path, single_folder, nhdr, r, fsps_new
     fwhm_array = np.array([])
 
     if int(fsps_new / 1e6) == 500 and single_folder == 'rt_1':
-        min_val = -80
+        min_val = -106
     elif int(fsps_new / 1e6) == 250 and single_folder == 'rt_2':
-        min_val = 48
+        min_val = -79
     elif int(fsps_new / 1e6) == 125 and single_folder == 'rt_2':
-        min_val = -15
+        min_val = -29
     elif int(fsps_new / 1e6) == 125 and single_folder == 'rt_4':
-        min_val = -10
+        min_val = -35
     else:
         min_val = np.inf
 
@@ -395,7 +368,7 @@ def make_arrays_s(single_file_array, dest_path, single_folder, nhdr, r, fsps_new
                                                                         '_Msps') / 'D3--waveforms--%s.txt') % item
         file_name2 = str(dest_path / 'calculations' / 'single_spe' / single_folder /
                          str(str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
-        '''if os.path.isfile(file_name1):
+        if os.path.isfile(file_name1):
             if os.path.isfile(file_name2):      # If the calculations were done previously, they are read from a file
                 print("Reading calculations from file #%s" % item)
                 myfile = open(file_name2, 'r')      # Opens file with calculations
@@ -457,35 +430,7 @@ def make_arrays_s(single_file_array, dest_path, single_folder, nhdr, r, fsps_new
                     save_calculations(file_name2, charge, amplitude, fwhm)
                     charge_array = np.append(charge_array, charge)
                     amplitude_array = np.append(amplitude_array, amplitude)
-                    fwhm_array = np.append(fwhm_array, fwhm)'''
-        print("Calculating file #%s" % item)
-        t, v, hdr = rw(file_name1, nhdr)  # Shifted waveform file is read
-        t1, t2, charge = calculate_charge(t, v, r)  # Start & end times and charge of spe are calculated
-        amplitude = calculate_amp(t, v)  # Amplitude of spe is calculated
-        fwhm = calculate_fwhm(t, v, min_val)  # FWHM of spe is calculated
-        # Any spe waveform that returns impossible values is put into the not_spe folder
-        if charge <= 0 or amplitude <= 0 or fwhm <= 0:
-            raw_file = str(dest_path / 'single_spe' / single_folder / 'raw' / 'D3--waveforms--%s.txt') % item
-            save_file = str(dest_path / 'unusable_data' / 'D3--waveforms--%s.txt') % item
-            t, v, hdr = rw(raw_file, nhdr)
-            ww(t, v, save_file, hdr)
-            print('Removing file #%s' % item)
-            if os.path.isfile(raw_file):
-                os.remove(raw_file)
-            if os.path.isfile(file_name1):
-                os.remove(file_name1)
-            if os.path.isfile(str(dest_path / 'single_spe' / single_folder /
-                                  str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
-                                  'D3--waveforms--%s.txt') % item):
-                os.remove(str(dest_path / 'single_spe' / single_folder /
-                              str('downsampled_' + str(int(fsps_new / 1e6)) + '_Msps') /
-                              'D3--waveforms--%s.txt') % item)
-        # All other spe waveforms' calculations are saved in a file & placed into arrays
-        else:
-            save_calculations(file_name2, charge, amplitude, fwhm)
-            charge_array = np.append(charge_array, charge)
-            amplitude_array = np.append(amplitude_array, amplitude)
-            fwhm_array = np.append(fwhm_array, fwhm)
+                    fwhm_array = np.append(fwhm_array, fwhm)
 
     return charge_array, amplitude_array, fwhm_array
 
@@ -716,8 +661,9 @@ def read_hist_file(path, filename, fsps_new):
 
 
 def false_spes_vs_delay(start, end, factor, parameter, parameter_title, units, fsps_new, means, mean_5, mean1,
-                        mean15, mean2, mean25, mean3, mean35, mean4, mean45, mean5, mean55, mean6, sds, sd_5, sd1, sd15,
-                        sd2, sd25, sd3, sd35, sd4, sd45, sd5, sd55, sd6, dest_path, shaping):
+                        mean15, mean2, mean25, mean3, mean35, mean4, mean45, mean5, mean55, mean6, mean40, mean80,
+                        sds, sd_5, sd1, sd15, sd2, sd25, sd3, sd35, sd4, sd45, sd5, sd55, sd6, sd40, sd80, dest_path,
+                        shaping):
     cutoff_array = np.array([])
     spes_as_mpes_array = np.array([])
     mpes_as_spes_array = np.array([])
@@ -733,6 +679,8 @@ def false_spes_vs_delay(start, end, factor, parameter, parameter_title, units, f
     mpes_as_spes_5x_array = np.array([])
     mpes_as_spes_55x_array = np.array([])
     mpes_as_spes_6x_array = np.array([])
+    mpes_as_spes_40_array = np.array([])
+    mpes_as_spes_80_array = np.array([])
 
     for i in range(start, end):
         x = i * factor
@@ -750,6 +698,8 @@ def false_spes_vs_delay(start, end, factor, parameter, parameter_title, units, f
         mpes_as_spes_5x = 100 * ((1 / 2) * (2 - math.erfc((x - mean5) / (sd5 * math.sqrt(2)))))
         mpes_as_spes_55x = 100 * ((1 / 2) * (2 - math.erfc((x - mean55) / (sd55 * math.sqrt(2)))))
         mpes_as_spes_6x = 100 * ((1 / 2) * (2 - math.erfc((x - mean6) / (sd6 * math.sqrt(2)))))
+        mpes_as_spes_40 = 100 * ((1 / 2) * (2 - math.erfc((x - mean40) / (sd40 * math.sqrt(2)))))
+        mpes_as_spes_80 = 100 * ((1 / 2) * (2 - math.erfc((x - mean80) / (sd80 * math.sqrt(2)))))
         spes_as_mpes_array = np.append(spes_as_mpes_array, spes_as_mpes)
         mpes_as_spes__5x_array = np.append(mpes_as_spes__5x_array, mpes_as_spes__5x)
         mpes_as_spes_1x_array = np.append(mpes_as_spes_1x_array, mpes_as_spes_1x)
@@ -778,6 +728,8 @@ def false_spes_vs_delay(start, end, factor, parameter, parameter_title, units, f
     mpes_as_spes_5x_array_2 = np.interp(cutoff_array_2, cutoff_array, mpes_as_spes_5x_array)
     mpes_as_spes_55x_array_2 = np.interp(cutoff_array_2, cutoff_array, mpes_as_spes_55x_array)
     mpes_as_spes_6x_array_2 = np.interp(cutoff_array_2, cutoff_array, mpes_as_spes_6x_array)
+    mpes_as_spes_40_array_2 = np.interp(cutoff_array_2, cutoff_array, mpes_as_spes_40_array)
+    mpes_as_spes_80_array_2 = np.interp(cutoff_array_2, cutoff_array, mpes_as_spes_80_array)
 
     idx = np.argmin(np.abs(spes_as_mpes_array_2 - 1))
     mpes_as_spes_array = np.append(mpes_as_spes_array, mpes_as_spes__5x_array_2[idx])
@@ -792,14 +744,16 @@ def false_spes_vs_delay(start, end, factor, parameter, parameter_title, units, f
     mpes_as_spes_array = np.append(mpes_as_spes_array, mpes_as_spes_5x_array_2[idx])
     mpes_as_spes_array = np.append(mpes_as_spes_array, mpes_as_spes_55x_array_2[idx])
     mpes_as_spes_array = np.append(mpes_as_spes_array, mpes_as_spes_6x_array_2[idx])
+    mpes_as_spes_array = np.append(mpes_as_spes_array, mpes_as_spes_40_array_2[idx])
+    mpes_as_spes_array = np.append(mpes_as_spes_array, mpes_as_spes_80_array_2[idx])
 
     delay_array = np.array([1.52e-9, 3.04e-9, 4.56e-9, 6.08e-9, 7.6e-9, 9.12e-9, 1.064e-8, 1.216e-8, 1.368e-8, 1.52e-8,
-                            1.672e-8, 1.824e-8])
+                            1.672e-8, 1.824e-8, 4e-8, 8e-8])
     cutoff = str(float(format(cutoff_array_2[idx], '.2e')))
 
     plt.scatter(delay_array, mpes_as_spes_array)
     plt.plot(delay_array, mpes_as_spes_array)
-    plt.xlim(1.3e-9, 1.84e-8)
+    plt.xlim(1.3e-9, 8.2e-8)
     plt.ylim(-5, 100)
     plt.xlabel('Delay (s)')
     plt.ylabel('% MPES Misidentified as SPEs')
@@ -855,8 +809,8 @@ def false_spes_mpes(start, end, factor, parameter, parameter_title, units, means
 
 
 def roc_graphs(start, end, factor, fsps_new, shaping, parameter, parameter_title, means, mean_nd, mean_5, mean1,
-               mean15, mean2, mean25, mean3, mean35, mean4, mean45, mean5, mean55, mean6, sds, sd_nd, sd_5, sd1, sd15,
-               sd2, sd25, sd3, sd35, sd4, sd45, sd5, sd55, sd6, dest_path):
+               mean15, mean2, mean25, mean3, mean35, mean4, mean45, mean5, mean55, mean6, mean40, mean80,
+               sds, sd_nd, sd_5, sd1, sd15, sd2, sd25, sd3, sd35, sd4, sd45, sd5, sd55, sd6, sd40, sd80, dest_path):
     cutoff_array = np.array([])
     false_mpes_array = np.array([])
     true_spes_array = np.array([])
@@ -873,6 +827,8 @@ def roc_graphs(start, end, factor, fsps_new, shaping, parameter, parameter_title
     false_spes_5x_array = np.array([])
     false_spes_55x_array = np.array([])
     false_spes_6x_array = np.array([])
+    false_spes_40_array = np.array([])
+    false_spes_80_array = np.array([])
     true_mpes_nd_array = np.array([])
     true_mpes__5x_array = np.array([])
     true_mpes_1x_array = np.array([])
@@ -886,6 +842,8 @@ def roc_graphs(start, end, factor, fsps_new, shaping, parameter, parameter_title
     true_mpes_5x_array = np.array([])
     true_mpes_55x_array = np.array([])
     true_mpes_6x_array = np.array([])
+    true_mpes_40_array = np.array([])
+    true_mpes_80_array = np.array([])
 
     for i in range(start, end):
         x = i * factor
@@ -918,6 +876,10 @@ def roc_graphs(start, end, factor, fsps_new, shaping, parameter, parameter_title
         true_mpes_55x = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - mean55) / (sd55 * math.sqrt(2))))))
         false_spes_6x = 100 * ((1 / 2) * (2 - math.erfc((x - mean6) / (sd6 * math.sqrt(2)))))
         true_mpes_6x = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - mean6) / (sd6 * math.sqrt(2))))))
+        false_spes_40 = 100 * ((1 / 2) * (2 - math.erfc((x - mean40) / (sd40 * math.sqrt(2)))))
+        true_mpes_40 = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - mean40) / (sd40 * math.sqrt(2))))))
+        false_spes_80 = 100 * ((1 / 2) * (2 - math.erfc((x - mean80) / (sd80 * math.sqrt(2)))))
+        true_mpes_80 = 100 * (1 + ((1 / 2) * (-2 + math.erfc((x - mean80) / (sd80 * math.sqrt(2))))))
         false_mpes_array = np.append(false_mpes_array, false_mpes)
         true_spes_array = np.append(true_spes_array, true_spes)
         false_spes_nd_array = np.append(false_spes_nd_array, false_spes_nd)
@@ -946,6 +908,10 @@ def roc_graphs(start, end, factor, fsps_new, shaping, parameter, parameter_title
         true_mpes_55x_array = np.append(true_mpes_55x_array, true_mpes_55x)
         false_spes_6x_array = np.append(false_spes_6x_array, false_spes_6x)
         true_mpes_6x_array = np.append(true_mpes_6x_array, true_mpes_6x)
+        false_spes_40_array = np.append(false_spes_40_array, false_spes_40)
+        true_mpes_40_array = np.append(true_mpes_40_array, true_mpes_40)
+        false_spes_80_array = np.append(false_spes_80_array, false_spes_80)
+        true_mpes_80_array = np.append(true_mpes_80_array, true_mpes_80)
 
     cutoff_array_2 = np.linspace(start * factor, end * factor, 1000)
     false_mpes_array_2 = np.interp(cutoff_array_2, cutoff_array, false_mpes_array)
@@ -976,6 +942,10 @@ def roc_graphs(start, end, factor, fsps_new, shaping, parameter, parameter_title
     true_mpes_55x_array_2 = np.interp(cutoff_array_2, cutoff_array, true_mpes_55x_array)
     false_spes_6x_array_2 = np.interp(cutoff_array_2, cutoff_array, false_spes_6x_array)
     true_mpes_6x_array_2 = np.interp(cutoff_array_2, cutoff_array, true_mpes_6x_array)
+    false_spes_40_array_2 = np.interp(cutoff_array_2, cutoff_array, false_spes_40_array)
+    true_mpes_40_array_2 = np.interp(cutoff_array_2, cutoff_array, true_mpes_40_array)
+    false_spes_80_array_2 = np.interp(cutoff_array_2, cutoff_array, false_spes_80_array)
+    true_mpes_80_array_2 = np.interp(cutoff_array_2, cutoff_array, true_mpes_80_array)
 
     idx = np.argmin(np.abs(false_mpes_array_2 - 1))
 
@@ -1301,5 +1271,55 @@ def roc_graphs(start, end, factor, fsps_new, shaping, parameter, parameter_title
     plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
     plt.annotate('1% false MPEs', (3, 0))
     plt.savefig(dest_path / 'plots' / str('roc_mpes_' + parameter + '_6x_rt_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    # Plots ROC graphs for double waveforms with 40 ns delay
+    plt.plot(false_spes_40_array_2, true_spes_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.plot(false_spes_40_array_2[idx], true_spes_array_2[idx], marker='x')
+    plt.xlabel('% False SPEs')
+    plt.ylabel('% True SPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (false_spes_40_array_2[idx] + 2, true_spes_array_2[idx] - 4))
+    plt.savefig(dest_path / 'plots' / str('roc_spes_' + parameter + '_40_ns_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    plt.plot(false_mpes_array_2, true_mpes_40_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.vlines(1, 0, 100)
+    plt.xlabel('% False MPEs')
+    plt.ylabel('% True MPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (3, 0))
+    plt.savefig(dest_path / 'plots' / str('roc_mpes_' + parameter + '_40_ns_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    # Plots ROC graphs for double waveforms with 80 ns delay
+    plt.plot(false_spes_80_array_2, true_spes_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.plot(false_spes_80_array_2[idx], true_spes_array_2[idx], marker='x')
+    plt.xlabel('% False SPEs')
+    plt.ylabel('% True SPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (false_spes_80_array_2[idx] + 2, true_spes_array_2[idx] - 4))
+    plt.savefig(dest_path / 'plots' / str('roc_spes_' + parameter + '_80_ns_' + str(int(fsps_new / 1e6)) + '_Msps_' +
+                                          shaping + '.png'), dpi=360)
+    plt.close()
+
+    plt.plot(false_mpes_array_2, true_mpes_80_array_2)
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.vlines(1, 0, 100)
+    plt.xlabel('% False MPEs')
+    plt.ylabel('% True MPEs')
+    plt.title('ROC Graph (' + parameter_title + ' Cutoff)')
+    plt.annotate('1% false MPEs', (3, 0))
+    plt.savefig(dest_path / 'plots' / str('roc_mpes_' + parameter + '_80_ns_' + str(int(fsps_new / 1e6)) + '_Msps_' +
                                           shaping + '.png'), dpi=360)
     plt.close()

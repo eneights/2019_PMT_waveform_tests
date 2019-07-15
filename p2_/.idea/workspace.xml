@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="b233d9bb-fb16-433a-88e9-9ace4d76cecf" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/../p3_/amp_cutoff.py" beforeDir="false" afterPath="$PROJECT_DIR$/../p3_/amp_cutoff.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../p3_/double_spe_studies.py" beforeDir="false" afterPath="$PROJECT_DIR$/../p3_/double_spe_studies.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../p3_/double_spe_studies_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/../p3_/double_spe_studies_2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../p3_/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/../p3_/functions.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -31,26 +31,26 @@
         <counts>
           <entry key="ipyb" value="1" />
           <entry key="ipynb" value="3" />
-          <entry key="py" value="121" />
+          <entry key="py" value="123" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="IPNB" value="3" />
           <entry key="PLAIN_TEXT" value="1" />
-          <entry key="Python" value="121" />
+          <entry key="Python" value="123" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="14" />
-          <entry key="py" value="48959" />
+          <entry key="py" value="49406" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="14" />
-          <entry key="Python" value="48959" />
+          <entry key="Python" value="49406" />
         </counts>
       </usages-collector>
     </session>
@@ -60,7 +60,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../p3_/double_spe_studies.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4305">
+            <state relative-caret-position="3921">
               <caret line="287" column="42" selection-start-line="287" selection-start-column="42" selection-end-line="287" selection-end-column="42" />
               <folding>
                 <marker date="1562950198425" expanded="true" signature="208:209" ph="..." />
@@ -69,13 +69,13 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../p3_/double_spe_studies_2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3105">
-              <caret line="207" column="79" lean-forward="true" selection-start-line="207" selection-start-column="79" selection-end-line="207" selection-end-column="79" />
+            <state relative-caret-position="284">
+              <caret line="200" column="60" lean-forward="true" selection-start-line="200" selection-start-column="60" selection-end-line="200" selection-end-column="60" />
               <folding>
-                <marker date="1562041283947" expanded="true" signature="89:90" ph="..." />
+                <marker date="1563200972267" expanded="true" signature="89:90" ph="..." />
               </folding>
             </state>
           </provider>
@@ -84,23 +84,32 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../p3_/amp_cutoff.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-7">
-              <caret line="102" column="9" selection-start-line="102" selection-start-column="9" selection-end-line="102" selection-end-column="9" />
+            <state relative-caret-position="-967">
+              <caret line="31" lean-forward="true" selection-start-line="31" selection-end-line="31" />
               <folding>
-                <marker date="1562949510596" expanded="true" signature="85:86" ph="..." />
+                <marker date="1563201786883" expanded="true" signature="85:86" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../p3_/functions.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="15891">
+              <caret line="1316" column="21" lean-forward="true" selection-start-line="1316" selection-start-column="21" selection-end-line="1316" selection-end-column="21" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../p3_/functions.py">
+        <entry file="file://$PROJECT_DIR$/create_double_spe.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1894">
-              <caret line="487" column="52" selection-start-line="487" selection-start-column="52" selection-end-line="487" selection-end-column="52" />
-              <folding>
-                <element signature="e#0#9#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="-3206">
+              <caret line="158" column="42" selection-start-line="158" selection-start-column="42" selection-end-line="158" selection-end-column="42" />
             </state>
           </provider>
         </entry>
@@ -181,7 +190,6 @@
         <option value="$PROJECT_DIR$/../p3_/drawit.py" />
         <option value="$USER_HOME$/Desktop/drawit.py" />
         <option value="$PROJECT_DIR$/../p3_/plot_waveform.py" />
-        <option value="$PROJECT_DIR$/../p3_/double_spe_studies_2.py" />
         <option value="$PROJECT_DIR$/../p3_/amp_cutoff_roc.py" />
         <option value="$PROJECT_DIR$/../p3_/dispersion_check.py" />
         <option value="$PROJECT_DIR$/../../2019_PMT_thickness_tests/dispersion_check.py" />
@@ -194,9 +202,10 @@
         <option value="$PROJECT_DIR$/functions.py" />
         <option value="$PROJECT_DIR$/../p1_/p1.py" />
         <option value="$PROJECT_DIR$/../p3_/p3.py" />
+        <option value="$PROJECT_DIR$/../p3_/double_spe_studies.py" />
+        <option value="$PROJECT_DIR$/../p3_/double_spe_studies_2.py" />
         <option value="$PROJECT_DIR$/../p3_/amp_cutoff.py" />
         <option value="$PROJECT_DIR$/../p3_/functions.py" />
-        <option value="$PROJECT_DIR$/../p3_/double_spe_studies.py" />
       </list>
     </option>
   </component>
@@ -607,24 +616,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/create_double_spe.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="215">
-          <caret line="158" column="42" selection-start-line="158" selection-start-column="42" selection-end-line="158" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/p2.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1500">
           <caret line="101" column="4" lean-forward="true" selection-start-line="101" selection-start-column="4" selection-end-line="101" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/functions.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1897">
-          <caret line="361" column="45" selection-start-line="361" selection-start-column="45" selection-end-line="361" selection-end-column="45" />
         </state>
       </provider>
     </entry>
@@ -647,29 +642,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../p3_/amp_cutoff.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-7">
-          <caret line="102" column="9" selection-start-line="102" selection-start-column="9" selection-end-line="102" selection-end-column="9" />
-          <folding>
-            <marker date="1562949510596" expanded="true" signature="85:86" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../p3_/functions.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1894">
-          <caret line="487" column="52" selection-start-line="487" selection-start-column="52" selection-end-line="487" selection-end-column="52" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../p3_/double_spe_studies.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4305">
+        <state relative-caret-position="3921">
           <caret line="287" column="42" selection-start-line="287" selection-start-column="42" selection-end-line="287" selection-end-column="42" />
           <folding>
             <marker date="1562950198425" expanded="true" signature="208:209" ph="..." />
@@ -679,10 +654,44 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../p3_/double_spe_studies_2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3105">
-          <caret line="207" column="79" lean-forward="true" selection-start-line="207" selection-start-column="79" selection-end-line="207" selection-end-column="79" />
+        <state relative-caret-position="284">
+          <caret line="200" column="60" lean-forward="true" selection-start-line="200" selection-start-column="60" selection-end-line="200" selection-end-column="60" />
           <folding>
-            <marker date="1562041283947" expanded="true" signature="89:90" ph="..." />
+            <marker date="1563200972267" expanded="true" signature="89:90" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/functions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3008">
+          <caret line="361" column="45" selection-start-line="361" selection-start-column="45" selection-end-line="361" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/create_double_spe.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3206">
+          <caret line="158" column="42" selection-start-line="158" selection-start-column="42" selection-end-line="158" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../p3_/amp_cutoff.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-967">
+          <caret line="31" lean-forward="true" selection-start-line="31" selection-end-line="31" />
+          <folding>
+            <marker date="1563201786883" expanded="true" signature="85:86" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../p3_/functions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15891">
+          <caret line="1316" column="21" lean-forward="true" selection-start-line="1316" selection-start-column="21" selection-end-line="1316" selection-end-column="21" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
