@@ -24,6 +24,9 @@ def amp_cutoff(date, filter_band, nhdr, shaping):
         files_added = filename[15:27]
         double_file_array_6x_rt = np.append(double_file_array_6x_rt, files_added)
 
+    single_file_array = single_file_array[:1001]
+    double_file_array_6x_rt = double_file_array_6x_rt[:1001]
+
     print('Doing calculations...')
     for i in range(-150, 0):
         cutoff_array = np.append(cutoff_array, i)
