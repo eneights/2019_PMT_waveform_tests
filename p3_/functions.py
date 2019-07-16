@@ -266,7 +266,7 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
     if int(fsps_new / 1e6) == 500 and double_folder == 'rt_1':
         min_val = -106
     elif int(fsps_new / 1e6) == 250 and double_folder == 'rt_2':
-        min_val = 79
+        min_val = -79
     elif int(fsps_new / 1e6) == 125 and double_folder == 'rt_2':
         min_val = -29
     elif int(fsps_new / 1e6) == 125 and double_folder == 'rt_4':

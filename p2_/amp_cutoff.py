@@ -1,10 +1,10 @@
 from functions import *
 
 
-def amp_cutoff(date, filter_band, fsps_new, nhdr, shaping):
+def amp_cutoff(date, filter_band, nhdr, shaping):
     gen_path = Path(r'/Volumes/TOSHIBA EXT/data/watchman')
     save_path = Path(str(gen_path / '%08d_watchman_spe/waveforms/%s') % (date, filter_band))
-    dest_path = Path(save_path / 'd3')
+    dest_path = Path(save_path / 'd2')
 
     single_file_array = np.array([])
     double_file_array_6x_rt = np.array([])
@@ -15,13 +15,11 @@ def amp_cutoff(date, filter_band, fsps_new, nhdr, shaping):
     false_double = np.array([])
 
     print('Checking existing files...')
-    for filename in os.listdir(dest_path / 'single_spe' / shaping / str('digitized_' + str(int(fsps_new / 1e6)) +
-                                                                        '_Msps')):
+    for filename in os.listdir(dest_path / 'single_spe' / shaping):
         print(filename, 'is a file')
         files_added = filename[15:20]
         single_file_array = np.append(single_file_array, files_added)
-    for filename in os.listdir(dest_path / 'double_spe' / shaping / '6x_rt' /
-                               str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps')):
+    for filename in os.listdir(dest_path / 'double_spe' / shaping / '6x_rt'):
         print(filename, 'is a file')
         files_added = filename[15:27]
         double_file_array_6x_rt = np.append(double_file_array_6x_rt, files_added)
@@ -38,9 +36,8 @@ def amp_cutoff(date, filter_band, fsps_new, nhdr, shaping):
         z2 = 0
 
         for item in single_file_array:
-            file_name = str(dest_path / 'single_spe' / shaping / str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps')
-                            / 'D3--waveforms--%s.txt') % item
-            t, v, hdr = rw(file_name, nhdr)                 # Waveform file is read
+            file_name = str(dest_path / 'single_spe' / shaping / 'D2--waveforms--%s.txt') % item
+            t, v, hdr = rw(file_name, nhdr)  # Waveform file is read
 
             peak_amts = np.array([])
 
@@ -64,9 +61,8 @@ def amp_cutoff(date, filter_band, fsps_new, nhdr, shaping):
                 pass
 
         for item in double_file_array_6x_rt:
-            file_name = str(dest_path / 'double_spe' / shaping / '6x_rt' /
-                            str('digitized_' + str(int(fsps_new / 1e6)) + '_Msps') / 'D3--waveforms--%s.txt') % item
-            t, v, hdr = rw(file_name, nhdr)                 # Waveform file is read
+            file_name = str(dest_path / 'double_spe' / shaping / '6x_rt' / 'D2--waveforms--%s.txt') % item
+            t, v, hdr = rw(file_name, nhdr)  # Waveform file is read
 
             peak_amts = np.array([])
 
@@ -117,7 +113,7 @@ def amp_cutoff(date, filter_band, fsps_new, nhdr, shaping):
               '% true single peaks')
     plt.plot(false_s_per, true_s_per, marker='x')
     plt.annotate(str(amp) + ' bits', (false_s_per + 3, true_s_per))
-    plt.savefig(dest_path / 'plots' / str('roc_single_' + str(int(fsps_new / 1e6)) + '_Msps_' + shaping + '.png'),
+    plt.savefig(dest_path / 'plots' / str('roc_single_' + shaping + '.png'),
                 dpi=360)
     plt.close()
 
@@ -130,8 +126,7 @@ def amp_cutoff(date, filter_band, fsps_new, nhdr, shaping):
               '% true double peaks')
     plt.plot(false_d_per, true_d_per, marker='x')
     plt.annotate(str(amp) + ' bits', (false_d_per + 3, true_d_per))
-    plt.savefig(dest_path / 'plots' / str('roc_double_' + str(int(fsps_new / 1e6)) + '_Msps_' + shaping + '.png'),
-                dpi=360)
+    plt.savefig(dest_path / 'plots' / str('roc_double_' + shaping + '.png'), dpi=360)
     plt.close()
 
     # Plots percent error vs amplitude cutoff graphs
@@ -141,8 +136,7 @@ def amp_cutoff(date, filter_band, fsps_new, nhdr, shaping):
     plt.xlabel('Amplitude Cutoff (bits)')
     plt.ylabel('% False Single Peaks')
     plt.title('False Single Peaks')
-    plt.savefig(dest_path / 'plots' / str('false_single_cutoff_' + str(int(fsps_new / 1e6)) + '_Msps_' + shaping +
-                                          '.png'), dpi=360)
+    plt.savefig(dest_path / 'plots' / str('false_single_cutoff_' + shaping + '.png'), dpi=360)
     plt.close()
 
     plt.plot(cutoff_array, false_double)
@@ -151,8 +145,7 @@ def amp_cutoff(date, filter_band, fsps_new, nhdr, shaping):
     plt.xlabel('Amplitude Cutoff (bits)')
     plt.ylabel('% False Double Peaks')
     plt.title('False Double Peaks')
-    plt.savefig(dest_path / 'plots' / str('false_double_cutoff_' + str(int(fsps_new / 1e6)) + '_Msps_' + shaping +
-                                          '.png'), dpi=360)
+    plt.savefig(dest_path / 'plots' / str('false_double_cutoff_' + shaping + '.png'), dpi=360)
     plt.close()
 
 
@@ -162,12 +155,8 @@ if __name__ == '__main__':
     parser.add_argument("--date", type=int, help='date of data acquisition (default=20190513)', default=20190513)
     parser.add_argument("--fil_band", type=str, help='folder name for data (default=full_bdw_no_nf)',
                         default='full_bdw_no_nf')
-    parser.add_argument("--fsps_new", type=float, help='new samples per second (Hz) (default=500000000.)',
-                        default=500000000.)
     parser.add_argument("--nhdr", type=int, help='number of header lines to skip in raw file (default=5)', default=5)
     parser.add_argument("--shaping", type=str, help='shaping amount (default=rt_1)', default='rt_1')
     args = parser.parse_args()
 
-    amp_cutoff(args.date, args.fil_band, args.fsps_new, args.nhdr, args.shaping)
-
-
+    amp_cutoff(args.date, args.fil_band, args.nhdr, args.shaping)
