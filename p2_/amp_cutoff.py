@@ -7,8 +7,14 @@ def amp_cutoff(date, filter_band, nhdr, shaping):
     dest_path = Path(save_path / 'd2')
 
     single_file_array = np.array([])
-    double_file_array_6x_rt = np.array([])
+    double_file_array = np.array([])
     cutoff_array = np.array([])
+    x1_array = np.array([])
+    y1_array = np.array([])
+    z1_array = np.array([])
+    x2_array = np.array([])
+    y2_array = np.array([])
+    z2_array = np.array([])
     true_single = np.array([])
     false_single = np.array([])
     true_double = np.array([])
@@ -19,86 +25,80 @@ def amp_cutoff(date, filter_band, nhdr, shaping):
         print(filename, 'is a file')
         files_added = filename[15:20]
         single_file_array = np.append(single_file_array, files_added)
-    for filename in os.listdir(dest_path / 'double_spe' / shaping / '40_ns'):
+    for filename in os.listdir(dest_path / 'double_spe' / shaping / '80_ns'):
         print(filename, 'is a file')
         files_added = filename[15:27]
-        double_file_array_6x_rt = np.append(double_file_array_6x_rt, files_added)
+        double_file_array = np.append(double_file_array, files_added)
 
     single_file_array = single_file_array[:100]
-    double_file_array_6x_rt = double_file_array_6x_rt[:100]
+    double_file_array = double_file_array[:100]
 
     print('Doing calculations...')
     for i in range(-200, 0):
-        print(i)
-        cutoff_array = np.append(cutoff_array, i)
+        voltage = (i - 0.5) / ((2 ** 14 - 1) * 2)
+        cutoff_array = np.append(cutoff_array, voltage)
 
-        x1 = 0
-        y1 = 0
-        z1 = 0
-        x2 = 0
-        y2 = 0
-        z2 = 0
+    for i in range(len(cutoff_array)):
+        x1_array = np.append(x1_array, 0)
+        y1_array = np.append(y1_array, 0)
+        z1_array = np.append(z1_array, 0)
+        x2_array = np.append(x2_array, 0)
+        y2_array = np.append(y2_array, 0)
+        z2_array = np.append(z2_array, 0)
 
-        for item in single_file_array:
-            file_name = str(dest_path / 'single_spe' / shaping / 'D2--waveforms--%s.txt') % item
-            t, v, hdr = rw(file_name, nhdr)  # Waveform file is read
-            v_bits = np.array([])
-            for thing in range(len(v)):
-                v_bits = np.append(v_bits, (v[thing] * (2 ** 14 - 1) * 2 + 0.5))  # Converts voltage array to bits
+    for item in single_file_array:
+        peak_amts = np.array([])
 
-            peak_amts = np.array([])
+        file_name = str(dest_path / 'single_spe' / shaping / 'D2--waveforms--%s.txt') % item
+        t, v, hdr = rw(file_name, nhdr)                                         # Waveform file is read
+        v_flip = -1 * v
 
-            try:
-                z1 += 1
-                v_flip = -1 * v_bits
-                peaks, _ = signal.find_peaks(v_flip, max(v_flip) / 20)
-                for thing in peaks:
-                    peak_amts = np.append(peak_amts, v_flip[thing])
-                if len(np.where(peak_amts == max(peak_amts))[0]) == 1:
-                    peak_amts[np.where(peak_amts == max(peak_amts))] = 0
-                else:
-                    peak_amts[np.where(peak_amts == max(peak_amts))[0][0]] = 0
-                sec_max = v_bits[peaks[np.where(peak_amts == max(peak_amts))]][0]
+        for i in cutoff_array:
+            idx = np.where(cutoff_array == i)
+            z1_array[idx] += 1
+            peaks, _ = signal.find_peaks(v_flip, max(v_flip) / 20)
+            for thing in peaks:
+                peak_amts = np.append(peak_amts, v_flip[thing])
+            if len(np.where(peak_amts == max(peak_amts))[0]) == 1:
+                peak_amts[np.where(peak_amts == max(peak_amts))] = 0
+            else:
+                peak_amts[np.where(peak_amts == max(peak_amts))[0][0]] = 0
+            sec_max = v[peaks[np.where(peak_amts == max(peak_amts))]][0]
+            if sec_max >= i or len(peaks) == 1:
+                x1_array[idx] += 1
+            else:
+                y1_array[idx] += 1
 
-                if sec_max >= i or len(peaks) == 1:
-                    x1 += 1
-                else:
-                    y1 += 1
-            except Exception:
-                pass
+    for item in double_file_array:
+        peak_amts = np.array([])
 
-        for item in double_file_array_6x_rt:
-            file_name = str(dest_path / 'double_spe' / shaping / '40_ns' / 'D2--waveforms--%s.txt') % item
-            t, v, hdr = rw(file_name, nhdr)  # Waveform file is read
-            v_bits = np.array([])
-            for thing in range(len(v)):
-                v_bits = np.append(v_bits, (v[thing] * (2 ** 14 - 1) * 2 + 0.5))  # Converts voltage array to bits
+        file_name = str(dest_path / 'double_spe' / shaping / '40_ns' / 'D2--waveforms--%s.txt') % item
+        t, v, hdr = rw(file_name, nhdr)                                         # Waveform file is read
+        v_flip = -1 * v
 
-            peak_amts = np.array([])
+        for i in cutoff_array:
+            idx = np.where(cutoff_array == i)
+            z2_array[idx] += 1
+            peaks, _ = signal.find_peaks(v_flip, max(v_flip) / 20)
+            for thing in peaks:
+                peak_amts = np.append(peak_amts, v_flip[thing])
+            if len(np.where(peak_amts == max(peak_amts))[0]) == 1:
+                peak_amts[np.where(peak_amts == max(peak_amts))] = 0
+            else:
+                peak_amts[np.where(peak_amts == max(peak_amts))[0][0]] = 0
+            sec_max = v[peaks[np.where(peak_amts == max(peak_amts))]][0]
+            if sec_max >= i or len(peaks) == 1:
+                x2_array[idx] += 1
+            else:
+                y2_array[idx] += 1
 
-            try:
-                z2 += 1
-                v_flip = -1 * v
-                peaks, _ = signal.find_peaks(v_flip, max(v_flip) / 20)
-                for thing in peaks:
-                    peak_amts = np.append(peak_amts, v_flip[thing])
-                if len(np.where(peak_amts == max(peak_amts))[0]) == 1:
-                    peak_amts[np.where(peak_amts == max(peak_amts))] = 0
-                else:
-                    peak_amts[np.where(peak_amts == max(peak_amts))[0][0]] = 0
-                sec_max = v_bits[peaks[np.where(peak_amts == max(peak_amts))]][0]
+    for item in cutoff_array:
+        idx = np.where(cutoff_array == item)
 
-                if sec_max >= i or len(peaks) == 1:
-                    x2 += 1
-                else:
-                    y2 += 1
-            except Exception:
-                pass
-
-        percent_true_single = x1 / z1 * 100
-        percent_false_double = y1 / z1 * 100
-        percent_false_single = x2 / z2 * 100
-        percent_true_double = y2 / z2 * 100
+        percent_true_single = x1_array[idx] / z1_array[idx] * 100
+        percent_false_double = y1_array[idx] / z1_array[idx] * 100
+        percent_false_single = x2_array[idx] / z2_array[idx] * 100
+        percent_true_double = y2_array[idx] / z2_array[idx] * 100
 
         true_single = np.append(true_single, percent_true_single)
         false_single = np.append(false_single, percent_false_single)
@@ -112,49 +112,25 @@ def amp_cutoff(date, filter_band, nhdr, shaping):
     true_d_per = float(format(true_double[idx], '.2e'))
     false_d_per = float(format(false_double[idx], '.2e'))
 
-    print('Making plots...')
-    # Plots ROC graphs
-    plt.plot(false_single, true_single)
-    plt.xlim(-5, 100)
-    plt.ylim(-5, 100)
-    plt.xlabel('% False Single Peaks')
-    plt.ylabel('% True Single Peaks')
-    plt.title('ROC Graph (Amplitude Cutoff)\n' + str(false_s_per) + '% false single peaks, ' + str(true_s_per) +
-              '% true single peaks')
-    plt.plot(false_s_per, true_s_per, marker='x')
-    plt.annotate(str(amp) + ' bits', (false_s_per + 3, true_s_per))
-    plt.savefig(dest_path / 'plots' / str('roc_single_' + shaping + '.png'),
-                dpi=360)
-    plt.close()
-
-    plt.plot(false_double, true_double)
-    plt.xlim(-5, 100)
-    plt.ylim(-5, 100)
-    plt.xlabel('% False Double Peaks')
-    plt.ylabel('% True Double Peaks')
-    plt.title('ROC Graph (Amplitude Cutoff)\n' + str(false_d_per) + '% false double peaks, ' + str(true_d_per) +
-              '% true double peaks')
-    plt.plot(false_d_per, true_d_per, marker='x')
-    plt.annotate(str(amp) + ' bits', (false_d_per + 3, true_d_per))
-    plt.savefig(dest_path / 'plots' / str('roc_double_' + shaping + '.png'), dpi=360)
-    plt.close()
-
     # Plots percent error vs amplitude cutoff graphs
+    print('Making plots...')
     plt.plot(cutoff_array, false_single)
     plt.ylim(-5, 100)
     plt.plot(amp, false_s_per, marker='x')
-    plt.xlabel('Amplitude Cutoff (bits)')
+    plt.xlabel('Amplitude Cutoff (V)')
     plt.ylabel('% False Single Peaks')
-    plt.title('False Single Peaks')
+    plt.title('False Single Peaks (Amplitude Cutoff = ' + str(amp) + ' V\n' + str(false_s_per) +
+              '% false single peaks, ' + str(true_s_per) + '% true single peaks')
     plt.savefig(dest_path / 'plots' / str('false_single_cutoff_' + shaping + '.png'), dpi=360)
     plt.close()
 
     plt.plot(cutoff_array, false_double)
     plt.ylim(-5, 100)
     plt.plot(amp, false_d_per, marker='x')
-    plt.xlabel('Amplitude Cutoff (bits)')
+    plt.xlabel('Amplitude Cutoff (V)')
     plt.ylabel('% False Double Peaks')
-    plt.title('False Double Peaks')
+    plt.title('False Double Peaks (Amplitude Cutoff = ' + str(amp) + ' V\n' + str(false_d_per) +
+              '% false double peaks, ' + str(true_d_per) + '% true double peaks')
     plt.savefig(dest_path / 'plots' / str('false_double_cutoff_' + shaping + '.png'), dpi=360)
     plt.close()
 

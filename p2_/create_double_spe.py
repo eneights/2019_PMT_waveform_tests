@@ -389,10 +389,10 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
 
     # Creates histograms of 10-90 rise times for 1x, 2x, 4x, and 8x the initial rise time for double spe waveforms
     print('Creating histograms...')
-    plot_histogram(rt_1_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'double_spe_rt_1_' + delay_folder)
-    plot_histogram(rt_2_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'double_spe_rt_2_' + delay_folder)
-    plot_histogram(rt_4_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'double_spe_rt_4_' + delay_folder)
-    plot_histogram(rt_8_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'double_spe_rt_8_' + delay_folder)
+    plot_histogram(rt_1_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_1_double_' + delay_folder)
+    plot_histogram(rt_2_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_2_double_' + delay_folder)
+    plot_histogram(rt_4_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_4_double_' + delay_folder)
+    plot_histogram(rt_8_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_8_double_' + delay_folder)
 
 
 if __name__ == '__main__':

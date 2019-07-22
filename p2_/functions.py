@@ -440,7 +440,8 @@ def make_arrays(dest_path, save_path, start, end, nhdr):
                 filter_2_array = np.append(filter_2_array, filter_2)
                 filter_2_2_array = np.append(filter_2_2_array, filter_2_2)
                 filter_2_2_2_array = np.append(filter_2_2_2_array, filter_2_2_2)
-
+        elif os.path.isfile(dest_path / 'unusable_data' / 'D2--waveforms--%05d.txt' % i):
+                pass
         else:       # If the calculations were not done yet, they are calculated, any spe waveform that returns
                     # impossible values is removed
             if os.path.isfile(file_name1) and os.path.isfile(file_name2) and os.path.isfile(file_name2_2) and \
@@ -695,6 +696,43 @@ def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename):
     def func(x, a, b, c):           # Defines Gaussian function (a is amplitude, b is mean, c is standard deviation)
         return a * np.exp(-(x - b) ** 2.0 / (2 * c ** 2))
 
+    if (filename.startswith('rt_1_double_') or filename.startswith('rt_2_double_') or
+            filename.startswith('rt_4_double_') or filename.startswith('rt_8_double_')):
+        if filename[12:] == 'no_delay':
+            delay_folder = 'no delay'
+        elif filename[12:] == '0.5x_rt':
+            delay_folder = '1.52 ns delay'
+        elif filename[12:] == '1x_rt':
+            delay_folder = '3.04 ns delay'
+        elif filename[12:] == '1.5x_rt':
+            delay_folder = '4.56 ns delay'
+        elif filename[12:] == '2x_rt':
+            delay_folder = '6.08 ns delay'
+        elif filename[12:] == '2.5x_rt':
+            delay_folder = '7.6 ns delay'
+        elif filename[12:] == '3x_rt':
+            delay_folder = '9.12 ns delay'
+        elif filename[12:] == '3.5x_rt':
+            delay_folder = '10.6 ns delay'
+        elif filename[12:] == '4x_rt':
+            delay_folder = '12.2 ns delay'
+        elif filename[12:] == '4.5x_rt':
+            delay_folder = '13.7 ns delay'
+        elif filename[12:] == '5x_rt':
+            delay_folder = '15.2 ns delay'
+        elif filename[12:] == '5.5x_rt':
+            delay_folder = '16.7 ns delay'
+        elif filename[12:] == '6x_rt':
+            delay_folder = '18.2 ns delay'
+        elif filename[12:] == '40_ns':
+            delay_folder = '40 ns delay'
+        elif filename[12:] == '80_ns':
+            delay_folder = '80 ns delay'
+        else:
+            delay_folder = ''
+    else:
+        delay_folder = ''
+
     path = Path(dest_path / 'plots')
     n, bins, patches = plt.hist(array, nbins)       # Plots histogram
     b_est, c_est = norm.fit(array)              # Calculates mean & standard deviation based on entire array
@@ -720,12 +758,62 @@ def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename):
         mu2 = float(format(popt2[1], '.2e'))    # Calculates mean
         sigma2 = np.abs(float(format(popt2[2], '.2e')))     # Calculates standard deviation
         plt.xlabel(xaxis + ' (' + units + ')')
-        plt.title(title + ' of SPE\n mean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2) + ' ' + units)
+        if filename == 'rt_1_single_':
+            plt.title(title + ' of SPE (no shaping)\nmean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2) + ' ' +
+                      units)
+        elif filename == 'rt_2_single_':
+            plt.title(title + ' of SPE (2x rise time shaping)\nmean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2)
+                      + ' ' + units)
+        elif filename == 'rt_4_single_':
+            plt.title(title + ' of SPE (4x rise time shaping)\nmean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2)
+                      + ' ' + units)
+        elif filename == 'rt_8_single_':
+            plt.title(title + ' of SPE (8x rise time shaping)\nmean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2)
+                      + ' ' + units)
+        elif filename.startswith('rt_1_double_'):
+            plt.title(title + ' of Double SPE (' + delay_folder + ', no shaping)\nmean: ' + str(mu2) + ' ' + units +
+                      ', SD: ' + str(sigma2) + ' ' + units)
+        elif filename.startswith('rt_2_double_'):
+            plt.title(title + ' of Double SPE (' + delay_folder + ', 2x rise time shaping)\nmean: ' + str(mu2) + ' ' +
+                      units + ', SD: ' + str(sigma2) + ' ' + units)
+        elif filename.startswith('rt_4_double_'):
+            plt.title(title + ' of Double SPE (' + delay_folder + ', 4x rise time shaping)\nmean: ' + str(mu2) + ' ' +
+                      units + ', SD: ' + str(sigma2) + ' ' + units)
+        elif filename.startswith('rt_8_double_'):
+            plt.title(title + ' of Double SPE (' + delay_folder + ', 8x rise time shaping)\nmean: ' + str(mu2) + ' ' +
+                      units + ', SD: ' + str(sigma2) + ' ' + units)
+        else:
+            plt.title(title + '\nmean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2) + ' ' + units)
         plt.savefig(path / str(filename + '.png'), dpi=360)
         plt.close()
     except Exception:
         plt.xlabel(xaxis + ' (' + units + ')')
-        plt.title(title + ' of SPE\n mean: ' + str(b_est) + ' ' + units + ', SD: ' + str(c_est) + ' ' + units)
+        if filename == 'rt_1_single_':
+            plt.title(title + ' of SPE (no shaping)\nmean: ' + str(b_est) + ' ' + units + ', SD: ' + str(c_est) + ' ' +
+                      units)
+        elif filename == 'rt_2_single_':
+            plt.title(title + ' of SPE (2x rise time shaping)\nmean: ' + str(b_est) + ' ' + units + ', SD: ' +
+                      str(c_est) + ' ' + units)
+        elif filename == 'rt_4_single_':
+            plt.title(title + ' of SPE (4x rise time shaping)\nmean: ' + str(b_est) + ' ' + units + ', SD: ' +
+                      str(c_est) + ' ' + units)
+        elif filename == 'rt_8_single_':
+            plt.title(title + ' of SPE (8x rise time shaping)\nmean: ' + str(b_est) + ' ' + units + ', SD: ' +
+                      str(c_est) + ' ' + units)
+        elif filename.startswith('rt_1_double_'):
+            plt.title(title + ' of Double SPE (' + delay_folder + ', no shaping)\nmean: ' + str(b_est) + ' ' + units +
+                      ', SD: ' + str(c_est) + ' ' + units)
+        elif filename.startswith('rt_2_double_'):
+            plt.title(title + ' of Double SPE (' + delay_folder + ', 2x rise time shaping)\nmean: ' + str(b_est) + ' ' +
+                      units + ', SD: ' + str(c_est) + ' ' + units)
+        elif filename.startswith('rt_4_double_'):
+            plt.title(title + ' of Double SPE (' + delay_folder + ', 4x rise time shaping)\nmean: ' + str(b_est) + ' ' +
+                      units + ', SD: ' + str(c_est) + ' ' + units)
+        elif filename.startswith('rt_8_double_'):
+            plt.title(title + ' of Double SPE (' + delay_folder + ', 8x rise time shaping)\nmean: ' + str(b_est) + ' ' +
+                      units + ', SD: ' + str(c_est) + ' ' + units)
+        else:
+            plt.title(title + '\nmean: ' + str(b_est) + ' ' + units + ', SD: ' + str(c_est) + ' ' + units)
         plt.savefig(path / str(filename + '.png'), dpi=360)
         plt.close()
 

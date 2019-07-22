@@ -184,10 +184,10 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
 
     # Creates histograms of 10-90 rise times for 1x, 2x, 4x, and 8x the initial rise time
     print('Creating histograms...')
-    plot_histogram(rt_1_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_1')
-    plot_histogram(rt_2_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_2')
-    plot_histogram(rt_4_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_4')
-    plot_histogram(rt_8_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_8')
+    plot_histogram(rt_1_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_1_single_')
+    plot_histogram(rt_2_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_2_single_')
+    plot_histogram(rt_4_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_4_single_')
+    plot_histogram(rt_8_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_8_single_')
 
     # Writes info file
     info_file(date_time, data_path, dest_path, pmt_hv, gain, offset, trig_delay, amp, fsps, band, nfilter, r)
