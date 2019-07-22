@@ -69,7 +69,7 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
         save_name4 = str(filt_path2_2 / 'D2--waveforms--%05d.txt') % i
         save_name8 = str(filt_path2_2_2 / 'D2--waveforms--%05d.txt') % i
 
-        if os.path.isfile(file_name):
+        '''if os.path.isfile(file_name):
             if os.path.isfile(save_name1):
                 print('File #%05d in rt_1 folder' % i)
             else:
@@ -105,7 +105,24 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
                 v8 = lowpass_filter(v, tau_2_2_2, fsps)
                 v8 = v8 * factor8
                 ww(t, v8, save_name8, hdr)
-                print('File #%05d in rt_8 folder' % i)
+                print('File #%05d in rt_8 folder' % i)'''
+
+        if os.path.isfile(file_name):
+            t, v, hdr = rw(file_name, nhdr)
+            ww(t, v, save_name1, hdr)
+            print('File #%05d in rt_1 folder' % i)
+            v2 = lowpass_filter(v, tau_2, fsps)
+            v4 = lowpass_filter(v2, tau_2_2, fsps)
+            v8 = lowpass_filter(v4, tau_2_2_2, fsps)
+            v2_gain = v2 * factor2
+            v4_gain = v4 * factor4
+            v8_gain = v8 * factor8
+            ww(t, v2_gain, save_name2, hdr)
+            print('File #%05d in rt_2 folder' % i)
+            ww(t, v4_gain, save_name4, hdr)
+            print('File #%05d in rt_4 folder' % i)
+            ww(t, v8_gain, save_name8, hdr)
+            print('File #%05d in rt_8 folder' % i)
 
     # Plots average waveform for 1x rise time
     print('Calculating rt_1 average waveform...')

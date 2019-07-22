@@ -158,7 +158,7 @@ def calculate_tau(t, v, fsps):
 
     v_flip = -1 * v
     rt1090 = rise_time_1090(t, v)
-    for i in range(500, 50000):
+    for i in range(5, 50000):
         j = i * 1e-11
         j_array = np.append(j_array, j)
         v_new = lowpass_filter(v_flip, j, fsps)
