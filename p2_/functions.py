@@ -45,7 +45,7 @@ def ww(x, y, file_name, hdr):
 
 
 # Calculates the average waveform of an spe
-def average_waveform(start, end, data_file, dest_path, nhdr, save_name):
+def average_waveform(start, end, data_file, dest_path, nhdr, save_name, shaping):
     save_file = Path(dest_path / 'plots')
     tsum = 0
     vsum = 0
@@ -87,7 +87,7 @@ def average_waveform(start, end, data_file, dest_path, nhdr, save_name):
     plt.plot(t_avg, v_avg)
     plt.xlabel('Time (s)')
     plt.ylabel('Normalized Voltage')
-    plt.title('Average Waveform')
+    plt.title('Average Waveform\n' + shaping)
     plt.savefig(save_file / (save_name + '.png'), dpi=360)
     plt.close()
 
@@ -149,6 +149,28 @@ def rise_time_1090(t, v):
         rise_time1090 = float(format(time90 - time10, '.2e'))       # Calculates 10-90 rise time
 
         return rise_time1090
+
+
+# Calculates tau value for lowpass filter
+def calculate_tau(t, v, fsps):
+    rt_array = np.array([])
+    j_array = np.array([])
+
+    v_flip = -1 * v
+    rt1090 = rise_time_1090(t, v)
+    for i in range(500, 50000):
+        j = i * 1e-11
+        j_array = np.append(j_array, j)
+        v_new = lowpass_filter(v_flip, j, fsps)
+        rt = rise_time_1090(t, v_new)
+        rt_array = np.append(rt_array, rt)
+        diff_val = rt - 2 * rt1090
+        if diff_val >= 0:
+            break
+
+    tau = j_array[np.argmin(np.abs(rt_array - 2 * rt1090))]
+
+    return tau
 
 
 # Calculates 10-90 rise time for double peaks
@@ -440,7 +462,7 @@ def make_arrays(dest_path, save_path, start, end, nhdr):
                 filter_2_array = np.append(filter_2_array, filter_2)
                 filter_2_2_array = np.append(filter_2_2_array, filter_2_2)
                 filter_2_2_2_array = np.append(filter_2_2_2_array, filter_2_2_2)
-        elif os.path.isfile(dest_path / 'unusable_data' / 'D2--waveforms--%05d.txt' % i):
+        elif os.path.isfile(str(dest_path / 'unusable_data' / 'D2--waveforms--%05d.txt') % i):
                 pass
         else:       # If the calculations were not done yet, they are calculated, any spe waveform that returns
                     # impossible values is removed

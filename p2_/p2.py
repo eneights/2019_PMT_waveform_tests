@@ -14,84 +14,38 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     filt_path2_2_2 = Path(dest_path / 'rt_8')
 
     print('Calculating taus...')
-    x1_array = np.array([])
-    j_array = np.array([])
-
     # Uses average spe waveform to calculate tau to use in lowpass filter for 2x rise time
     average_file = str(data_path / 'hist_data' / 'avg_waveform_d1b.txt')
     t, v, hdr = rw(average_file, nhdr)
-    v = -1 * v
-    rt1090 = rise_time_1090(t, v)
-    for i in range(500, 50000):
-        j = i * 1e-11
-        v_new = lowpass_filter(v, j, fsps)
-        x1 = rise_time_1090(t, v_new)
-        x1_array = np.append(x1_array, x1)
-        j_array = np.append(j_array, j)
-        diff_val = x1 - 8 * rt1090
-        if diff_val >= 0:
-            break
-    tau_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090))]
-    v = -1 * v
-    v2 = lowpass_filter(v, tau_2, fsps)     # Creates new average waveform with 2x the rise time
-
-    amp1 = calculate_amp(t, v)
-    amp2 = calculate_amp(t, v2)
-    factor2 = amp1 / amp2
-
-    v2 = v2 * factor2
+    tau_2 = calculate_tau(t, v, fsps)
+    v2 = lowpass_filter(v, tau_2, fsps)                     # Creates new average waveform with 2x rise time shaping
 
     # Uses average waveform with 2x the rise time to calculate tau to use in lowpass filter for 4x rise time
-    v2 = -1 * v2
-    x1_array = np.array([])
-    j_array = np.array([])
-    rt1090_2 = rise_time_1090(t, v2)
-    for i in range(500, 50000):
-        j = i * 1e-11
-        v_new = lowpass_filter(v2, j, fsps)
-        x1 = rise_time_1090(t, v_new)
-        x1_array = np.append(x1_array, x1)
-        j_array = np.append(j_array, j)
-        diff_val = x1 - 2 * rt1090_2
-        if diff_val >= 0:
-            break
-    tau_2_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090_2))]
-    v2 = -1 * v2
-    v2_2 = lowpass_filter(v2, tau_2_2, fsps)    # Creates new average waveform with 4x the rise time
-
-    amp4 = calculate_amp(t, v2_2)
-    factor4 = amp1 / amp4
-
-    v2_2 = v2_2 * factor4
+    tau_2_2 = calculate_tau(t, v2, fsps)
+    v2_2 = lowpass_filter(v2, tau_2_2, fsps)                # Creates new average waveform with 4x rise time shaping
 
     # Uses average waveform with 4x the rise time to calculate tau to use in lowpass filter for 8x rise time
-    v2_2 = -1 * v2_2
-    x1_array = np.array([])
-    j_array = np.array([])
-    rt1090_2_2 = rise_time_1090(t, v2_2)
-    for i in range(500, 50000):
-        j = i * 1e-11
-        v_new = lowpass_filter(v2_2, j, fsps)
-        x1 = rise_time_1090(t, v_new)
-        x1_array = np.append(x1_array, x1)
-        j_array = np.append(j_array, j)
-        diff_val = x1 - 2 * rt1090_2_2
-        if diff_val >= 0:
-            break
-    tau_2_2_2 = j_array[np.argmin(np.abs(x1_array - 2 * rt1090_2_2))]
-    v2_2 = -1 * v2_2
-    v2_2_2 = lowpass_filter(v2_2, tau_2_2_2, fsps)      # Creates new average waveform with 8x the rise time
+    tau_2_2_2 = calculate_tau(t, v2_2, fsps)
+    v2_2_2 = lowpass_filter(v2_2, tau_2_2_2, fsps)          # Creates new average waveform with 8x rise time shaping
 
+    # Calculates factors for gain
+    amp1 = calculate_amp(t, v)
+    amp2 = calculate_amp(t, v2)
+    amp4 = calculate_amp(t, v2_2)
     amp8 = calculate_amp(t, v2_2_2)
+    factor2 = amp1 / amp2
+    factor4 = amp1 / amp4
     factor8 = amp1 / amp8
 
-    v2_2_2 = v2_2_2 * factor8
+    v2_gain = v2 * factor2
+    v2_2_gain = v2_2 * factor4
+    v2_2_2_gain = v2_2_2 * factor8
 
     # Plots average spe waveforms with 1x, 2x, 4x, and 8x the rise time
     plt.plot(t, v)
-    plt.plot(t, v2)
-    plt.plot(t, v2_2)
-    plt.plot(t, v2_2_2)
+    plt.plot(t, v2_gain)
+    plt.plot(t, v2_2_gain)
+    plt.plot(t, v2_2_2_gain)
     plt.xlabel('Time (s)')
     plt.ylabel('Normalized Voltage')
     plt.title('Average Waveforms\norange tau = ' + str(format(tau_2, '.2e')) + ' s, green tau = ' +
@@ -160,22 +114,22 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     plt.plot(t, v)
     plt.xlabel('Time (s)')
     plt.ylabel('Normalized Voltage')
-    plt.title('Average Waveform')
+    plt.title('Average Waveform\nNo shaping')
     plt.savefig(dest_path / 'plots' / 'avg_waveform1.png', dpi=360)
     plt.close()
     ww(t, v, dest_path / 'hist_data' / 'avg_waveform1.txt', 'Average Waveform\n\n\n\nTime,Ampl\n')
 
     # Plots average waveform for 2x rise time
     print('Calculating rt_2 average waveform...')
-    average_waveform(start, end, filt_path2, dest_path, nhdr, 'avg_waveform2')
+    average_waveform(start, end, filt_path2, dest_path, nhdr, 'avg_waveform2', '2x rise time shaping')
 
     # Plots average waveform for 4x rise time
     print('Calculating rt_4 average waveform...')
-    average_waveform(start, end, filt_path2_2, dest_path, nhdr, 'avg_waveform4')
+    average_waveform(start, end, filt_path2_2, dest_path, nhdr, 'avg_waveform4', '4x rise time shaping')
 
     # Plots average waveform for 8x rise time
     print('Calculating rt_8 average waveform...')
-    average_waveform(start, end, filt_path2_2_2, dest_path, nhdr, 'avg_waveform8')
+    average_waveform(start, end, filt_path2_2_2, dest_path, nhdr, 'avg_waveform8', '8x rise time shaping')
 
     # Calculates 10-90 rise times for each waveform and puts them into arrays
     print('Doing calculations...')
@@ -188,6 +142,13 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     plot_histogram(rt_2_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_2_single_')
     plot_histogram(rt_4_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_4_single_')
     plot_histogram(rt_8_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_8_single_')
+
+    print(tau_2)
+    print(tau_2_2)
+    print(tau_2_2_2)
+    print(factor2)
+    print(factor4)
+    print(factor8)
 
     # Writes info file
     info_file(date_time, data_path, dest_path, pmt_hv, gain, offset, trig_delay, amp, fsps, band, nfilter, r)
