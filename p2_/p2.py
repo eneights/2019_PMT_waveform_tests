@@ -99,13 +99,13 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     plt.savefig(dest_path / 'plots' / 'avg_waveforms.png', dpi=360)
     plt.close()
 
-    tau_2 = 1.3279999999999999e-08
+    '''tau_2 = 1.3279999999999999e-08
     tau_2_2 = 1.035e-08
     tau_2_2_2 = 3.3249999999999997e-08
 
     factor2 = 1.1861817973550082
     factor4 = 1.2256039407918038
-    factor8 = 4.057502778574371
+    factor8 = 4.057502778574371'''
 
     # For each spe waveform file, calculates and saves waveforms with 1x, 2x, 4x, and 8x the rise time
     for i in range(start, end + 1):

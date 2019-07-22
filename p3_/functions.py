@@ -286,7 +286,10 @@ def make_arrays(double_file_array, double_folder, delay_folder, dest_path, nhdr,
                 csv_reader = csv.reader(myfile)
                 file_array = np.array([])
                 for row in csv_reader:      # Creates array with calculation data
-                    file_array = np.append(file_array, float(row[1]))
+                    try:
+                        file_array = np.append(file_array, float(row[1]))
+                    except ValueError:
+                        file_array = np.append(file_array, -1)
                 myfile.close()
                 charge = file_array[0]
                 amplitude = file_array[1]
@@ -375,7 +378,10 @@ def make_arrays_s(single_file_array, dest_path, single_folder, nhdr, r, fsps_new
                 csv_reader = csv.reader(myfile)
                 file_array = np.array([])
                 for row in csv_reader:      # Creates array with calculation data
-                    file_array = np.append(file_array, float(row[1]))
+                    try:
+                        file_array = np.append(file_array, float(row[1]))
+                    except ValueError:
+                        file_array = np.append(file_array, -1)
                 myfile.close()
                 charge = file_array[0]
                 amplitude = file_array[1]
@@ -713,6 +719,8 @@ def false_spes_vs_delay(start, end, factor, parameter, parameter_title, units, f
         mpes_as_spes_5x_array = np.append(mpes_as_spes_5x_array, mpes_as_spes_5x)
         mpes_as_spes_55x_array = np.append(mpes_as_spes_55x_array, mpes_as_spes_55x)
         mpes_as_spes_6x_array = np.append(mpes_as_spes_6x_array, mpes_as_spes_6x)
+        mpes_as_spes_40_array = np.append(mpes_as_spes_40_array, mpes_as_spes_40)
+        mpes_as_spes_80_array = np.append(mpes_as_spes_80_array, mpes_as_spes_80)
 
     cutoff_array_2 = np.linspace(start * factor, end * factor, 1000)
     spes_as_mpes_array_2 = np.interp(cutoff_array_2, cutoff_array, spes_as_mpes_array)
@@ -782,15 +790,17 @@ def false_spes_mpes(start, end, factor, parameter, parameter_title, units, means
 
     cutoff_array_2 = np.linspace(start * factor, end * factor, 1000)
     spes_as_mpes_array_2 = np.interp(cutoff_array_2, cutoff_array, spes_as_mpes_array)
+    mpes_as_spes_array_2 = np.interp(cutoff_array_2, cutoff_array, mpes_as_spes_array)
     idx = np.argmin(np.abs(spes_as_mpes_array_2 - 1))
     cutoff = float(format(cutoff_array_2[idx], '.2e'))
+    false_spe = float(format(mpes_as_spes_array_2[idx], '.2e'))
 
     plt.plot(cutoff_array, spes_as_mpes_array)
     plt.ylim(-5, 100)
     plt.hlines(1, start * factor, end * factor)
     plt.xlabel(parameter_title + ' Cutoff (' + units + ')')
     plt.ylabel('% SPES Misidentified as MPEs')
-    plt.title('False MPEs')
+    plt.title('False MPEs\n' + parameter_title + ' Cutoff: ' + str(cutoff) + ' ' + units)
     plt.annotate('1% false MPEs', (start * factor, 3))
     plt.savefig(dest_path / 'plots' / str('false_mpes_' + parameter + '_' + str(int(fsps_new / 1e6)) + '_Msps_' +
                                           shaping + '.png'), dpi=360)
@@ -801,8 +811,8 @@ def false_spes_mpes(start, end, factor, parameter, parameter_title, units, means
     plt.vlines(cutoff, 0, 100)
     plt.xlabel(parameter_title + ' Cutoff (' + units + ')')
     plt.ylabel('% MPES Misidentified as SPEs')
-    plt.title('False SPEs')
-    plt.annotate('1% false MPEs', (cutoff, -2))
+    plt.title('False SPEs\n' + parameter_title + ' Cutoff: ' + str(cutoff) + ' ' + units)
+    plt.annotate(str(str(false_spe) + '% false SPEs'), (cutoff, -2))
     plt.savefig(dest_path / 'plots' / str('false_spes_' + parameter + '_' + str(int(fsps_new / 1e6)) + '_Msps_' +
                                           shaping + '.png'), dpi=360)
     plt.close()

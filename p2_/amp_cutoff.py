@@ -19,16 +19,17 @@ def amp_cutoff(date, filter_band, nhdr, shaping):
         print(filename, 'is a file')
         files_added = filename[15:20]
         single_file_array = np.append(single_file_array, files_added)
-    for filename in os.listdir(dest_path / 'double_spe' / shaping / '6x_rt'):
+    for filename in os.listdir(dest_path / 'double_spe' / shaping / '40_ns'):
         print(filename, 'is a file')
         files_added = filename[15:27]
         double_file_array_6x_rt = np.append(double_file_array_6x_rt, files_added)
 
-    single_file_array = single_file_array[:1001]
-    double_file_array_6x_rt = double_file_array_6x_rt[:1001]
+    single_file_array = single_file_array[:100]
+    double_file_array_6x_rt = double_file_array_6x_rt[:100]
 
     print('Doing calculations...')
-    for i in range(-150, 0):
+    for i in range(-200, 0):
+        print(i)
         cutoff_array = np.append(cutoff_array, i)
 
         x1 = 0
@@ -41,12 +42,15 @@ def amp_cutoff(date, filter_band, nhdr, shaping):
         for item in single_file_array:
             file_name = str(dest_path / 'single_spe' / shaping / 'D2--waveforms--%s.txt') % item
             t, v, hdr = rw(file_name, nhdr)  # Waveform file is read
+            v_bits = np.array([])
+            for thing in range(len(v)):
+                v_bits = np.append(v_bits, (v[thing] * (2 ** 14 - 1) * 2 + 0.5))  # Converts voltage array to bits
 
             peak_amts = np.array([])
 
             try:
                 z1 += 1
-                v_flip = -1 * v
+                v_flip = -1 * v_bits
                 peaks, _ = signal.find_peaks(v_flip, max(v_flip) / 20)
                 for thing in peaks:
                     peak_amts = np.append(peak_amts, v_flip[thing])
@@ -54,7 +58,7 @@ def amp_cutoff(date, filter_band, nhdr, shaping):
                     peak_amts[np.where(peak_amts == max(peak_amts))] = 0
                 else:
                     peak_amts[np.where(peak_amts == max(peak_amts))[0][0]] = 0
-                sec_max = v[peaks[np.where(peak_amts == max(peak_amts))]][0]
+                sec_max = v_bits[peaks[np.where(peak_amts == max(peak_amts))]][0]
 
                 if sec_max >= i or len(peaks) == 1:
                     x1 += 1
@@ -64,8 +68,11 @@ def amp_cutoff(date, filter_band, nhdr, shaping):
                 pass
 
         for item in double_file_array_6x_rt:
-            file_name = str(dest_path / 'double_spe' / shaping / '6x_rt' / 'D2--waveforms--%s.txt') % item
+            file_name = str(dest_path / 'double_spe' / shaping / '40_ns' / 'D2--waveforms--%s.txt') % item
             t, v, hdr = rw(file_name, nhdr)  # Waveform file is read
+            v_bits = np.array([])
+            for thing in range(len(v)):
+                v_bits = np.append(v_bits, (v[thing] * (2 ** 14 - 1) * 2 + 0.5))  # Converts voltage array to bits
 
             peak_amts = np.array([])
 
@@ -79,7 +86,7 @@ def amp_cutoff(date, filter_band, nhdr, shaping):
                     peak_amts[np.where(peak_amts == max(peak_amts))] = 0
                 else:
                     peak_amts[np.where(peak_amts == max(peak_amts))[0][0]] = 0
-                sec_max = v[peaks[np.where(peak_amts == max(peak_amts))]][0]
+                sec_max = v_bits[peaks[np.where(peak_amts == max(peak_amts))]][0]
 
                 if sec_max >= i or len(peaks) == 1:
                     x2 += 1

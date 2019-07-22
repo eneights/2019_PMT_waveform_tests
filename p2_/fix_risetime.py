@@ -9,12 +9,12 @@ single_path = Path(dest_path / 'single_spe')
 
 double_file_array = np.array([])
 
-min_amp_1 = 1
-min_amp_2 = 1
-min_amp_4 = 1
-min_amp_8 = 1
+min_amp_1 = (-186 - 0.5) / (2 * (2 ** 14 - 1))
+min_amp_2 = (-97 - 0.5) / (2 * (2 ** 14 - 1))
+min_amp_4 = (-11 - 0.5) / (2 * (2 ** 14 - 1))
+min_amp_8 = (-33 - 0.5) / (2 * (2 ** 14 - 1))
 
-t, v, hdr = rw(dest_path / 'hist_data' / 'avg_waveform_double_rt1_40_ns.txt', 5)
+t, v, hdr = rw(dest_path / 'hist_data' / 'avg_waveform_double_rt8_40_ns.txt', 5)
 plt.plot(t, v)
 plt.show()
 
@@ -34,6 +34,11 @@ for item in double_file_array:
             os.path.isfile(file_name8):
         print("Calculating file #%s" % item)
 
+        x1 = 0
+        x2 = 0
+        x4 = 0
+        x8 = 0
+
         t1, v1, hdr1 = rw(file_name1, 5)            # Unfiltered waveform file is read
         peak_amts = np.array([])
         idx1 = np.inf
@@ -44,11 +49,13 @@ for item in double_file_array:
             for thing in peaks:
                 peak_amts = np.append(peak_amts, v_flip[thing])
             true_max = v1[peaks[np.where(peak_amts == max(peak_amts))]][0]
+            print(true_max)
             if len(np.where(peak_amts == max(peak_amts))[0]) == 1:
                 peak_amts[np.where(peak_amts == max(peak_amts))] = 0
             else:
                 peak_amts[np.where(peak_amts == max(peak_amts))[0][0]] = 0
             sec_max = v1[peaks[np.where(peak_amts == max(peak_amts))]][0]
+            print(sec_max)
             v_sum = 0
             for i in range(251):
                 v_sum += v1[i]
@@ -57,8 +64,8 @@ for item in double_file_array:
                 tvals_1 = np.linspace(t1[0], t1[len(t1) - 1], 1000)
                 vvals_1 = np.interp(tvals_1, t1, v1)
                 idx_max_peak = np.argmin(np.abs(vvals_1 - true_max)).item()
-                t_rising_1 = tvals_1[:idx_max_peak].item()
-                v_rising_1 = vvals_1[:idx_max_peak].item()
+                t_rising_1 = tvals_1[:idx_max_peak]
+                v_rising_1 = vvals_1[:idx_max_peak]
                 val10_1 = .1 * (true_max - avg)             # Calculates 10% max
                 val90_1 = 9 * val10_1                       # Calculates 90% max
                 time10_1 = t_rising_1[np.argmin(np.abs(v_rising_1 - val10_1))]    # Finds time of point of 10% max
@@ -70,8 +77,8 @@ for item in double_file_array:
                     tvals_1 = np.linspace(t1[0], t1[np.where(v1 == true_max)], 500)
                     vvals_1 = np.interp(tvals_1, t1, v1)
                     idx_max_peak = np.argmin(np.abs(vvals_1 - true_max)).item()
-                    t_rising_1 = tvals_1[:idx_max_peak].item()
-                    v_rising_1 = vvals_1[:idx_max_peak].item()
+                    t_rising_1 = tvals_1[:idx_max_peak]
+                    v_rising_1 = vvals_1[:idx_max_peak]
                     val10_1 = .1 * (true_max - avg)             # Calculates 10% max
                     val90_1 = 9 * val10_1                       # Calculates 90% max
                     time10_1 = t_rising_1[np.argmin(np.abs(v_rising_1 - val10_1))]  # Finds time of point of 10% max
@@ -81,8 +88,8 @@ for item in double_file_array:
                     tvals_1 = np.linspace(t1[0], t1[np.where(v1 == sec_max)], 500)
                     vvals_1 = np.interp(tvals_1, t1, v1)
                     idx_max_peak = np.argmin(np.abs(vvals_1 - sec_max)).item()
-                    t_rising_1 = tvals_1[:idx_max_peak].item()
-                    v_rising_1 = vvals_1[:idx_max_peak].item()
+                    t_rising_1 = tvals_1[:idx_max_peak]
+                    v_rising_1 = vvals_1[:idx_max_peak]
                     val10_1 = .1 * (true_max - avg)             # Calculates 10% max
                     val90_1 = 9 * val10_1                       # Calculates 90% max
                     time10_1 = t_rising_1[np.argmin(np.abs(v_rising_1 - val10_1))]  # Finds time of point of 10% max
@@ -118,8 +125,8 @@ for item in double_file_array:
                 tvals_2 = np.linspace(t2[0], t2[len(t2) - 1], 1000)
                 vvals_2 = np.interp(tvals_2, t2, v2)
                 idx_max_peak = np.argmin(np.abs(vvals_2 - true_max)).item()
-                t_rising_2 = tvals_2[:idx_max_peak].item()
-                v_rising_2 = vvals_2[:idx_max_peak].item()
+                t_rising_2 = tvals_2[:idx_max_peak]
+                v_rising_2 = vvals_2[:idx_max_peak]
                 val10_2 = .1 * (true_max - avg)  # Calculates 10% max
                 val90_2 = 9 * val10_2  # Calculates 90% max
                 time10_2 = t_rising_2[np.argmin(np.abs(v_rising_2 - val10_2))]  # Finds time of point of 10% max
@@ -131,8 +138,8 @@ for item in double_file_array:
                     tvals_2 = np.linspace(t2[0], t2[np.where(v2 == true_max)], 500)
                     vvals_2 = np.interp(tvals_2, t2, v2)
                     idx_max_peak = np.argmin(np.abs(vvals_2 - true_max)).item()
-                    t_rising_2 = tvals_2[:idx_max_peak].item()
-                    v_rising_2 = vvals_2[:idx_max_peak].item()
+                    t_rising_2 = tvals_2[:idx_max_peak]
+                    v_rising_2 = vvals_2[:idx_max_peak]
                     val10_2 = .1 * (true_max - avg)  # Calculates 10% max
                     val90_2 = 9 * val10_2  # Calculates 90% max
                     time10_2 = t_rising_2[np.argmin(np.abs(v_rising_2 - val10_2))]  # Finds time of point of 10% max
@@ -142,8 +149,8 @@ for item in double_file_array:
                     tvals_2 = np.linspace(t2[0], t2[np.where(v2 == sec_max)], 500)
                     vvals_2 = np.interp(tvals_2, t2, v2)
                     idx_max_peak = np.argmin(np.abs(vvals_2 - sec_max)).item()
-                    t_rising_2 = tvals_2[:idx_max_peak].item()
-                    v_rising_2 = vvals_2[:idx_max_peak].item()
+                    t_rising_2 = tvals_2[:idx_max_peak]
+                    v_rising_2 = vvals_2[:idx_max_peak]
                     val10_2 = .1 * (true_max - avg)  # Calculates 10% max
                     val90_2 = 9 * val10_2  # Calculates 90% max
                     time10_2 = t_rising_2[np.argmin(np.abs(v_rising_2 - val10_2))]  # Finds time of point of 10% max
@@ -179,8 +186,8 @@ for item in double_file_array:
                 tvals_4 = np.linspace(t4[0], t4[len(t4) - 1], 1000)
                 vvals_4 = np.interp(tvals_4, t4, v4)
                 idx_max_peak = np.argmin(np.abs(vvals_4 - true_max)).item()
-                t_rising_4 = tvals_4[:idx_max_peak].item()
-                v_rising_4 = vvals_4[:idx_max_peak].item()
+                t_rising_4 = tvals_4[:idx_max_peak]
+                v_rising_4 = vvals_4[:idx_max_peak]
                 val10_4 = .1 * (true_max - avg)  # Calculates 10% max
                 val90_4 = 9 * val10_4  # Calculates 90% max
                 time10_4 = t_rising_4[np.argmin(np.abs(v_rising_4 - val10_4))]  # Finds time of point of 10% max
@@ -188,7 +195,7 @@ for item in double_file_array:
                 rise_time1090_4 = float(format(time90_4 - time10_4, '.2e'))  # Calculates 10-90 rise time
                 x4 = 1
             else:
-                if np.where(v4 == true_max) < np.where(v4 == sec_max):
+                if np.where(v4 == true_max)[0] < np.where(v4 == sec_max)[0]:
                     tvals_4 = np.linspace(t4[0], t4[np.where(v4 == true_max)], 500)
                     vvals_4 = np.interp(tvals_4, t4, v4)
                     idx_max_peak = np.argmin(np.abs(vvals_4 - true_max)).item()
@@ -203,8 +210,8 @@ for item in double_file_array:
                     tvals_4 = np.linspace(t4[0], t4[np.where(v4 == sec_max)], 500)
                     vvals_4 = np.interp(tvals_4, t4, v4)
                     idx_max_peak = np.argmin(np.abs(vvals_4 - sec_max)).item()
-                    t_rising_4 = tvals_4[:idx_max_peak].item()
-                    v_rising_4 = vvals_4[:idx_max_peak].item()
+                    t_rising_4 = tvals_4[:idx_max_peak]
+                    v_rising_4 = vvals_4[:idx_max_peak]
                     val10_4 = .1 * (true_max - avg)  # Calculates 10% max
                     val90_4 = 9 * val10_4  # Calculates 90% max
                     time10_4 = t_rising_4[np.argmin(np.abs(v_rising_4 - val10_4))]  # Finds time of point of 10% max
@@ -240,8 +247,8 @@ for item in double_file_array:
                 tvals_8 = np.linspace(t8[0], t8[len(t8) - 1], 1000)
                 vvals_8 = np.interp(tvals_8, t8, v8)
                 idx_max_peak = np.argmin(np.abs(vvals_8 - true_max)).item()
-                t_rising_8 = tvals_8[:idx_max_peak].item()
-                v_rising_8 = vvals_8[:idx_max_peak].item()
+                t_rising_8 = tvals_8[:idx_max_peak]
+                v_rising_8 = vvals_8[:idx_max_peak]
                 val10_8 = .1 * (true_max - avg)  # Calculates 10% max
                 val90_8 = 9 * val10_8  # Calculates 90% max
                 time10_8 = t_rising_8[np.argmin(np.abs(v_rising_8 - val10_8))]  # Finds time of point of 10% max
@@ -253,8 +260,8 @@ for item in double_file_array:
                     tvals_8 = np.linspace(t8[0], t8[np.where(v8 == true_max)], 500)
                     vvals_8 = np.interp(tvals_8, t8, v8)
                     idx_max_peak = np.argmin(np.abs(vvals_8 - true_max)).item()
-                    t_rising_8 = tvals_8[:idx_max_peak].item()
-                    v_rising_8 = vvals_8[:idx_max_peak].item()
+                    t_rising_8 = tvals_8[:idx_max_peak]
+                    v_rising_8 = vvals_8[:idx_max_peak]
                     val10_8 = .1 * (true_max - avg)  # Calculates 10% max
                     val90_8 = 9 * val10_8  # Calculates 90% max
                     time10_8 = t_rising_8[np.argmin(np.abs(v_rising_8 - val10_8))]  # Finds time of point of 10% max
@@ -264,8 +271,8 @@ for item in double_file_array:
                     tvals_8 = np.linspace(t8[0], t8[np.where(v8 == sec_max)], 500)
                     vvals_8 = np.interp(tvals_8, t8, v8)
                     idx_max_peak = np.argmin(np.abs(vvals_8 - sec_max)).item()
-                    t_rising_8 = tvals_8[:idx_max_peak].item()
-                    v_rising_8 = vvals_8[:idx_max_peak].item()
+                    t_rising_8 = tvals_8[:idx_max_peak]
+                    v_rising_8 = vvals_8[:idx_max_peak]
                     val10_8 = .1 * (true_max - avg)  # Calculates 10% max
                     val90_8 = 9 * val10_8  # Calculates 90% max
                     time10_8 = t_rising_8[np.argmin(np.abs(v_rising_8 - val10_8))]  # Finds time of point of 10% max
