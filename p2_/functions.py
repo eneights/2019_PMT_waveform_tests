@@ -156,12 +156,11 @@ def calculate_tau(t, v, fsps):
     rt_array = np.array([])
     j_array = np.array([])
 
-    v_flip = -1 * v
     rt1090 = rise_time_1090(t, v)
     for i in range(5, 50000):
         j = i * 1e-11
         j_array = np.append(j_array, j)
-        v_new = lowpass_filter(v_flip, j, fsps)
+        v_new = lowpass_filter(v, j, fsps)
         rt = rise_time_1090(t, v_new)
         rt_array = np.append(rt_array, rt)
         diff_val = rt - 2 * rt1090

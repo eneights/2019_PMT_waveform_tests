@@ -15,8 +15,9 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
 
     print('Calculating taus...')
     # Uses average spe waveform to calculate tau to use in lowpass filter for 2x rise time
-    average_file = str(data_path / 'hist_data' / 'avg_waveform_d1b.txt')
+    '''average_file = str(data_path / 'hist_data' / 'avg_waveform_d1b.txt')
     t, v, hdr = rw(average_file, nhdr)
+    v = -1 * v
     tau_2 = calculate_tau(t, v, fsps)
     v2 = lowpass_filter(v, tau_2, fsps)                     # Creates new average waveform with 2x rise time shaping
 
@@ -26,7 +27,18 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
 
     # Uses average waveform with 4x the rise time to calculate tau to use in lowpass filter for 8x rise time
     tau_2_2_2 = calculate_tau(t, v2_2, fsps)
-    v2_2_2 = lowpass_filter(v2_2, tau_2_2_2, fsps)          # Creates new average waveform with 8x rise time shaping
+    v2_2_2 = lowpass_filter(v2_2, tau_2_2_2, fsps)          # Creates new average waveform with 8x rise time shaping'''
+
+    tau_2 = 1.3279999999999999e-08
+    tau_2_2 = 1.035e-08
+    tau_2_2_2 = 3.3249999999999997e-08
+
+    average_file = str(data_path / 'hist_data' / 'avg_waveform_d1b.txt')
+    t, v, hdr = rw(average_file, nhdr)
+    v = -1 * v
+    v2 = lowpass_filter(v, tau_2, fsps)  # Creates new average waveform with 2x rise time shaping
+    v2_2 = lowpass_filter(v2, tau_2_2, fsps)  # Creates new average waveform with 4x rise time shaping
+    v2_2_2 = lowpass_filter(v2_2, tau_2_2_2, fsps)  # Creates new average waveform with 8x rise time shaping
 
     # Calculates factors for gain
     amp1 = calculate_amp(t, v)
@@ -37,12 +49,13 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     factor4 = amp1 / amp4
     factor8 = amp1 / amp8
 
-    v2_gain = v2 * factor2
-    v2_2_gain = v2_2 * factor4
-    v2_2_2_gain = v2_2_2 * factor8
+    v_gain = v * -1
+    v2_gain = v2 * factor2 * -1
+    v2_2_gain = v2_2 * factor4 * -1
+    v2_2_2_gain = v2_2_2 * factor8 * -1
 
     # Plots average spe waveforms with 1x, 2x, 4x, and 8x the rise time
-    plt.plot(t, v)
+    plt.plot(t, v_gain)
     plt.plot(t, v2_gain)
     plt.plot(t, v2_2_gain)
     plt.plot(t, v2_2_2_gain)

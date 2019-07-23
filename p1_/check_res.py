@@ -10,5 +10,18 @@ t, v, hdr = rw(filename, 5)
 
 v_new = np.sort(v)
 
-for item in v_new:
-    print(item)
+diff_array = np.array([])
+
+for i in range(len(v_new)):
+    if i >= 1:
+        diff = v_new[i] - v_new[i - 1]
+        diff_array = np.append(diff_array, diff)
+
+# diff_array[diff_array == 0] = np.inf
+
+diff_new = np.sort(diff_array)
+
+plt.hist(diff_new[diff_new <= 0.00001], 100)
+plt.title('Difference Between 20 Gsps Oscilloscope Voltages')
+plt.xlabel('Difference Between Voltages (V)')
+plt.show()
