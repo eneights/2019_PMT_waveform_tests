@@ -779,16 +779,16 @@ def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename):
         mu2 = float(format(popt2[1], '.2e'))    # Calculates mean
         sigma2 = np.abs(float(format(popt2[2], '.2e')))     # Calculates standard deviation
         plt.xlabel(xaxis + ' (' + units + ')')
-        if filename == 'rt_1_single_':
+        if filename == 'rt_1_single':
             plt.title(title + ' of SPE (no shaping)\nmean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2) + ' ' +
                       units)
-        elif filename == 'rt_2_single_':
+        elif filename == 'rt_2_single':
             plt.title(title + ' of SPE (2x rise time shaping)\nmean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2)
                       + ' ' + units)
-        elif filename == 'rt_4_single_':
+        elif filename == 'rt_4_single':
             plt.title(title + ' of SPE (4x rise time shaping)\nmean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2)
                       + ' ' + units)
-        elif filename == 'rt_8_single_':
+        elif filename == 'rt_8_single':
             plt.title(title + ' of SPE (8x rise time shaping)\nmean: ' + str(mu2) + ' ' + units + ', SD: ' + str(sigma2)
                       + ' ' + units)
         elif filename.startswith('rt_1_double_'):
@@ -809,16 +809,16 @@ def plot_histogram(array, dest_path, nbins, xaxis, title, units, filename):
         plt.close()
     except Exception:
         plt.xlabel(xaxis + ' (' + units + ')')
-        if filename == 'rt_1_single_':
+        if filename == 'rt_1_single':
             plt.title(title + ' of SPE (no shaping)\nmean: ' + str(b_est) + ' ' + units + ', SD: ' + str(c_est) + ' ' +
                       units)
-        elif filename == 'rt_2_single_':
+        elif filename == 'rt_2_single':
             plt.title(title + ' of SPE (2x rise time shaping)\nmean: ' + str(b_est) + ' ' + units + ', SD: ' +
                       str(c_est) + ' ' + units)
-        elif filename == 'rt_4_single_':
+        elif filename == 'rt_4_single':
             plt.title(title + ' of SPE (4x rise time shaping)\nmean: ' + str(b_est) + ' ' + units + ', SD: ' +
                       str(c_est) + ' ' + units)
-        elif filename == 'rt_8_single_':
+        elif filename == 'rt_8_single':
             plt.title(title + ' of SPE (8x rise time shaping)\nmean: ' + str(b_est) + ' ' + units + ', SD: ' +
                       str(c_est) + ' ' + units)
         elif filename.startswith('rt_1_double_'):
