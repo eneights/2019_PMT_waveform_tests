@@ -41,10 +41,10 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     v2_2_2 = lowpass_filter(v2_2, tau_2_2_2, fsps)  # Creates new average waveform with 8x rise time shaping
 
     # Calculates factors for gain
-    amp1 = calculate_amp(t, v)
-    amp2 = calculate_amp(t, v2)
-    amp4 = calculate_amp(t, v2_2)
-    amp8 = calculate_amp(t, v2_2_2)
+    amp1 = min(v)
+    amp2 = min(v2)
+    amp4 = min(v2_2)
+    amp8 = min(v2_2_2)
     factor2 = amp1 / amp2
     factor4 = amp1 / amp4
     factor8 = amp1 / amp8
@@ -173,9 +173,6 @@ def p2(start, end, date, date_time, filter_band, nhdr, fsps, r, pmt_hv, gain, of
     plot_histogram(rt_4_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_4_single_')
     plot_histogram(rt_8_array, dest_path, 100, 'Time', '10-90 Rise Time', 's', 'rt_8_single_')
 
-    print(tau_2)
-    print(tau_2_2)
-    print(tau_2_2_2)
     print(factor2)
     print(factor4)
     print(factor8)
