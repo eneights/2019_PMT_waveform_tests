@@ -22,6 +22,6 @@ for i in range(len(v_new)):
 diff_new = np.sort(diff_array)
 
 plt.hist(diff_new[diff_new <= 0.00001], 100)
-plt.title('Difference Between 20 Gsps Oscilloscope Voltages')
+plt.title('Resolution of 20 Gsps Oscilloscope')
 plt.xlabel('Difference Between Voltages (V)')
 plt.show()
