@@ -126,8 +126,8 @@ def rise_time_1090(t, v):
     tvals1 = np.linspace(t[0], min_time, 5000)      # Creates array of times from beginning to point of min voltage
     vvals1 = np.interp(tvals1, t, v)   # Interpolates & creates array of voltages from beginning to point of min voltage
     vvals1_flip = np.flip(vvals1)   # Flips array, creating array of voltages from point of min voltage to beginning
-    difference_value = vvals1_flip - (0.1 * (min(v) - avg))     # Finds difference between points in beginning array
-                                                                    # and 10% max
+    difference_value = vvals1_flip - ((0.1 * (min(v) - avg)) + avg)     # Finds difference between points in beginning
+                                                                        # array and 10% max
     for i in range(0, len(difference_value) - 1): # Starting at point of minimum voltage and going towards beginning
         if difference_value[i] >= 0:              # of waveform, finds where voltage becomes greater than 10% max
             idx = len(difference_value) - i
@@ -139,8 +139,8 @@ def rise_time_1090(t, v):
         return '--'
     else:
         t1 = tvals[np.argmin(np.abs(tvals - tvals1[idx]))]      # Finds time of beginning of spe
-        val10 = .1 * (min(v) - avg)      # Calculates 10% max
-        val90 = 9 * val10               # Calculates 90% max
+        val10 = (.1 * (min(v) - avg)) + avg         # Calculates 10% max
+        val90 = (.9 * (min(v) - avg)) + avg         # Calculates 90% max
         tvals2 = np.linspace(t1, min_time, 5000)  # Creates array of times from beginning of spe to point of min voltage
         vvals2 = np.interp(tvals2, t, v)  # Interpolates, creates array of voltages from beginning of spe to min voltage
 
