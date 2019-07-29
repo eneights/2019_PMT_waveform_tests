@@ -9,9 +9,11 @@ def amp_cutoff(date, filter_band, nhdr, shaping):
     single_file_array = np.array([])
     double_file_array = np.array([])
     cutoff_array = np.array([])
+    a1_array = np.array([])
     x1_array = np.array([])
     y1_array = np.array([])
     z1_array = np.array([])
+    a2_array = np.array([])
     x2_array = np.array([])
     y2_array = np.array([])
     z2_array = np.array([])
@@ -19,6 +21,17 @@ def amp_cutoff(date, filter_band, nhdr, shaping):
     false_single = np.array([])
     true_double = np.array([])
     false_double = np.array([])
+
+    for filename in os.listdir(dest_path / 'double_spe' / shaping / '2x_rt'):
+        print(filename, 'is a file')
+        files_added = filename[15:27]
+        double_file_array = np.append(double_file_array, files_added)
+    for item in double_file_array:
+        file_name = str(dest_path / 'double_spe' / shaping / '2x_rt' / 'D2--waveforms--%s.txt') % item
+        t, v, hdr = rw(file_name, nhdr)                                         # Waveform file is read
+        plt.plot(t, v)
+        plt.title(item)
+        plt.show()
 
     print('Checking existing files...')
     for filename in os.listdir(dest_path / 'single_spe' / shaping):
@@ -30,25 +43,25 @@ def amp_cutoff(date, filter_band, nhdr, shaping):
         files_added = filename[15:27]
         double_file_array = np.append(double_file_array, files_added)
 
-    single_file_array = single_file_array[:100]
-    double_file_array = double_file_array[:100]
+    # single_file_array = single_file_array[:100]
+    # double_file_array = double_file_array[:100]
 
     print('Doing calculations...')
-    for i in range(-200, 0):
+    for i in range(-300, 0):
         voltage = (i - 0.5) / ((2 ** 14 - 1) * 2)
         cutoff_array = np.append(cutoff_array, voltage)
 
     for i in range(len(cutoff_array)):
+        a1_array = np.append(a1_array, 0)
         x1_array = np.append(x1_array, 0)
         y1_array = np.append(y1_array, 0)
         z1_array = np.append(z1_array, 0)
+        a2_array = np.append(a2_array, 0)
         x2_array = np.append(x2_array, 0)
         y2_array = np.append(y2_array, 0)
         z2_array = np.append(z2_array, 0)
 
     for item in single_file_array:
-        peak_amts = np.array([])
-
         file_name = str(dest_path / 'single_spe' / shaping / 'D2--waveforms--%s.txt') % item
         t, v, hdr = rw(file_name, nhdr)                                         # Waveform file is read
         v_flip = -1 * v
@@ -56,41 +69,66 @@ def amp_cutoff(date, filter_band, nhdr, shaping):
         for i in cutoff_array:
             idx = np.where(cutoff_array == i)
             z1_array[idx] += 1
-            peaks, _ = signal.find_peaks(v_flip, max(v_flip) / 20)
-            for thing in peaks:
-                peak_amts = np.append(peak_amts, v_flip[thing])
-            if len(np.where(peak_amts == max(peak_amts))[0]) == 1:
-                peak_amts[np.where(peak_amts == max(peak_amts))] = 0
-            else:
-                peak_amts[np.where(peak_amts == max(peak_amts))[0][0]] = 0
-            sec_max = v[peaks[np.where(peak_amts == max(peak_amts))]][0]
-            if sec_max >= i or len(peaks) == 1:
+            peaks, _ = signal.find_peaks(v_flip, -i)
+            if len(peaks) == 0:
+                a1_array[idx] += 1
+            elif len(peaks) == 1:
                 x1_array[idx] += 1
             else:
-                y1_array[idx] += 1
+                diff = 0
+                check = 0
+                for what in range(1, len(peaks)):
+                    if peaks[what] - peaks[what - 1] >= 3:
+                        diff += 1
+                if diff == 0:
+                    x1_array[idx] += 1
+                else:
+                    idx_peak = np.where(v == max(v))
+                    for what in peaks:
+                        if what < idx_peak[0][0]:
+                            check = 1
+                        else:
+                            break
+                    if check == 0:
+                        x1_array[idx] += 1
+                    else:
+                        y1_array[idx] += 1
 
     for item in double_file_array:
-        peak_amts = np.array([])
-
-        file_name = str(dest_path / 'double_spe' / shaping / '40_ns' / 'D2--waveforms--%s.txt') % item
+        file_name = str(dest_path / 'double_spe' / shaping / '80_ns' / 'D2--waveforms--%s.txt') % item
         t, v, hdr = rw(file_name, nhdr)                                         # Waveform file is read
         v_flip = -1 * v
 
         for i in cutoff_array:
             idx = np.where(cutoff_array == i)
             z2_array[idx] += 1
-            peaks, _ = signal.find_peaks(v_flip, max(v_flip) / 20)
-            for thing in peaks:
-                peak_amts = np.append(peak_amts, v_flip[thing])
-            if len(np.where(peak_amts == max(peak_amts))[0]) == 1:
-                peak_amts[np.where(peak_amts == max(peak_amts))] = 0
-            else:
-                peak_amts[np.where(peak_amts == max(peak_amts))[0][0]] = 0
-            sec_max = v[peaks[np.where(peak_amts == max(peak_amts))]][0]
-            if sec_max >= i or len(peaks) == 1:
+            peaks, _ = signal.find_peaks(v_flip, -i)
+            if len(peaks) == 0:
+                a2_array[idx] += 1
+            elif len(peaks) == 1:
                 x2_array[idx] += 1
             else:
-                y2_array[idx] += 1
+                diff = 0
+                check = 0
+                for what in range(1, len(peaks)):
+                    if peaks[what] - peaks[what - 1] >= 3:
+                        diff += 1
+                if diff == 0:
+                    x2_array[idx] += 1
+                else:
+                    idx_peak = np.where(v == max(v))
+                    for what in peaks:
+                        if what < idx_peak[0][0]:
+                            check = 1
+                        else:
+                            break
+                    if check == 0:
+                        x2_array[idx] += 1
+                    else:
+                        y2_array[idx] += 1
+            if i >= -0.005 and len(peaks) == 1:
+                plt.plot(t, v)
+                plt.show()
 
     for item in cutoff_array:
         idx = np.where(cutoff_array == item)
@@ -106,7 +144,7 @@ def amp_cutoff(date, filter_band, nhdr, shaping):
         false_double = np.append(false_double, percent_false_double)
 
     idx = np.argmin(np.abs(false_double - 1))
-    amp = cutoff_array[idx]
+    amp = float(format(cutoff_array[idx], '.2e'))
     true_s_per = float(format(true_single[idx], '.2e'))
     false_s_per = float(format(false_single[idx], '.2e'))
     true_d_per = float(format(true_double[idx], '.2e'))
