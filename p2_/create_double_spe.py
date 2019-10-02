@@ -29,12 +29,11 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
         double_file_array = np.append(double_file_array, files_added)
 
     # Creates double spe files
-    for i in range(nloops - len(double_file_array)):
+    while len(double_file_array) < nloops:
         idx1 = np.random.randint(len(file_array))
         idx2 = np.random.randint(len(file_array))
         file_1 = file_array[idx1]
         file_2 = file_array[idx2]
-        print('Adding files #%05d & #%05d' % (file_1, file_2))
         files_added = '%05d--%05d' % (file_1, file_2)
         file_name_1 = str(filt_path / 'D2--waveforms--%05d.txt') % file_1
         file_name_2 = str(filt_path / 'D2--waveforms--%05d.txt') % file_2
@@ -49,25 +48,30 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
         try:
             if min(t1) > min(t2):
                 t2 += delay_amt
+            else:
+                t1 += delay_amt
+            if min(t1) < min(t2):
                 idx1 = np.where(t1 == min(t2))[0][0]
                 for j in range(idx1):
                     t1 = np.append(t1, float(format(max(t1) + time_int, '.4e')))
                     t2 = np.insert(t2, 0, float(format(min(t2) + time_int, '.4e')))
                     v1 = np.append(v1, 0)
                     v2 = np.insert(v2, 0, 0)
-            else:
-                t1 += delay_amt
+            elif min(t1) > min(t2):
                 idx2 = np.where(t2 == min(t1))[0][0]
                 for j in range(idx2):
                     t1 = np.insert(t1, 0, float(format(min(t1) - time_int, '.4e')))
                     t2 = np.append(t2, float(format(max(t2) + time_int, '.4e')))
                     v1 = np.insert(v1, 0, 0)
                     v2 = np.append(v2, 0)
+            else:
+                pass
             t = t1
             v = np.add(v1, v2)
             file_name = 'D2--waveforms--%s.txt' % files_added
             ww(t, v, double_path / 'rt_1' / delay_folder / file_name, hdr1)
             double_file_array = np.append(double_file_array, files_added)
+            print('Added files #%05d & #%05d' % (file_1, file_2))
         except Exception:
             pass
 
@@ -79,7 +83,7 @@ def create_double_spe(nloops, date, filter_band, nhdr, delay, delay_folder, fsps
         single_file_array = np.append(single_file_array, file_added)
 
     # Creates single spe files
-    for i in range(nloops - len(single_file_array)):
+    while len(single_file_array) < nloops:
         idx = np.random.randint(len(file_array))
         file = file_array[idx]
         print('Adding file #%05d' % file)

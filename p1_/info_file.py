@@ -1,4 +1,4 @@
-timport datetime
+import datetime
 
 
 # Creates info file

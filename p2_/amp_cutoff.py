@@ -22,12 +22,13 @@ def amp_cutoff(date, filter_band, nhdr, shaping):
     true_double = np.array([])
     false_double = np.array([])
 
-    for filename in os.listdir(dest_path / 'double_spe' / shaping / '2x_rt'):
+    # DELETE LATER
+    for filename in os.listdir(dest_path / 'double_spe' / shaping / 'no_delay'):
         print(filename, 'is a file')
         files_added = filename[15:27]
         double_file_array = np.append(double_file_array, files_added)
     for item in double_file_array:
-        file_name = str(dest_path / 'double_spe' / shaping / '2x_rt' / 'D2--waveforms--%s.txt') % item
+        file_name = str(dest_path / 'double_spe' / shaping / 'no_delay' / 'D2--waveforms--%s.txt') % item
         t, v, hdr = rw(file_name, nhdr)                                         # Waveform file is read
         plt.plot(t, v)
         plt.title(item)
